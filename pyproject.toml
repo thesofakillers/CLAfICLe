@@ -15,6 +15,8 @@ black = "^22.6.0"
 flake8 = "^4.0.1"
 jupyterlab-code-formatter = "^1.4.11"
 ipykernel = "^6.15.0"
+nbdime = "^3.1.1"
+ipywidgets = "^7.7.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
