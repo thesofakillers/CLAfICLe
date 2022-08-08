@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 datasets = "^2.3.2"
+transformers = "^4.21.1"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.4.3"
