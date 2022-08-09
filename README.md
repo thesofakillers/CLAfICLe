@@ -42,7 +42,7 @@ sh gen_pip_reqs.sh
     │   ├── interim/       <- Intermediate data that has been transformed.
     │   ├── processed/     <- The final, canonical data sets for modeling.
     │   └── raw/           <- The original, immutable data dump.
-    ├── models/            <- Trained and serialized models.
+    ├── checkpoints/       <- Trained and serialized models.
     ├── notebooks/         <- Jupyter notebooks.
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     ├── pyproject.toml     <- project metadata, handled by poetry.
