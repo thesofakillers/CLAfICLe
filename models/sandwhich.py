@@ -10,19 +10,19 @@ class Sandwhich:
     BREAD_LANG -> FILL_LANG_MODEL -> BREAD_LANG
     """
 
-    def __init__(self, bread: str, model_name: str, fill: str = "en"):
+    def __init__(self, bread: str, model: str, fill: str = "en"):
         """Initialization
 
-        :param bread: input and output language (ISO-639-1)
-        :param model_name: the name of the language model to use on HF Hub
+        :param bread: desired input and output language (ISO-639-1)
+        :param model: HF Hub name or path to the model to use as the filling
         :param fill: language the language model is capable of (ISO-639-1)
 
         """
         self.bread = bread
         self.fill = fill
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
         self._translator = Translator()
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
 
     def translate(self, text: str, src_lang: str, dest_lang: str) -> str:
         """Translates a piece of text"""
@@ -54,7 +54,7 @@ class Sandwhich:
 
 if __name__ == "__main__":
     test_sandwhich = Sandwhich(
-        bread="it", model_name="google/t5-small-lm-adapt", fill="en"
+        bread="it", model="google/t5-small-lm-adapt", fill="en"
     )
 
     test_output = test_sandwhich.generate(
