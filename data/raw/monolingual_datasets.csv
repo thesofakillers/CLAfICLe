@@ -1,0 +1,252 @@
+Language	ISO code	Datasets	Models
+English English	en	807	26437
+German Deutsch	de	115	951
+French Français	fr	115	1145
+Spanish Español	es	111	2152
+Russian Русский	ru	97	417
+Arabic اللغة العربية	ar	93	633
+Portuguese Português	pt	90	509
+Polish język polski	pl	87	177
+Italian Italiano	it	84	471
+Dutch Nederlands	nl	84	323
+Chinese 中文	zh	83	1514
+Turkish Türkçe	tr	78	419
+Catalan Català	ca	69	161
+Finnish suomi	fi	68	324
+Romanian Română	ro	66	133
+Swedish Svenska	sv	66	380
+Korean 한국어	ko	65	280
+Danish dansk	da	64	143
+Greek Ελληνικά	el	61	113
+Czech čeština	cs	59	118
+Japanese 日本語	ja	58	712
+Thai ไทย	th	57	153
+Hungarian magyar	hu	56	106
+Indonesian Bahasa Indonesia	id	56	287
+Bulgarian български език	bg	55	125
+Hindi हिन्दी	hi	55	371
+Estonian eesti	et	53	162
+Slovenian slovenski jezik	sl	53	104
+Vietnamese Tiếng Việt	vi	51	167
+Latvian latviešu valoda	lv	48	80
+Lithuanian lietuvių kalba	lt	47	96
+Bengali বাংলা	bn	45	806
+Croatian Hrvatski	hr	45	95
+Slovak slovenčina	sk	45	74
+Persian فارسی	fa	44	212
+Tamil தமிழ்	ta	44	117
+Urdu اردو	ur	44	130
+Hebrew עברית	he	42	97
+Ukrainian Українська	uk	42	236
+Telugu తెలుగు	te	40	95
+Basque euskara	eu	39	91
+Maltese Malti	mt	38	63
+Serbian српски језик	sr	37	72
+Icelandic Íslenska	is	36	126
+Afrikaans Afrikaans	af	35	79
+Malayalam മലയാളം	ml	35	89
+Irish Gaeilge	ga	34	61
+Swahili Kiswahili	sw	34	115
+Marathi मराठी	mr	32	129
+Norwegian Norsk	no	32	140
+Tagalog Wikang Tagalog	tl	32	61
+Georgian ქართული	ka	31	58
+Welsh Cymraeg	cy	30	66
+Galician galego	gl	30	68
+Belarusian беларуская мова	be	29	78
+Esperanto Esperanto	eo	29	89
+Malay Bahasa Malaysia	ms	29	59
+Sinhala සිංහල	si	29	78
+Armenian Հայերեն	hy	28	52
+Kannada ಕನ್ನಡ	kn	28	79
+Macedonian македонски јазик	mk	28	68
+Breton brezhoneg	br	27	36
+Kazakh қазақ тілі	kk	27	52
+Khmer ខេមរភាសា	km	27	49
+Albanian Shqip	sq	27	42
+Gujarati ગુજરાતી	gu	26	104
+Burmese ဗမာစာ	my	26	54
+Nepali नेपाली	ne	26	83
+Yoruba Yorùbá	yo	26	96
+Azerbaijani azərbaycan dili	az	25	51
+Mongolian Монгол хэл	mn	24	72
+Tatar татар теле	tt	24	18
+Uzbek Ўзбек	uz	24	44
+Bosnian bosanski jezik	bs	23	28
+Hausa هَوُسَ	ha	23	74
+Igbo Asụsụ Igbo	ig	23	88
+Kyrgyz Кыргызча	ky	23	45
+Latin latine	la	23	31
+Norwegian Nynorsk Norsk nynorsk	nn	23	52
+Panjabi ਪੰਜਾਬੀ	pa	23	85
+Amharic አማርኛ	am	22	70
+Xhosa isiXhosa	xh	22	81
+Western Frisian Frysk	fy	21	44
+Kurdish Kurdî	ku	21	26
+Norwegian Bokmål Norsk bokmål	nb	21	29
+Somali Soomaaliga	so	21	54
+Tajik тоҷикӣ	tg	21	22
+Assamese অসমীয়া	as	20	82
+Scottish Gaelic Gàidhlig	gd	20	51
+Luxembourgish Lëtzebuergesch	lb	20	40
+Oriya ଓଡ଼ିଆ	or	20	80
+Kinyarwanda Ikinyarwanda	rw	20	70
+Pashto پښتو	ps	19	49
+Uyghur ئۇيغۇرچە‎	ug	19	32
+Zulu isiZulu	zu	19	57
+Cebuano	ceb	19	35
+Occitan occitan	oc	18	23
+Interlingua Interlingua	ia	17	5
+Javanese basa Jawa	jv	17	54
+Yiddish ייִדיש	yi	17	41
+Faroese føroyskt	fo	16	21
+Lao ພາສາ	lo	16	41
+Turkmen Türkmen	tk	16	11
+Divehi Dhivehi	dv	15	16
+Guaraní Avañe'ẽ	gn	15	22
+Haitian Kreyòl ayisyen	ht	15	48
+Malagasy fiteny malagasy	mg	15	36
+Māori te reo Māori	mi	15	22
+Sindhi सिन्धी	sd	15	35
+Ganda Luganda	lg	14	63
+Quechua Runa Simi	qu	14	3
+Sanskrit संस्कृतम्	sa	14	26
+Wolof Wollof	wo	14	60
+Chuvash чӑваш чӗлхи	cv	13	9
+Ido Ido	io	13	3
+Romansh rumantsch grischun	rm	13	10
+Pedi	nso	13	43
+Tibetan བོད་ཡིག	bo	12	14
+Sundanese Basa Sunda	su	12	46
+Tswana Setswana	tn	12	48
+Walloon walon	wa	12	11
+Yue Chinese	yue	12	17
+Aragonese aragonés	an	11	11
+Bashkir башҡорт теле	ba	11	20
+Limburgish Limburgs	li	11	5
+Shona chiShona	sn	11	59
+Volapük Volapük	vo	11	-
+Lingala Lingála	ln	10	53
+Southern Sotho Sesotho	st	10	53
+Tsonga Xitsonga	ts	10	48
+Waray	war	10	15
+Kabyle	kab	10	8
+Manx Gaelg	gv	9	9
+Cornish Kernewek	kw	9	7
+Oromo Afaan Oromoo	om	9	26
+Sardinian sardu	sc	9	11
+Chechen нохчийн мотт	ce	8	3
+Corsican corsu	co	8	23
+Chichewa chiCheŵa	ny	8	59
+Ossetian ирон æвзаг	os	8	9
+Kirundi Ikirundi	rn	8	57
+Northern Sami Davvisámegiella	se	8	9
+Swati SiSwati	ss	8	14
+Tigrinya ትግርኛ	ti	8	60
+Twi Twi	tw	8	42
+Iloko	ilo	8	21
+Abkhaz аҧсуа бызшәа	ab	7	29
+Aymara aymar aru	ay	7	-
+Chamorro Chamoru	ch	7	5
+Dzongkha རྫོང་ཁ	dz	7	7
+Interlingue Interlingue	ie	7	-
+Inuktitut ᐃᓄᒃᑎᑐᑦ	iu	7	-
+Navajo Diné bizaad	nv	7	2
+Samoan gagana fa'a Samoa	sm	7	30
+Venda Tshivenḓa	ve	7	7
+Papiamento	pap	7	16
+Umbundu	umb	7	8
+Bambara bamanankan	bm	6	30
+Ewe Eʋegbe	ee	6	23
+Fula Fulfulde	ff	6	6
+Kongo Kikongo	kg	6	16
+Kalaallisut kalaallisut	kl	6	3
+Luo	luo	6	16
+Fijian Vakaviti	fj	5	17
+Kashmiri कश्मीरी	ks	5	6
+Sango yângâ tî sängö	sg	5	24
+Tonga faka Tonga	to	5	13
+Akan Akan	ak	4	30
+Avaric авар мацӀ	av	4	-
+Bihari भोजपुरी	bh	4	4
+Bislama Bislama	bi	4	9
+Old Church Slavonic ѩзыкъ словѣньскъ	cu	4	2
+Komi коми кыв	kv	4	-
+Marshallese Kajin M̧ajeļ	mh	4	11
+Pangasinan	pag	4	16
+Bemba	bem	4	15
+Tok Pisin	tpi	4	13
+Berber languages	ber	4	6
+Afar Afaraf	aa	3	-
+Cree ᓀᐦᐃᔭᐍᐏᐣ	cr	3	-
+Nuosu ꆈꌠ꒿ Nuosuhxop	ii	3	-
+Southern Ndebele isiNdebele	nr	3	2
+Pāli पाऴि	pi	3	-
+Tahitian Reo Tahiti	ty	3	13
+Zhuang Saɯ cueŋƅ	za	3	-
+Central Bikol	bcl	3	12
+Hiligaynon	hil	3	9
+Mossi	mos	3	10
+Hiri Motu Hiri Motu	ho	2	7
+Inupiaq Iñupiaq	ik	2	-
+Kikuyu Gĩkũyũ	ki	2	29
+Kwanyama Kuanyama	kj	2	2
+Kanuri Kanuri	kr	2	6
+Nauru Ekakairũ Naoero	na	2	4
+Ndonga Owambo	ng	2	2
+Niuean	niu	2	12
+Luba-Lulua	lua	2	16
+Lushai	lus	2	15
+American Sign Language	ase	2	9
+Tonga (Zambia)	toi	2	8
+Sranan Tongo	srn	2	8
+Morisyen	mfe	2	6
+Tumbuka	tum	2	35
+Tetun Dili	tdt	2	1
+Fon	fon	2	34
+Avestan avesta	ae	1	-
+Herero Otjiherero	hz	1	-
+Luba-Katanga Tshiluba	lu	1	10
+Northern Ndebele isiNdebele	nd	1	-
+Seselwa Creole French	crs	1	12
+Ga	gaa	1	12
+Efik	efi	1	11
+Gilbertese	gil	1	11
+Pijin	pis	1	11
+Pohnpeian	pon	1	11
+Lozi	loz	1	10
+Congo Swahili	swc	1	10
+Tuvalua	tvl	1	10
+Luvale	lue	1	9
+Kaonde	kqn	1	8
+Rundi	run	1	7
+Tiv	tiv	1	7
+Chuukese	chk	1	6
+Yapese	yap	1	6
+Romance languages	roa	1	4
+Lunda	lun	1	2
+Tzotzil	tzo	1	2
+Yucateco	yua	1	1
+Wolaitta	wal	1	1
+Ojibwe ᐊᓂᔑᓈᐯᒧᐎᓐ	oj	-	-
+Acoli	ach	-	1
+Gun	guw	-	12
+Brazilian Sign Language	bzs	-	11
+Isoko	iso	-	11
+Tetela	tll	-	10
+Wallisian	wls	-	7
+Zande (individual language)	zne	-	7
+San Salvador Kongo	kwy	-	6
+Ruund	rnd	-	6
+Argentine Sign Language	aed	-	2
+Chilean Sign Language	csg	-	2
+Colombian Sign Language	csn	-	2
+Kwangali	kwn	-	2
+Nyaneka	nyk	-	2
+Mexican Sign Language	mfs	-	2
+Peruvian Sign Language	prl	-	2
+Isthmus Zapotec	zai	-	2
+Finnish Sign Language	fse	-	2
+Celtic languages	cel	-	4
+Spanish Sign Language	ssp	-	1
+Venezuelan Sign Language	vsl	-	1
