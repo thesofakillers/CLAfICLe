@@ -10,6 +10,7 @@ python = "^3.8"
 datasets = "^2.3.2"
 transformers = "^4.21.1"
 pytorch-lightning = "^1.7.0"
+hydra-core = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.4.3"

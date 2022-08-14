@@ -38,6 +38,14 @@ python-versions = ">=3.6"
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "antlr4-python3-runtime"
+version = "4.9.3"
+description = "ANTLR 4.9.3 runtime for Python 3.7"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "anyio"
 version = "3.6.1"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
@@ -293,13 +301,13 @@ xxhash = "*"
 apache-beam = ["apache-beam (>=2.26.0)"]
 audio = ["librosa"]
 benchmarks = ["numpy (==1.18.5)", "tensorflow (==2.3.0)", "torch (==1.6.0)", "transformers (==3.0.2)"]
-dev = ["absl-py", "pytest", "pytest-datadir", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch (<8.0.0)", "aiobotocore (==1.4.2)", "boto3 (==1.17.106)", "botocore (==1.20.106)", "faiss-cpu (>=1.6.4)", "fsspec", "moto[server,s3] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3,!=2.6.0,!=2.6.1)", "torch", "torchaudio", "soundfile", "transformers", "bs4", "conllu", "h5py", "langdetect", "lxml", "lz4", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "sentencepiece", "sacremoses", "bert-score (>=0.3.6)", "jiwer", "mauve-text", "rouge-score", "sacrebleu", "scikit-learn", "scipy", "seqeval", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "Pillow (>=6.2.1)", "librosa", "black (>=22.0,<23.0)", "flake8 (>=3.8.3)", "isort (>=5.0.0)", "pyyaml (>=5.3.1)", "importlib-resources"]
+dev = ["absl-py", "pytest", "pytest-datadir", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch (<8.0.0)", "aiobotocore (==1.4.2)", "boto3 (==1.17.106)", "botocore (==1.20.106)", "faiss-cpu (>=1.6.4)", "fsspec", "moto[s3,server] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3,!=2.6.0,!=2.6.1)", "torch", "torchaudio", "soundfile", "transformers", "bs4", "conllu", "h5py", "langdetect", "lxml", "lz4", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "sentencepiece", "sacremoses", "bert-score (>=0.3.6)", "jiwer", "mauve-text", "rouge-score", "sacrebleu", "scikit-learn", "scipy", "seqeval", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "Pillow (>=6.2.1)", "librosa", "black (>=22.0,<23.0)", "flake8 (>=3.8.3)", "isort (>=5.0.0)", "pyyaml (>=5.3.1)", "importlib-resources"]
 docs = ["s3fs"]
 quality = ["black (>=22.0,<23.0)", "flake8 (>=3.8.3)", "isort (>=5.0.0)", "pyyaml (>=5.3.1)"]
 s3 = ["fsspec", "boto3", "botocore", "s3fs"]
 tensorflow = ["tensorflow (>=2.2.0,!=2.6.0,!=2.6.1)"]
 tensorflow_gpu = ["tensorflow-gpu (>=2.2.0,!=2.6.0,!=2.6.1)"]
-tests = ["absl-py", "pytest", "pytest-datadir", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch (<8.0.0)", "aiobotocore (==1.4.2)", "boto3 (==1.17.106)", "botocore (==1.20.106)", "faiss-cpu (>=1.6.4)", "fsspec", "moto[server,s3] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3,!=2.6.0,!=2.6.1)", "torch", "torchaudio", "soundfile", "transformers", "bs4", "conllu", "h5py", "langdetect", "lxml", "lz4", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "sentencepiece", "sacremoses", "bert-score (>=0.3.6)", "jiwer", "mauve-text", "rouge-score", "sacrebleu", "scikit-learn", "scipy", "seqeval", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "Pillow (>=6.2.1)", "librosa", "importlib-resources"]
+tests = ["absl-py", "pytest", "pytest-datadir", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch (<8.0.0)", "aiobotocore (==1.4.2)", "boto3 (==1.17.106)", "botocore (==1.20.106)", "faiss-cpu (>=1.6.4)", "fsspec", "moto[s3,server] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3,!=2.6.0,!=2.6.1)", "torch", "torchaudio", "soundfile", "transformers", "bs4", "conllu", "h5py", "langdetect", "lxml", "lz4", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "sentencepiece", "sacremoses", "bert-score (>=0.3.6)", "jiwer", "mauve-text", "rouge-score", "sacrebleu", "scikit-learn", "scipy", "seqeval", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "Pillow (>=6.2.1)", "librosa", "importlib-resources"]
 torch = ["torch"]
 vision = ["Pillow (>=6.2.1)"]
 
@@ -607,6 +615,20 @@ testing = ["pytest", "pytest-cov", "datasets", "soundfile"]
 torch = ["torch"]
 
 [[package]]
+name = "hydra-core"
+version = "1.2.0"
+description = "A framework for elegantly configuring complex applications"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+antlr4-python3-runtime = ">=4.9.0,<4.10.0"
+importlib-resources = {version = "*", markers = "python_version < \"3.9\""}
+omegaconf = ">=2.2,<3.0"
+packaging = "*"
+
+[[package]]
 name = "hyperframe"
 version = "5.2.0"
 description = "HTTP/2 framing layer for Python"
@@ -642,7 +664,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 name = "importlib-resources"
 version = "5.8.0"
 description = "Read resources from Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1217,6 +1239,18 @@ python-versions = ">=3.6"
 rsa = ["cryptography (>=3.0.0)"]
 signals = ["blinker (>=1.4.0)"]
 signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
+
+[[package]]
+name = "omegaconf"
+version = "2.2.2"
+description = "A flexible configuration library"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+antlr4-python3-runtime = ">=4.9.0,<4.10.0"
+PyYAML = ">=5.1.0"
 
 [[package]]
 name = "packaging"
@@ -2022,7 +2056,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fb05554cce17568ba052a659b2e6b775b7f1bc913f6ad37a34c31cdfa3e6afbe"
+content-hash = "eb77352a4a613b8227a82edb158b31c43f01870c64829cc1113e55f80ba38c57"
 
 [metadata.files]
 absl-py = [
@@ -2106,6 +2140,9 @@ aiohttp = [
 aiosignal = [
     {file = "aiosignal-1.2.0-py3-none-any.whl", hash = "sha256:26e62109036cd181df6e6ad646f91f0dcfd05fe16d0cb924138ff2ab75d64e3a"},
     {file = "aiosignal-1.2.0.tar.gz", hash = "sha256:78ed67db6c7b7ced4f98e495e572106d5c432a93e1ddd1bf475e1dc05f5b7df2"},
+]
+antlr4-python3-runtime = [
+    {file = "antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b"},
 ]
 anyio = [
     {file = "anyio-3.6.1-py3-none-any.whl", hash = "sha256:cb29b9c70620506a9a8f87a309591713446953302d7d995344d0d7c6c0c9a7be"},
@@ -2426,6 +2463,10 @@ hstspreload = []
 httpcore = []
 httpx = []
 huggingface-hub = []
+hydra-core = [
+    {file = "hydra-core-1.2.0.tar.gz", hash = "sha256:4990721ce4ac69abafaffee566d6b63a54faa6501ecce65b338d3251446ff634"},
+    {file = "hydra_core-1.2.0-py3-none-any.whl", hash = "sha256:b6614fd6d6a97a9499f7ddbef02c9dd38f2fec6a9bc83c10e248db1dae50a528"},
+]
 hyperframe = []
 idna = []
 importlib-metadata = []
@@ -2667,6 +2708,10 @@ numpy = []
 oauthlib = [
     {file = "oauthlib-3.2.0-py3-none-any.whl", hash = "sha256:6db33440354787f9b7f3a6dbd4febf5d0f93758354060e802f6c06cb493022fe"},
     {file = "oauthlib-3.2.0.tar.gz", hash = "sha256:23a8208d75b902797ea29fd31fa80a15ed9dc2c6c16fe73f5d346f83f6fa27a2"},
+]
+omegaconf = [
+    {file = "omegaconf-2.2.2-py3-none-any.whl", hash = "sha256:556917181487fb66fe832d3c7b324f51b2f4c8adc373dd5091be921501b7d420"},
+    {file = "omegaconf-2.2.2.tar.gz", hash = "sha256:65c85b2a84669a570c70f2df00de3cebcd9b47a8587d3c53b1aa5766bb096f77"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
