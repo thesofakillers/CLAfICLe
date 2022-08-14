@@ -54,6 +54,7 @@ sh gen_pip_reqs.sh
         ├── data/          <- Scripts to download or generate data
         ├── models/        <- Model definitions
         ├── run/           <- scripts to train, evaluate and use models
+        ├── conf/          <- config files
         ├── utils.py       <- miscellaneous utils
         └── visualization/ <- Scripts for visualization
 ```

@@ -1,0 +1,12 @@
+defaults:
+  - _self_
+  - benchmark: test
+  - trainer: test
+
+model_name: "metaicl"
+checkpoint_path: "checkpoints/metaicl/model.pt"
+
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
