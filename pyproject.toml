@@ -29,3 +29,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
 reportPrivateImportUsage = false
+
+[additional.notes]
+bigbench = { url = "https://storage.googleapis.com/public_research_data/bigbench/bigbench-0.0.1.tar.gz" }
