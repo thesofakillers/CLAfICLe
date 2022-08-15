@@ -1,0 +1,40 @@
+data_dir: "data/"
+dataset_names:
+  # XGLUE
+  - xglue;qam
+  - xglue;qadsm
+  - xglue;nc
+  - xglue;paws-x
+  - xglue;xnli
+  # BIG BENCH
+  - bigbench;which_wiki_edit
+  # CSQA
+  - xcsr;X-CSQA-en
+  - xcsr;X-CSQA-de
+  - xcsr;X-CSQA-fr
+  # CODAH
+  - xcsr;X-CODAH-en
+  - xcsr;X-CODAH-de
+  - xcsr;X-CODAH-fr
+  # multi eurlex
+  - multi_eurlex;en
+  - multi_eurlex;de
+  - multi_eurlex;fr
+  # hatecheck
+  - Paul/hatecheck
+  - Paul/hatecheck-german
+  - Paul/hatecheck-french
+  # wino - x
+  - demelin/wino_x;lm_en_de
+  - demelin/wino_x;lm_en_fr
+  # swiss judgement prediction
+  - swiss_judgment_prediction;de
+  - swiss_judgment_prediction;fr
+  # amazon reviews
+  - amazon_reviews_multi;en
+  - amazon_reviews_multi;de
+  - amazon_reviews_multi;fr
+  # gnad10
+  - gnad10
+  # allocine
+  - allocine
