@@ -13,7 +13,7 @@ def main(cfg: DictConfig):
     model = Wrapper.load_from_checkpoint(cfg.checkpoint_path)
     benchmark = BenchmarkDataModule(cfg.benchmark)
     # so that the model knows names and metrics of dataloaders
-    model.set_benchmark_metadata(benchmark.metadata)
+    model.set_benchmark_metadata(benchmark.get_metadata())
     trainer = pl.Trainer(cfg.trainer)
     trainer.test(model, datamodule=benchmark)
 
