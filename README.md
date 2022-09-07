@@ -1,6 +1,6 @@
 # XLAICL
 
-Cross-lingual adaptation for Zero-Shot Task Generalization
+Cross-lingual adaptation for in-context Learning
 
 ## Requirements and Setup
 
