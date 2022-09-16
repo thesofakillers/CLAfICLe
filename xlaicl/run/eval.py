@@ -20,10 +20,10 @@ def main(cfg: DictConfig):
         if flag is True:
             benchmark = BenchmarkDataModule(config=cfg.benchmark, lang=lang)
             benchmarks.append(benchmark)
-    # so that the model knows names and metrics of dataloaders
-    model.set_benchmark_metadata(benchmark.get_metadata())
     trainer = pl.Trainer(cfg.trainer)
     for benchmark in benchmarks:
+        # so that the model knows names and metrics of dataloaders
+        model.set_benchmark_metadata(benchmark.get_metadata())
         trainer.test(model, datamodule=benchmark)
 
 
