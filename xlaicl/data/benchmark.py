@@ -30,11 +30,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         """
-        Gets relevant test split
-        Generates k-shot context
-        Prepends each input with k-shot context
-        Adds options column to track options
-        keep track of metadata throughout
+        processes each dataset, obtaining test split and relevant metric(s)
         """
         self._processed_datasets = []
         for dataset_name in self.cfg.dataset_names:
