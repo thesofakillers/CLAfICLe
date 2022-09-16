@@ -1,6 +1,7 @@
 # benchmark configuration for eval run
-data_dir: "data/"
-dataset_names:
+batch_size: 8  # desired effective batch size
+data_dir: "data/"  # where to store the data
+dataset_names:  # list of huggingface dataset;split names
   # XGLUE
   - xglue;qam
   - xglue;qadsm
