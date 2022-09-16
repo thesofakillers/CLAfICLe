@@ -1,3 +1,4 @@
+# benchmark configuration for eval run
 data_dir: "data/"
 dataset_names:
   # XGLUE

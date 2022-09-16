@@ -7,7 +7,7 @@ from xlaicl.data.benchmark import BenchmarkDataModule
 from xlaicl.models.wrapper import Wrapper
 
 
-@hydra.main(version_base=None, config_path="../conf", config_name="test")
+@hydra.main(version_base=None, config_path="../conf", config_name="eval")
 def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
     model = Wrapper.load_from_checkpoint(cfg.checkpoint_path)

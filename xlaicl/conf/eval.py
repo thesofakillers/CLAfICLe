@@ -1,7 +1,8 @@
+# Config for running evaluation
 defaults:
   - _self_
-  - benchmark: test
-  - trainer: test
+  - benchmark: eval
+  - trainer: eval
   # https://stackoverflow.com/a/70777327/9889508
   - override hydra/hydra_logging: disabled
   - override hydra/job_logging: disabled
