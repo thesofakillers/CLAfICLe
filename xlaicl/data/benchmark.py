@@ -1,7 +1,7 @@
 import os
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from torch.utils.data import DataLoader, SequentialSampler
 import pytorch_lightning as pl
@@ -17,7 +17,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.cfg = config
         self.lang = lang
         self.raw_save_path: str = os.path.join(self.cfg.data_dir, "raw")
-        self._process_by_name: Dict[str, Callable[[Any, str, str], Iterable]] = {
+        self._process_by_name: Dict[str, Callable[[Any, str, str], Tuple]] = {
             "xglue;qam": process.xglue
         }
         self._metadata = {"lang": self.lang, "datasets": []}
