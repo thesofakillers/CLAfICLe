@@ -39,3 +39,5 @@ dataset_names:
   - gnad10
   # allocine
   - allocine
+  # exams (not working: https://github.com/huggingface/datasets/issues/4852)
+  # - exams;crosslingual_test
