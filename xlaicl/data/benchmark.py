@@ -1,14 +1,14 @@
 import os
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import List, Optional
 
 from torch.utils.data import DataLoader, SequentialSampler
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
 
-import xlaicl.data.process as process
+from xlaicl.data.process import process_by_name
 
 
 class BenchmarkDataModule(pl.LightningDataModule):
@@ -17,9 +17,6 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.cfg = config
         self.lang = lang
         self.raw_save_path: str = os.path.join(self.cfg.data_dir, "raw")
-        self._process_by_name: Dict[str, Callable[[Any, str, str], Tuple]] = {
-            "xglue;qam": process.xglue
-        }
         self._metadata = {"lang": self.lang, "datasets": []}
 
     def prepare_data(self):
@@ -35,7 +32,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._processed_datasets = []
         for dataset_name in self.cfg.dataset_names:
             dataset = self._load_dataset(dataset_name)
-            test_dataset, metrics = self._process_by_name[dataset_name](
+            test_dataset, metrics = process_by_name[dataset_name](
                 dataset, self.lang, self.cfg.data_dir
             )
             # map dataset idx to name and metrics, so we can track in LightningModule
