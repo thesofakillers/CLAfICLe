@@ -72,7 +72,7 @@ if __name__ == "__main__":
     import yaml
     from omegaconf import OmegaConf
 
-    with open("xlaicl/conf/benchmark/test.yaml", "r") as f:
+    with open("xlaicl/conf/benchmark/eval.yaml", "r") as f:
         config: dict = yaml.safe_load(f)
     cfg: DictConfig = OmegaConf.create(config)
 
