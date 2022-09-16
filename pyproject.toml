@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "xlaicl"
+name = "claficle"
 version = "0.1.0"
 description = "Cross-lingual adaptation for In Context Learning"
 authors = ["Giulio Starace <giulio.starace@gmail.com>"]

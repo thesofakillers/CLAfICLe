@@ -3,8 +3,8 @@ import pytorch_lightning as pl
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-from xlaicl.data.benchmark import BenchmarkDataModule
-from xlaicl.models.wrapper import Wrapper
+from claficle.data.benchmark import BenchmarkDataModule
+from claficle.models.wrapper import Wrapper
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="eval")

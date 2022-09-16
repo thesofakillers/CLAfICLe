@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
 
-from xlaicl.data.process import process_by_name
+from claficle.data.process import process_by_name
 
 
 class BenchmarkDataModule(pl.LightningDataModule):
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     import yaml
     from omegaconf import OmegaConf
 
-    with open("xlaicl/conf/benchmark/eval.yaml", "r") as f:
+    with open("claficle/conf/benchmark/eval.yaml", "r") as f:
         config: dict = yaml.safe_load(f)
     cfg: DictConfig = OmegaConf.create(config)
 
