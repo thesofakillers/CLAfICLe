@@ -14,7 +14,7 @@ class XGLUEHelper(ProcessHelper):
 
     @staticmethod
     def get_options(dataset):
-        return tuple(range(dataset.features["relevance_label"].names))
+        return tuple(range(dataset.features["label"].names))
 
 
 class QAMHelper(XGLUEHelper):
@@ -52,3 +52,12 @@ class NCHelper(XGLUEHelper):
     rename_cols = {"news_category": "label"}
 
     remove_cols = ["news_title", "news_body"]
+
+
+class PAWSXHelper(XGLUEHelper):
+    @staticmethod
+    def prepare_example(example, separator):
+        example["input"] = example["sentence1"] + separator + example["sentence2"]
+        return example
+
+    remove_cols = ["sentence1", "sentence2"]
