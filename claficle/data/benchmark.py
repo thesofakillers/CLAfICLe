@@ -33,13 +33,15 @@ class BenchmarkDataModule(pl.LightningDataModule):
         for dataset_name in self.cfg.dataset_names:
             dataset = self._load_dataset(dataset_name)
             test_dataset, metrics = process_dataset(
-                dataset, self.lang, self.cfg, helper_by_name[dataset_name]
+                dataset, self.lang, self.cfg, dataset_name
             )
-            # map dataset idx to name & metrics, so we can track in LightningModule
-            self._metadata["datasets"].append(
-                {"name": dataset_name, "metrics": metrics}
-            )
-            self._processed_datasets.append(test_dataset)
+            # test_dataset is None if dataset is not available in language
+            if test_dataset is not None:
+                # map dataset idx to name & metrics, so to track in LightningModule
+                self._metadata["datasets"].append(
+                    {"name": dataset_name, "metrics": metrics}
+                )
+                self._processed_datasets.append(test_dataset)
         # sanity check, failing it should raise some red flags
         assert (
             len(self.cfg.dataset_names)

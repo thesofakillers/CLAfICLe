@@ -17,6 +17,13 @@ class XGLUEHelper(ProcessHelper):
         example["options"] = tuple(range(2))
         return example
 
+    @staticmethod
+    def language_available(dataset_name, lang):
+        if lang in {"en", "fr", "de"}:
+            return True
+        else:
+            return False
+
 
 class QAMHelper(XGLUEHelper):
     @staticmethod

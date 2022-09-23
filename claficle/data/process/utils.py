@@ -68,3 +68,8 @@ class ProcessHelper:
     is_classification = True
 
     rename_cols = {}
+
+    @staticmethod
+    def language_available(dataset_name, lang):
+        """Checks if language is available for dataset"""
+        raise NotImplementedError
