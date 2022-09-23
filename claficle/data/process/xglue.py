@@ -38,8 +38,6 @@ class QADSMHelper(XGLUEHelper):
         )
         return example
 
-    is_classification = False
-
     rename_cols = {"relevance_label": "label"}
 
     remove_cols = ["query", "ad_title", "ad_description"]
