@@ -4,7 +4,9 @@ from datasets.arrow_dataset import Dataset
 import numpy as np
 
 
-def prepare_kshot_str(k_shot_subdataset: Dataset, separator: str, preparer: Callable):
+def prepare_kshot_str(
+    k_shot_subdataset: Dataset, separator: str, preparer: Callable
+) -> str:
     k_shot_str = ""
 
     for i, example in enumerate(k_shot_subdataset):
