@@ -43,7 +43,7 @@ class ProcessHelper:
     def get_k_source(dataset, lang):
         raise NotImplementedError
 
-    k_from_test = None
+    k_from_test = False
 
     @staticmethod
     def get_test_split(dataset, lang):
@@ -53,10 +53,12 @@ class ProcessHelper:
     def get_options(dataset):
         raise NotImplementedError
 
-    remove_columns = None
+    remove_cols = None
 
     @staticmethod
     def prepare_example(example, separator):
         raise NotImplementedError
 
     is_classification = True
+
+    rename_cols = {}

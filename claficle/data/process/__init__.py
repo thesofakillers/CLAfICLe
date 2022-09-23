@@ -6,11 +6,11 @@ import numpy as np
 
 import claficle.data.process.utils as utils
 
-from claficle.data.process.xglue import XGLUEHelper
+from claficle.data.process.xglue import QAMHelper, QADSMHelper
 
 helper_by_name: Dict[str, Dict] = {
-    "xglue;qam": XGLUEHelper,
-    "xglue;qadsm": XGLUEHelper,
+    "xglue;qam": QAMHelper,
+    "xglue;qadsm": QADSMHelper,
 }
 
 
@@ -27,6 +27,8 @@ def process_dataset(
     Adds options column to track options
     Returns processed test dataset and relevant metrics
     """
+    for source, target in Helper.rename_cols:
+        dataset = dataset.rename_column(source, target)
     k_shot_source = Helper.get_k_source(dataset, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k_shot)
     k_shot_string = utils.prepare_kshot_str(
@@ -43,7 +45,7 @@ def process_dataset(
 
     processed_test_split = test_split.map(
         utils.prepare_and_process,
-        remove_columns=Helper.remove_columns,
+        remove_columns=Helper.remove_cols,
         fn_kwargs={
             "k_shot_str": k_shot_string,
             "separator": cfg.separator,
