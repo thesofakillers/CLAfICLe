@@ -10,10 +10,10 @@ dataset_names: # list of huggingface dataset;split names
   - xglue;nc
   - xglue;paws-x
   - xglue;xnli
-  # CSQA
-  - xcsr;X-CSQA-en
-  - xcsr;X-CSQA-de
-  - xcsr;X-CSQA-fr
+  # CSQA is all in english for some reason https://github.com/huggingface/datasets/issues/5017
+  # - xcsr;X-CSQA-en
+  # - xcsr;X-CSQA-de
+  # - xcsr;X-CSQA-fr
   # CODAH
   - xcsr;X-CODAH-en
   - xcsr;X-CODAH-de
