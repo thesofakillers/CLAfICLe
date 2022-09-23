@@ -10,8 +10,6 @@ dataset_names: # list of huggingface dataset;split names
   - xglue;nc
   - xglue;paws-x
   - xglue;xnli
-  # BIG BENCH
-  - bigbench;which_wiki_edit
   # CSQA
   - xcsr;X-CSQA-en
   - xcsr;X-CSQA-de
