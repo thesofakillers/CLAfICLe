@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
 
-from claficle.data.process import kwargs_by_name, process_dataset
+from claficle.data.process import helper_by_name, process_dataset
 
 
 class BenchmarkDataModule(pl.LightningDataModule):
@@ -33,7 +33,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         for dataset_name in self.cfg.dataset_names:
             dataset = self._load_dataset(dataset_name)
             test_dataset, metrics = process_dataset(
-                dataset, self.lang, self.cfg, **kwargs_by_name[dataset_name]
+                dataset, self.lang, self.cfg, helper_by_name[dataset_name]
             )
             # map dataset idx to name & metrics, so we can track in LightningModule
             self._metadata["datasets"].append(

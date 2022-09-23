@@ -34,3 +34,29 @@ def get_k_shot_subset(dataset: Dataset, k: int):
     k_indices = np.random.choice(data_len, k, replace=False)
     k_shot = dataset.select(k_indices)
     return k_shot, k_indices
+
+
+class ProcessHelper:
+    """Base class defining skeleton for (sub)dataset helpers"""
+
+    @staticmethod
+    def get_k_source(dataset, lang):
+        raise NotImplementedError
+
+    k_from_test = None
+
+    @staticmethod
+    def get_test_split(dataset, lang):
+        raise NotImplementedError
+
+    @staticmethod
+    def get_options(dataset):
+        raise NotImplementedError
+
+    remove_columns = None
+
+    @staticmethod
+    def prepare_example(example, separator):
+        raise NotImplementedError
+
+    is_classification = True
