@@ -6,13 +6,14 @@ import numpy as np
 
 import claficle.data.process.utils as utils
 
-from claficle.data.process.xglue import NCHelper, PAWSXHelper, QAMHelper, QADSMHelper
+from claficle.data.process import xglue
 
 helper_by_name: Dict[str, Dict] = {
-    "xglue;qam": QAMHelper,
-    "xglue;qadsm": QADSMHelper,
-    "xglue;nc": NCHelper,
-    "xglue;paws-x": PAWSXHelper,
+    "xglue;qam": xglue.QAMHelper,
+    "xglue;qadsm": xglue.QADSMHelper,
+    "xglue;nc": xglue.NCHelper,
+    "xglue;paws-x": xglue.PAWSXHelper,
+    "xglue;xnli": xglue.XNLIHelper,
 }
 
 

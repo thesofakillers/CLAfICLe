@@ -67,3 +67,17 @@ class PAWSXHelper(XGLUEHelper):
         return example
 
     remove_cols = ["sentence1", "sentence2"]
+
+
+class XNLIHelper(XGLUEHelper):
+    @staticmethod
+    def prepare_example(example, separator):
+        example["input"] = example["premise"] + separator + example["hypothesis"]
+        return example
+
+    remove_cols = ["premise", "hypothesis"]
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = tuple(range(3))
+        return example
