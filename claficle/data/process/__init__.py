@@ -26,7 +26,7 @@ def process_dataset(
     """
     k_shot_source = kwargs["get_k_source"](dataset, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k_shot)
-    k_shot_string = utils.prepare_kshot_str(k_shot, cfg.separator)
+    k_shot_string = utils.prepare_kshot_str(k_shot, cfg.separator, kwargs["preparer"])
 
     if kwargs["k_from_test"]:
         test_indices = np.setdiff1d(np.arange(len(k_shot_source)), k_indices)
@@ -37,7 +37,7 @@ def process_dataset(
         ), "Must provide 'get_test_split' function if 'k_from_test' is False"
         test_split = kwargs["get_test_split"](dataset, lang)
 
-    options = kwargs["get_options"](test_split)
+    options = kwargs["get_options"](dataset)
 
     processed_test_split = test_split.map(
         utils.prepare_and_process,
