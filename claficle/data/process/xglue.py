@@ -13,8 +13,9 @@ class XGLUEHelper(ProcessHelper):
     is_classification = True
 
     @staticmethod
-    def get_options(dataset):
-        return tuple(range(dataset.features["label"].names))
+    def get_options(example):
+        example["options"] = tuple(range(2))
+        return example
 
 
 class QAMHelper(XGLUEHelper):
@@ -52,6 +53,11 @@ class NCHelper(XGLUEHelper):
     rename_cols = {"news_category": "label"}
 
     remove_cols = ["news_title", "news_body"]
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = tuple(range(10))
+        return example
 
 
 class PAWSXHelper(XGLUEHelper):

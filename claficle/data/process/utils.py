@@ -23,10 +23,16 @@ def prepend_kshot(example, k_shot_str):
     return example
 
 
-def prepare_and_process(example, k_shot_str: str, separator: str, preparer: Callable):
+def prepare_and_process(
+    example, k_shot_str: str, separator: str, preparer: Callable, optioner: Callable
+) -> dict:
+    # prepare so we have 'input' field
     prepared_example = preparer(example, separator)
+    # prepend k-shot context to 'input'
     processed_example = prepend_kshot(prepared_example, k_shot_str, separator)
-    return processed_example
+    # add 'options' field
+    proc_example_with_options = optioner(processed_example)
+    return proc_example_with_options
 
 
 def get_k_shot_subset(dataset: Dataset, k: int):
@@ -50,7 +56,7 @@ class ProcessHelper:
         raise NotImplementedError
 
     @staticmethod
-    def get_options(dataset):
+    def get_options(example):
         raise NotImplementedError
 
     remove_cols = None

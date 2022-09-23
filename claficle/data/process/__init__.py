@@ -43,8 +43,6 @@ def process_dataset(
     else:
         test_split = Helper.get_test_split(dataset, lang)
 
-    options = Helper.get_options(dataset)
-
     processed_test_split = test_split.map(
         utils.prepare_and_process,
         remove_columns=Helper.remove_cols,
@@ -52,10 +50,8 @@ def process_dataset(
             "k_shot_str": k_shot_string,
             "separator": cfg.separator,
             "preparer": Helper.prepare_example,
+            "optioner": Helper.get_options,
         },
-    )
-    processed_test_split = processed_test_split.add_column(
-        "options", [options] * len(processed_test_split)
     )
     if Helper.is_classification:
         metrics = ["f1"]
