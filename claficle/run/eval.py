@@ -9,6 +9,7 @@ from claficle.models.wrapper import Wrapper
 
 @hydra.main(version_base=None, config_path="../conf", config_name="eval")
 def main(cfg: DictConfig):
+    pl.seed_everything(cfg.seed, workers=True)
     print(OmegaConf.to_yaml(cfg))
     model = Wrapper.load_from_checkpoint(cfg.checkpoint_path)
     # separate benchmarks by language
@@ -21,7 +22,11 @@ def main(cfg: DictConfig):
             benchmark = BenchmarkDataModule(config=cfg.benchmark, lang=lang)
             bmark_by_lang[lang] = benchmark
     trainer = pl.Trainer(cfg.trainer)
-    for _lang, benchmark in bmark_by_lang.items():
+    for lang in langs:
+        if lang in bmark_by_lang:
+            benchmark = bmark_by_lang[lang]
+        else:
+            continue
         # so that the model knows names and metrics of dataloaders before testing
         model.set_benchmark_metadata(benchmark.get_metadata())
         trainer.test(model, datamodule=benchmark)
