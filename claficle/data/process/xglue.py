@@ -41,3 +41,14 @@ class QADSMHelper(XGLUEHelper):
     rename_cols = {"relevance_label": "label"}
 
     remove_cols = ["query", "ad_title", "ad_description"]
+
+
+class NCHelper(XGLUEHelper):
+    @staticmethod
+    def prepare_example(example, separator):
+        example["input"] = example["news_title"] + separator + example["news_body"]
+        return example
+
+    rename_cols = {"news_category": "label"}
+
+    remove_cols = ["news_title", "news_body"]
