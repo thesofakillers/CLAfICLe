@@ -1,9 +1,9 @@
 # benchmark configuration for eval run
-batch_size: 8  # desired effective batch size
+batch_size: 8 # desired effective batch size
 k: 16 # number of examples shown
 separator: "\n" # what to separate each example with
-data_dir: "data/"  # where to store the data
-dataset_names:  # list of huggingface dataset;split names
+data_dir: "data/" # where to store the data
+dataset_names: # list of huggingface dataset;split names
   # XGLUE
   - xglue;qam
   - xglue;qadsm
@@ -42,5 +42,5 @@ dataset_names:  # list of huggingface dataset;split names
   - gnad10
   # allocine
   - allocine
-  # exams (not working: https://github.com/huggingface/datasets/issues/4852)
-  # - exams;multilingual
+  # exams
+  - exams;multilingual
