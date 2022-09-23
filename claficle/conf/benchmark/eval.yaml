@@ -1,5 +1,7 @@
 # benchmark configuration for eval run
 batch_size: 8  # desired effective batch size
+k: 16 # number of examples shown
+separator: "\n" # what to separate each example with
 data_dir: "data/"  # where to store the data
 dataset_names:  # list of huggingface dataset;split names
   # XGLUE
