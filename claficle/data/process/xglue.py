@@ -4,9 +4,9 @@ def prepare_qam_example(example, separator):
 
 
 qam_kwargs = {
-    "get_k_source": lambda dataset, lang: dataset[f"test.{lang}"],
-    "k_from_test": True,
-    "get_test_split": None,
+    "get_k_source": lambda dataset, lang: dataset[f"validation.{lang}"],
+    "k_from_test": False,
+    "get_test_split": lambda dataset, lang: dataset[f"test.{lang}"],
     "get_options": lambda test_split: tuple(
         range(test_split.features["label"].num_classes)
     ),
