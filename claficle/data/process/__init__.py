@@ -51,5 +51,9 @@ def process_dataset(
     processed_test_split = processed_test_split.add_column(
         "options", [options] * len(processed_test_split)
     )
+    if kwargs["is_classification"]:
+        metrics = ["f1"]
+    else:
+        metrics = ["accuracy"]
 
-    return processed_test_split, []
+    return processed_test_split, metrics
