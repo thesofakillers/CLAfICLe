@@ -6,9 +6,12 @@ import numpy as np
 
 import claficle.data.process.utils as utils
 
-from claficle.data.process.xglue import qam_kwargs as xglue_qam_kwargs
+from claficle.data.process.xglue import qam_kwargs, qadsm_kwargs
 
-kwargs_by_name: Dict[str, Dict] = {"xglue;qam": xglue_qam_kwargs}
+kwargs_by_name: Dict[str, Dict] = {
+    "xglue;qam": qam_kwargs,
+    "xglue;qadsm": qadsm_kwargs,
+}
 
 
 def process_dataset(
