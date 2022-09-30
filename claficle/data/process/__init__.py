@@ -17,6 +17,9 @@ helper_by_name: Dict[str, Dict] = {
     "xcsr;X-CSQA-en": xcsr.CSQAHelper,
     "xcsr;X-CSQA-fr": xcsr.CSQAHelper,
     "xcsr;X-CSQA-de": xcsr.CSQAHelper,
+    "xcsr;X-CODAH-en": xcsr.CODAHHelper,
+    "xcsr;X-CODAH-fr": xcsr.CODAHHelper,
+    "xcsr;X-CODAH-de": xcsr.CODAHHelper,
 }
 
 
