@@ -14,9 +14,7 @@ class XCSRHelper(ProcessHelper):
     def get_k_source(dataset, lang):
         return dataset["validation"]
 
-    @staticmethod
-    def get_test_split(dataset, lang):
-        return dataset["test"]
+    k_from_test = True
 
 
 class CSQAHelper(XCSRHelper):
