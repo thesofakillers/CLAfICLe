@@ -16,8 +16,6 @@ class XCSRHelper(ProcessHelper):
 
     k_from_test = True
 
-
-class CSQAHelper(XCSRHelper):
     @staticmethod
     def get_options(example):
         labels, text = tuple(example["question"]["choices"].values())
@@ -31,4 +29,12 @@ class CSQAHelper(XCSRHelper):
 
     is_classification = False
 
+
+class CSQAHelper(XCSRHelper):
+
     remove_cols = ["lang", "id", "question"]
+
+
+class CODAHHelper(XCSRHelper):
+
+    remove_cols = ["lang", "id", "question", "question_tag"]
