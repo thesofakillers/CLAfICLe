@@ -6,7 +6,7 @@ import numpy as np
 
 import claficle.data.process.utils as utils
 
-from claficle.data.process import xglue
+from claficle.data.process import xglue, xcsr
 
 helper_by_name: Dict[str, Dict] = {
     "xglue;qam": xglue.QAMHelper,
@@ -14,6 +14,9 @@ helper_by_name: Dict[str, Dict] = {
     "xglue;nc": xglue.NCHelper,
     "xglue;paws-x": xglue.PAWSXHelper,
     "xglue;xnli": xglue.XNLIHelper,
+    "xcsr;X-CSQA-en": xcsr.CSQAHelper,
+    "xcsr;X-CSQA-fr": xcsr.CSQAHelper,
+    "xcsr;X-CSQA-de": xcsr.CSQAHelper,
 }
 
 
