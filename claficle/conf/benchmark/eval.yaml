@@ -18,10 +18,11 @@ dataset_names: # list of huggingface dataset;split names
   - xcsr;X-CODAH-en
   - xcsr;X-CODAH-de
   - xcsr;X-CODAH-fr
-  # multi eurlex
-  - multi_eurlex;en
-  - multi_eurlex;de
-  - multi_eurlex;fr
+  # multi eurlex - metaICL can't handle multi-label clssfctn
+  # see https://github.com/facebookresearch/MetaICL/issues/15
+  # - multi_eurlex;en
+  # - multi_eurlex;de
+  # - multi_eurlex;fr
   # hatecheck
   - Paul/hatecheck
   - Paul/hatecheck-german
