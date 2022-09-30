@@ -4,11 +4,11 @@ from claficle.data.process.utils import ProcessHelper
 class XGLUEHelper(ProcessHelper):
     @staticmethod
     def get_k_source(dataset, lang):
-        return dataset[f"train.{lang}"]
+        return dataset[f"validation.{lang}"]
 
     @staticmethod
     def get_test_split(dataset, lang):
-        return dataset[f"validation.{lang}"]
+        return dataset[f"test.{lang}"]
 
     is_classification = True
 

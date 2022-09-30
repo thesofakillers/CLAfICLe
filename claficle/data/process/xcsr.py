@@ -12,12 +12,11 @@ class XCSRHelper(ProcessHelper):
 
     @staticmethod
     def get_k_source(dataset, lang):
-        return dataset["train"]
-
-    @staticmethod
-    def get_test_split(dataset, lang):
         return dataset["validation"]
 
     @staticmethod
-    def get_options(example):
+    def get_test_split(dataset, lang):
+        return dataset["test"]
 
+    @staticmethod
+    def get_options(example):
