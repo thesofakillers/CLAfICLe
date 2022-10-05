@@ -10,7 +10,7 @@ class HatecheckHelper(ProcessHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = [["hateful", "non-hateful"]]
+        example["options"] = ("hateful", "non-hateful")
         return example
 
     rename_cols = {"test_case": "input", "label_gold": "label"}
@@ -27,7 +27,7 @@ class HatecheckHelper(ProcessHelper):
 
     @staticmethod
     def prepare_example(example, separator):
-        example
+        example["label"] = {"hateful": 0, "non-hateful": 1}[example["label"]]
 
 
 class EnglishHelper(HatecheckHelper):

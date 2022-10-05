@@ -2,6 +2,8 @@ from claficle.data.process.utils import ProcessHelper
 
 
 class XCSRHelper(ProcessHelper):
+    rename_cols = {"answerKey": "label"}
+
     @staticmethod
     def language_available(dataset_name, lang):
         dataset_lang = dataset_name[-2:]
@@ -18,25 +20,23 @@ class XCSRHelper(ProcessHelper):
 
     @staticmethod
     def get_options(example):
-        labels, text = tuple(example["question"]["choices"].values())
-        example["options"] = [f"{label}: {text}" for label, text in zip(labels, text)]
+        example["options"] = example["question"]["choices"]["text"]
         return example
 
     @staticmethod
     def prepare_example(example, separator):
         example["input"] = example["question"]["stem"]
+        example["label"] = ord(example["label"].lower()) - ord("a")
         return example
-
-    rename_cols = {"answerKey": "label"}
 
     is_classification = False
 
 
 class CSQAHelper(XCSRHelper):
 
-    remove_cols = ["lang", "id", "question"]
+    remove_cols = ["lang", "id", "question", "stem"]
 
 
 class CODAHHelper(XCSRHelper):
 
-    remove_cols = ["lang", "id", "question", "question_tag"]
+    remove_cols = ["lang", "id", "question", "question_tag", "stem"]

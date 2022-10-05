@@ -13,11 +13,6 @@ class XGLUEHelper(ProcessHelper):
     is_classification = True
 
     @staticmethod
-    def get_options(example):
-        example["options"] = tuple(range(2))
-        return example
-
-    @staticmethod
     def language_available(dataset_name, lang):
         if lang in {"en", "fr", "de"}:
             return True
@@ -29,6 +24,11 @@ class QAMHelper(XGLUEHelper):
     @staticmethod
     def prepare_example(example, separator):
         example["input"] = example["question"] + separator + example["answer"]
+        return example
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = ("False", "True")
         return example
 
     remove_cols = ["question", "answer"]
@@ -44,6 +44,11 @@ class QADSMHelper(XGLUEHelper):
             + separator
             + example["ad_description"]
         )
+        return example
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = ("Bad", "Good")
         return example
 
     rename_cols = {"relevance_label": "label"}
@@ -63,7 +68,18 @@ class NCHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(10))
+        example["options"] = (
+            "foodanddrink",
+            "sports",
+            "travel",
+            "finance",
+            "lifestyle",
+            "news",
+            "entertainment",
+            "health",
+            "video",
+            "autos",
+        )
         return example
 
 
@@ -74,6 +90,11 @@ class PAWSXHelper(XGLUEHelper):
         return example
 
     remove_cols = ["sentence1", "sentence2"]
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = ("different", "same")
+        return example
 
 
 class XNLIHelper(XGLUEHelper):
@@ -86,5 +107,5 @@ class XNLIHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(3))
+        example["options"] = ("entailment", "neutral", "contradiction")
         return example

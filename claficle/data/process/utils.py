@@ -12,7 +12,10 @@ def prepare_kshot_str(
     for i, example in enumerate(k_shot_subdataset):
         prep_example = preparer(example, separator)
         k_shot_str += (
-            f"{prep_example['input']}{separator}{prep_example['label']}{separator*3}"
+            f"{prep_example['input']}"
+            f"{separator}"
+            f"{prep_example['options'][prep_example['label']]}"
+            f"{separator*3}"
         )
 
     return k_shot_str
