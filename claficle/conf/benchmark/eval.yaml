@@ -38,9 +38,3 @@ dataset_names: # list of huggingface dataset;split names
   - amazon_reviews_multi;en
   - amazon_reviews_multi;de
   - amazon_reviews_multi;fr
-  # gnad10
-  - gnad10
-  # allocine
-  - allocine
-  # exams
-  - exams;multilingual
