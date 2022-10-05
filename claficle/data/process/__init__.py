@@ -27,7 +27,7 @@ helper_by_name: Dict[str, Dict] = {
     "demelin/wino_x;lm_en_fr": winox.WinoXHelper,
     "swiss_judgment_prediction;mt_en": swissjudge.SwissJudgeHelper,
     "swiss_judgment_prediction;de": swissjudge.SwissJudgeHelper,
-    "swiss_judgment_prediction;de": swissjudge.SwissJudgeHelper,
+    "swiss_judgment_prediction;fr": swissjudge.SwissJudgeHelper,
 }
 
 
