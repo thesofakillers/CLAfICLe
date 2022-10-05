@@ -6,7 +6,7 @@ import numpy as np
 
 import claficle.data.process.utils as utils
 
-from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge
+from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, amazon
 
 helper_by_name: Dict[str, Dict] = {
     "xglue;qam": xglue.QAMHelper,
@@ -28,6 +28,9 @@ helper_by_name: Dict[str, Dict] = {
     "swiss_judgment_prediction;mt_en": swissjudge.SwissJudgeHelper,
     "swiss_judgment_prediction;de": swissjudge.SwissJudgeHelper,
     "swiss_judgment_prediction;fr": swissjudge.SwissJudgeHelper,
+    "amazon_reviews_multi;en": amazon.AmazonHelper,
+    "amazon_reviews_multi;de": amazon.AmazonHelper,
+    "amazon_reviews_multi;fr": amazon.AmazonHelper,
 }
 
 
