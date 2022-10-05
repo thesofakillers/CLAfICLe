@@ -20,10 +20,12 @@ class XCSRHelper(ProcessHelper):
     def get_options(example):
         labels, text = tuple(example["question"]["choices"].values())
         example["options"] = [f"{label}: {text}" for label, text in zip(labels, text)]
+        return example
 
     @staticmethod
     def prepare_example(example, separator):
         example["input"] = example["question"]["stem"]
+        return example
 
     rename_cols = {"answerKey": "label"}
 
