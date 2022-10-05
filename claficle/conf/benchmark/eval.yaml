@@ -28,8 +28,8 @@ dataset_names: # list of huggingface dataset;split names
   - Paul/hatecheck-german
   - Paul/hatecheck-french
   # wino - x
-  - demelin/wino_x;lm_en_de
-  - demelin/wino_x;lm_en_fr
+  - demelin/wino_x;lm_en_de # english and german
+  - demelin/wino_x;lm_en_fr # only french
   # swiss judgement prediction
   - swiss_judgment_prediction;de
   - swiss_judgment_prediction;fr
