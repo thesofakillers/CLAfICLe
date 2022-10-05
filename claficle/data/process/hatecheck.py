@@ -10,7 +10,7 @@ class HatecheckHelper(ProcessHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = ("hateful", "non-hateful")
+        example["options"] = tuple(range(2))
         return example
 
     rename_cols = {"test_case": "input", "label_gold": "label"}
