@@ -31,6 +31,7 @@ dataset_names: # list of huggingface dataset;split names
   - demelin/wino_x;lm_en_de # english and german
   - demelin/wino_x;lm_en_fr # only french
   # swiss judgement prediction
+  - swiss_judgment_prediction;mt_en
   - swiss_judgment_prediction;de
   - swiss_judgment_prediction;fr
   # amazon reviews
