@@ -23,7 +23,7 @@ class XCSRHelper(ProcessHelper):
 
 class CSQAHelper(XCSRHelper):
 
-    remove_cols = ["lang", "id", "question", "stem"]
+    remove_cols = ["lang", "id", "question"]
 
     @staticmethod
     def get_options(example):
@@ -39,7 +39,7 @@ class CSQAHelper(XCSRHelper):
 
 class CODAHHelper(XCSRHelper):
 
-    remove_cols = ["lang", "id", "question", "question_tag", "stem"]
+    remove_cols = ["lang", "id", "question", "question_tag"]
 
     @staticmethod
     def get_options(example):
