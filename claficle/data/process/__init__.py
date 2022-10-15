@@ -44,13 +44,14 @@ def process_dataset(
     Adds options column to track options
     Returns processed test dataset and relevant metrics
     """
+    print(f"Processing {dataset_name}")
     Helper = helper_by_name[dataset_name]
     if not Helper.language_available(dataset_name, lang):
         return None, []
     for source, target in Helper.rename_cols:
         dataset = dataset.rename_column(source, target)
     k_shot_source = Helper.get_k_source(dataset, lang)
-    k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k_shot)
+    k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
     k_shot_string = utils.prepare_kshot_str(
         k_shot, cfg.separator, Helper.prepare_example
     )
