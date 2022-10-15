@@ -43,9 +43,11 @@ class CODAHHelper(XCSRHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = (
-            ".".join(text.split(".")[1:])
-            for text in example["question"]["choices"]["text"]
+        example["options"] = tuple(
+            [
+                ".".join(text.split(".")[1:])
+                for text in example["question"]["choices"]["text"]
+            ]
         )
         return example
 
