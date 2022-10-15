@@ -33,7 +33,7 @@ def prepare_and_process(
     # prepare so we have 'input' field
     prepared_example = preparer(example, separator)
     # prepend k-shot context to 'input'
-    processed_example = prepend_kshot(prepared_example, k_shot_str, separator)
+    processed_example = prepend_kshot(prepared_example, k_shot_str)
     # add 'options' field
     proc_example_with_options = optioner(processed_example)
     return proc_example_with_options
