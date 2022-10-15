@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
 
-from claficle.data.process import helper_by_name, process_dataset
+from claficle.data.process import process_dataset
 
 
 class BenchmarkDataModule(pl.LightningDataModule):
@@ -43,11 +43,12 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 )
                 self._processed_datasets.append(test_dataset)
         # sanity check, failing it should raise some red flags
-        assert (
-            len(self.cfg.dataset_names)
-            == len(self._processed_datasets)
-            == len(self._metadata["datasets"])
-        ), "Mismatch in number of requested, processed, and tracked datasets"
+        assert len(self.cfg.dataset_names) == len(self._metadata["datasets"]), (
+            "Mismatch in number of requested, and tracked datasets\n"
+            f" cfg.dataset_names: \n{cfg.dataset_names}"
+            "\n--------\n"
+            f" metadata: \n{self._metadata['datasets']}"
+        )
 
     def get_metadata(self):
         return self._metadata
