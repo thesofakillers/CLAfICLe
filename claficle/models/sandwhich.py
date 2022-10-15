@@ -53,9 +53,7 @@ class Sandwhich:
 
 
 if __name__ == "__main__":
-    test_sandwhich = Sandwhich(
-        bread="it", model="google/t5-small-lm-adapt", fill="en"
-    )
+    test_sandwhich = Sandwhich(bread="it", model="google/t5-small-lm-adapt", fill="en")
 
     test_output = test_sandwhich.generate(
         "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
