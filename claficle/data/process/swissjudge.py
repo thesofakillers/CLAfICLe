@@ -9,13 +9,9 @@ class SwissJudgeHelper(ProcessHelper):
 
     @staticmethod
     def get_k_source(dataset, lang):
-        return dataset["validation"]
+        return dataset["train"]
 
-    k_from_test = False
-
-    @staticmethod
-    def get_test_split(dataset, lang):
-        return dataset["test"]
+    k_from_test = True
 
     @staticmethod
     def get_options(example):
