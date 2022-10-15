@@ -48,7 +48,7 @@ def process_dataset(
     Helper = helper_by_name[dataset_name]
     if not Helper.language_available(dataset_name, lang):
         return None, []
-    for source, target in Helper.rename_cols:
+    for source, target in Helper.rename_cols.items():
         dataset = dataset.rename_column(source, target)
     k_shot_source = Helper.get_k_source(dataset, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
