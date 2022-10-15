@@ -30,5 +30,5 @@ class EvalWrapper(pl.LightningModule):
         pass
 
     def set_benchmark_metadata(self, metadata):
-        # todo
-        pass
+        """Contains info on the name and metrics for each dataloader in the benchmark"""
+        self.benchmark_metadata = metadata
