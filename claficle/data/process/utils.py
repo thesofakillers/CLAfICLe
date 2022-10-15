@@ -5,12 +5,13 @@ import numpy as np
 
 
 def prepare_kshot_str(
-    k_shot_subdataset: Dataset, separator: str, preparer: Callable
+    k_shot_subdataset: Dataset, separator: str, preparer: Callable, optioner: Callable
 ) -> str:
     k_shot_str = ""
 
     for i, example in enumerate(k_shot_subdataset):
         prep_example = preparer(example, separator)
+        prep_example = optioner(prep_example)
         k_shot_str += (
             f"{prep_example['input']}"
             f"{separator}"

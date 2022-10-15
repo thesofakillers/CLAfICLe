@@ -53,7 +53,7 @@ def process_dataset(
     k_shot_source = Helper.get_k_source(dataset, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
     k_shot_string = utils.prepare_kshot_str(
-        k_shot, cfg.separator, Helper.prepare_example
+        k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
     )
 
     if Helper.k_from_test:
