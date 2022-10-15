@@ -28,6 +28,7 @@ class HatecheckHelper(ProcessHelper):
     @staticmethod
     def prepare_example(example, separator):
         example["label"] = {"hateful": 0, "non-hateful": 1}[example["label"]]
+        return example
 
 
 class EnglishHelper(HatecheckHelper):
