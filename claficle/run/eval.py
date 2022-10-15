@@ -11,7 +11,8 @@ from claficle.models.wrapper import Wrapper
 def main(cfg: DictConfig):
     pl.seed_everything(cfg.seed, workers=True)
     print(OmegaConf.to_yaml(cfg))
-    model = Wrapper.load_from_checkpoint(cfg.checkpoint_path)
+    model = Wrapper(gpt2_variant=cfg.causalLM_variant, approach=cfg.approach)
+    model.load_checkpoint(cfg.checkpoint_path)
     # separate benchmarks by language
     bmark_by_lang = {}
     langs = ["en", "de", "fr"]
