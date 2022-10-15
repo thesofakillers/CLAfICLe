@@ -15,7 +15,7 @@ class WinoXHelper(ProcessHelper):
     def get_k_source(dataset, lang):
         dataset = dataset["test"]
         # need to do renaming and prelim removing here since langs are split by columns
-        dataset = dataset.rename_cols(
+        dataset = dataset.rename_columns(
             {
                 f"context_{lang}": "context",
                 f"option_1{lang}": "option_1",
