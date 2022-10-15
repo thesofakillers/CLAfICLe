@@ -18,6 +18,13 @@ class XCSRHelper(ProcessHelper):
 
     k_from_test = True
 
+    is_classification = False
+
+
+class CSQAHelper(XCSRHelper):
+
+    remove_cols = ["lang", "id", "question", "stem"]
+
     @staticmethod
     def get_options(example):
         example["options"] = example["question"]["choices"]["text"]
@@ -29,14 +36,21 @@ class XCSRHelper(ProcessHelper):
         example["label"] = ord(example["label"].lower()) - ord("a")
         return example
 
-    is_classification = False
-
-
-class CSQAHelper(XCSRHelper):
-
-    remove_cols = ["lang", "id", "question", "stem"]
-
 
 class CODAHHelper(XCSRHelper):
 
     remove_cols = ["lang", "id", "question", "question_tag", "stem"]
+
+    @staticmethod
+    def get_options(example):
+        example["options"] = (
+            ".".join(text.split(".")[1:])
+            for text in example["question"]["choices"]["text"]
+        )
+        return example
+
+    @staticmethod
+    def prepare_example(example, separator):
+        example["input"] = example["question"]["choices"]["text"][0].split(".")[0] + "."
+        example["label"] = ord(example["label"].lower()) - ord("a")
+        return example
