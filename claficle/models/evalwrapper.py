@@ -3,7 +3,7 @@ import torch
 from transformers import AutoModelForCausalLM
 
 
-class Wrapper(pl.LightningModule):
+class EvalWrapper(pl.LightningModule):
     # todo
     def __init__(self, causalLM_variant: str, approach: str):
         super().__init__()

@@ -4,14 +4,14 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 
 from claficle.data.benchmark import BenchmarkDataModule
-from claficle.models.wrapper import Wrapper
+from claficle.models.evalwrapper import EvalWrapper
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="eval")
 def main(cfg: DictConfig):
     pl.seed_everything(cfg.seed, workers=True)
     print(OmegaConf.to_yaml(cfg))
-    model = Wrapper(gpt2_variant=cfg.causalLM_variant, approach=cfg.approach)
+    model = EvalWrapper(gpt2_variant=cfg.causalLM_variant, approach=cfg.approach)
     model.load_checkpoint(cfg.checkpoint_path)
     # separate benchmarks by language
     bmark_by_lang = {}
