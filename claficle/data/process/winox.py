@@ -18,8 +18,8 @@ class WinoXHelper(ProcessHelper):
         dataset = dataset.rename_columns(
             {
                 f"context_{lang}": "context",
-                f"option_1{lang}": "option_1",
-                f"option_2{lang}": "option_2",
+                f"option1_{lang}": "option_1",
+                f"option2_{lang}": "option_2",
             }
         )
         dataset.remove_columns(
