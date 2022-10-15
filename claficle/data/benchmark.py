@@ -95,3 +95,4 @@ if __name__ == "__main__":
     benchmark = BenchmarkDataModule(cfg, "en")
 
     benchmark.prepare_data()
+    benchmark.setup()
