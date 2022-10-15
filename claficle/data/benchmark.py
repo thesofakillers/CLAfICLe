@@ -32,23 +32,18 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._processed_datasets = []
         for dataset_name in self.cfg.dataset_names:
             dataset = self._load_dataset(dataset_name)
-            test_dataset, metrics = process_dataset(
+            test_dataset, metrics, collection_name = process_dataset(
                 dataset, self.lang, self.cfg, dataset_name
             )
             # test_dataset is None if dataset is not available in language
             if test_dataset is not None:
                 # map dataset idx to name & metrics, so to track in LightningModule
                 self._metadata["datasets"].append(
-                    {"name": dataset_name, "metrics": metrics}
+                    {"name": collection_name, "metrics": metrics}
                 )
                 self._processed_datasets.append(test_dataset)
-        # sanity check, failing it should raise some red flags
-        assert len(self.cfg.dataset_names) == len(self._metadata["datasets"]), (
-            "Mismatch in number of requested, and tracked datasets\n"
-            f" cfg.dataset_names: \n{cfg.dataset_names}"
-            "\n--------\n"
-            f" metadata: \n{self._metadata['datasets']}"
-        )
+            else:
+                print(f"Dataset {dataset_name} not available in {self.lang}")
 
     def get_metadata(self):
         return self._metadata
@@ -93,7 +88,8 @@ if __name__ == "__main__":
         config: dict = yaml.safe_load(f)
     cfg: DictConfig = OmegaConf.create(config)
 
-    benchmark = BenchmarkDataModule(cfg, "en")
-
-    benchmark.prepare_data()
-    benchmark.setup()
+    for lang in ["en", "fr", "de"]:
+        benchmark = BenchmarkDataModule(cfg, lang)
+        benchmark.prepare_data()
+        benchmark.setup()
+        print(benchmark.get_metadata())

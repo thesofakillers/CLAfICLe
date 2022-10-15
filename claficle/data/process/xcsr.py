@@ -7,10 +7,9 @@ class XCSRHelper(ProcessHelper):
     @staticmethod
     def language_available(dataset_name, lang):
         dataset_lang = dataset_name[-2:]
-        if dataset_lang == lang:
-            return True
-        else:
-            return False
+        collection_name = dataset_name[5:-3]
+        lang_avail = dataset_lang == lang
+        return (f"xcsr-{collection_name}", lang_avail)
 
     @staticmethod
     def get_k_source(dataset, lang):

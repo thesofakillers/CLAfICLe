@@ -4,37 +4,37 @@ k: 16 # number of examples shown
 separator: "\n" # what to separate each example with
 data_dir: "data/" # where to store the data
 dataset_names: # list of huggingface dataset;split names
-  # XGLUE
-  - xglue;qam
-  - xglue;qadsm
-  - xglue;nc
-  - xglue;paws-x
-  - xglue;xnli
-  # CSQA
-  - xcsr;X-CSQA-en
-  - xcsr;X-CSQA-de
-  - xcsr;X-CSQA-fr
-  # CODAH
-  - xcsr;X-CODAH-en
-  - xcsr;X-CODAH-de
-  - xcsr;X-CODAH-fr
-  # multi eurlex - metaICL can't handle multi-label clssfctn
-  # see https://github.com/facebookresearch/MetaICL/issues/15
-  # - multi_eurlex;en
-  # - multi_eurlex;de
-  # - multi_eurlex;fr
-  # hatecheck
-  - Paul/hatecheck
-  - Paul/hatecheck-german
-  - Paul/hatecheck-french
-  # wino - x
-  - demelin/wino_x;lm_en_de # english and german
-  - demelin/wino_x;lm_en_fr # only french
-  # swiss judgement prediction
+  # # XGLUE
+  # - xglue;qam
+  # - xglue;qadsm
+  # - xglue;nc
+  # - xglue;paws-x
+  # - xglue;xnli
+  # # CSQA
+  # - xcsr;X-CSQA-en
+  # - xcsr;X-CSQA-de
+  # - xcsr;X-CSQA-fr
+  # # CODAH
+  # - xcsr;X-CODAH-en
+  # - xcsr;X-CODAH-de
+  # - xcsr;X-CODAH-fr
+  # # multi eurlex - metaICL can't handle multi-label clssfctn
+  # # see https://github.com/facebookresearch/MetaICL/issues/15
+  # # - multi_eurlex;en
+  # # - multi_eurlex;de
+  # # - multi_eurlex;fr
+  # # hatecheck
+  # - Paul/hatecheck
+  # - Paul/hatecheck-german
+  # - Paul/hatecheck-french
+  # # wino - x
+  # - demelin/wino_x;lm_en_de # english and german
+  # - demelin/wino_x;lm_en_fr # only french
+  # # swiss judgement prediction
   - swiss_judgment_prediction;mt_en
-  - swiss_judgment_prediction;de
-  - swiss_judgment_prediction;fr
-  # amazon reviews
-  - amazon_reviews_multi;en
-  - amazon_reviews_multi;de
-  - amazon_reviews_multi;fr
+  # - swiss_judgment_prediction;de
+  # - swiss_judgment_prediction;fr
+  # # amazon reviews
+  # - amazon_reviews_multi;en
+  # - amazon_reviews_multi;de
+  # - amazon_reviews_multi;fr

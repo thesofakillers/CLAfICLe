@@ -6,8 +6,8 @@ class AmazonHelper(ProcessHelper):
 
     @staticmethod
     def language_available(dataset_name, lang):
-        parsed_lang = dataset_name[-2:]
-        return parsed_lang == lang
+        collection_name, parsed_lang = dataset_name.split(";")
+        return (collection_name, parsed_lang == lang)
 
     @staticmethod
     def get_k_source(dataset, lang):

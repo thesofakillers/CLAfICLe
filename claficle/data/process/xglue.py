@@ -14,10 +14,9 @@ class XGLUEHelper(ProcessHelper):
 
     @staticmethod
     def language_available(dataset_name, lang):
-        if lang in {"en", "fr", "de"}:
-            return True
-        else:
-            return False
+        lang_avail = lang in {"en", "fr", "de"}
+        collection_name = "-".join(dataset_name.split(";"))
+        return (collection_name, lang_avail)
 
 
 class QAMHelper(XGLUEHelper):

@@ -7,9 +7,10 @@ class WinoXHelper(ProcessHelper):
     @staticmethod
     def language_available(dataset_name, lang):
         subsplit = dataset_name.split(";")[-1]
-        return (lang in {"en", "de"} and subsplit == "lm_en_de") or (
+        lang_avail = (lang in {"en", "de"} and subsplit == "lm_en_de") or (
             lang == "fr" and subsplit == "lm_en_fr"
         )
+        return ("winox", lang_avail)
 
     @staticmethod
     def get_k_source(dataset, lang):

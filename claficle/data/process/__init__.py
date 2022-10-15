@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Any, Dict, Tuple, List
 
 from omegaconf import DictConfig
@@ -36,7 +38,7 @@ helper_by_name: Dict[str, Dict] = {
 
 def process_dataset(
     dataset: Dataset, lang: str, cfg: DictConfig, dataset_name: str
-) -> Tuple[Any, List[str]]:
+) -> Tuple[Any, List[str], str]:
     """
     Gets relevant splits
     Generates k-shot context from non-test portion of data
@@ -46,8 +48,9 @@ def process_dataset(
     """
     print(f"Processing {dataset_name}")
     Helper = helper_by_name[dataset_name]
-    if not Helper.language_available(dataset_name, lang):
-        return None, []
+    collection_name, language_available = Helper.language_available(dataset_name, lang)
+    if not language_available:
+        return None, [], collection_name
     for source, target in Helper.rename_cols.items():
         dataset = dataset.rename_column(source, target)
     k_shot_source = Helper.get_k_source(dataset, lang)
@@ -62,6 +65,9 @@ def process_dataset(
     else:
         test_split = Helper.get_test_split(dataset, lang)
 
+    cache_dir = os.path.join(cfg.data_dir, "processed", collection_name)
+    # create cache directory if it doesn't exist
+    Path(cache_dir).mkdir(parents=True, exist_ok=True)
     processed_test_split = test_split.map(
         utils.prepare_and_process,
         remove_columns=Helper.remove_cols,
@@ -71,10 +77,11 @@ def process_dataset(
             "preparer": Helper.prepare_example,
             "optioner": Helper.get_options,
         },
+        cache_file_name=os.path.join(cache_dir, lang + ".arrow"),
     )
     if Helper.is_classification:
         metrics = ["f1"]
     else:
         metrics = ["accuracy"]
 
-    return processed_test_split, metrics
+    return processed_test_split, metrics, collection_name

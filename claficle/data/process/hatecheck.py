@@ -34,7 +34,8 @@ class HatecheckHelper(ProcessHelper):
 class EnglishHelper(HatecheckHelper):
     @staticmethod
     def language_available(dataset_name, lang):
-        return lang == "en" and dataset_name == "Paul/hatecheck"
+        lang_avail = lang == "en" and dataset_name == "Paul/hatecheck"
+        return ("hatecheck", lang_avail)
 
     remove_cols = HatecheckHelper.remove_cols + [
         "case_id",
@@ -47,9 +48,10 @@ class EnglishHelper(HatecheckHelper):
 class NonEnglishHelper(HatecheckHelper):
     @staticmethod
     def language_available(dataset_name, lang):
-        return (lang == "de" and dataset_name == "Paul/hatecheck-german") or (
+        lang_avail = (lang == "de" and dataset_name == "Paul/hatecheck-german") or (
             lang == "fr" and dataset_name == "Paul/hatecheck-french"
         )
+        return ("hatecheck", lang_avail)
 
     remove_cols = HatecheckHelper.remove_cols + [
         "disagreement_in_case",

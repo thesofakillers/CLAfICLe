@@ -75,5 +75,8 @@ class ProcessHelper:
 
     @staticmethod
     def language_available(dataset_name, lang):
-        """Checks if language is available for dataset"""
+        """
+        Checks if language is available for dataset
+        Returns bool and language-free collection name
+        """
         raise NotImplementedError

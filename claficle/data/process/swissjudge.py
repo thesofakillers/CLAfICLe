@@ -4,8 +4,9 @@ from claficle.data.process.utils import ProcessHelper
 class SwissJudgeHelper(ProcessHelper):
     @staticmethod
     def language_available(dataset_name, lang):
-        parsed_lang = dataset_name.split(";")[-1][-2:]
-        return parsed_lang == lang
+        collection_name, parsed_lang = dataset_name.split(";")
+        parsed_lang = parsed_lang[-2:]
+        return (collection_name, parsed_lang == lang)
 
     @staticmethod
     def get_k_source(dataset, lang):
