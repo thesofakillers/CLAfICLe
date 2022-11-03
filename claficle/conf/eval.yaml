@@ -3,7 +3,7 @@ defaults:
   - _self_
   - benchmark: eval
   - trainer: eval
-  - model: sandwhich
+  - model: sandwich
   # https://stackoverflow.com/a/70777327/9889508
   - override hydra/hydra_logging: disabled
   - override hydra/job_logging: disabled

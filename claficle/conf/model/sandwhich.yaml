@@ -1,3 +1,3 @@
-name: "sandwhich"
+name: "sandwich"
 causalLM_variant: "gpt2-large"
-checkpoint_path: "checkpoints/sandwhich.pt"
+checkpoint_path: "checkpoints/sandwich.pt"

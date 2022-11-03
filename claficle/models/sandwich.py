@@ -1,4 +1,4 @@
-"""Sandwhich model: lang -> english -> lang"""
+"""Sandwich model: lang -> english -> lang"""
 from googletrans import Translator
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer  # type: ignore
 
@@ -53,9 +53,9 @@ class Sandwich:
 
 
 if __name__ == "__main__":
-    test_sandwhich = Sandwhich(bread="it", model="google/t5-small-lm-adapt", fill="en")
+    test_sandwich = Sandwich(bread="it", model="google/t5-small-lm-adapt", fill="en")
 
-    test_output = test_sandwhich.generate(
+    test_output = test_sandwich.generate(
         "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
     )
 
