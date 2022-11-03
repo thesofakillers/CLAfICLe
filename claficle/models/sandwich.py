@@ -3,7 +3,7 @@ from googletrans import Translator
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer  # type: ignore
 
 
-class Sandwhich:
+class Sandwich:
 
     """
     Uses Google Translate API to use BREAD_LANG inputs on a FILL_LANG model
