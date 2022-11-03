@@ -3,12 +3,11 @@ defaults:
   - _self_
   - benchmark: eval
   - trainer: eval
+  - model: sandwhich
   # https://stackoverflow.com/a/70777327/9889508
   - override hydra/hydra_logging: disabled
   - override hydra/job_logging: disabled
 
-causalLM_variant: "gpt2-large"
-approach: "sandwhich"
 checkpoint_path: "checkpoints/metaicl/model.pt"
 en: true
 de: true

@@ -1,20 +1,20 @@
 import pytorch_lightning as pl
 import torch
 from transformers import AutoModelForCausalLM
+from omegaconf import DictConfig
 
 
 class EvalWrapper(pl.LightningModule):
     # todo
-    def __init__(self, causalLM_variant: str, approach: str):
+    def __init__(self, cfg: DictConfig):
         super().__init__()
-        self.causalLM_variant = causalLM_variant
-        self.approach = approach
+        self.cfg = cfg
 
     def load_checkpoint(self, checkpoint_path):
         # todo
         state_dict = torch.load(checkpoint_path)
         self.causal_lm = AutoModelForCausalLM.from_pretrained(
-            self.causalLM_variant, state_dict=state_dict
+            self.cfg.causalLM_variant, state_dict=state_dict
         )
 
     def configure_approach(self):
