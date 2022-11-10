@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from torch.utils.data import DataLoader, SequentialSampler
 import pytorch_lightning as pl
@@ -57,6 +57,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 dataset,
                 batch_size=self.cfg.batch_size,
                 sampler=SequentialSampler(dataset),
+                collate_fn=lambda batch: batch,  # convert batch to list of dicts
             )
             for dataset in self._processed_datasets
         ]
