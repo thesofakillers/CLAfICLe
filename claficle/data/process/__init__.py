@@ -4,6 +4,7 @@ from typing import Any, Dict, Tuple, List
 
 from omegaconf import DictConfig
 from datasets.arrow_dataset import Dataset
+import datasets
 import numpy as np
 
 import claficle.data.process.utils as utils
@@ -37,7 +38,7 @@ helper_by_name: Dict[str, Dict] = {
 
 
 def process_dataset(
-    dataset: Dataset, lang: str, cfg: DictConfig, dataset_name: str
+    processed_test_split: Dataset, lang: str, cfg: DictConfig, dataset_name: str
 ) -> Tuple[Any, List[str], str]:
     """
     Gets relevant splits
@@ -46,14 +47,25 @@ def process_dataset(
     Adds options column to track options
     Returns processed test dataset and relevant metrics
     """
-    print(f"Processing {dataset_name}")
     Helper = helper_by_name[dataset_name]
+
+    if Helper.is_classification:
+        metrics = ["f1"]
+    else:
+        metrics = ["accuracy"]
+
     collection_name, language_available = Helper.language_available(dataset_name, lang)
     if not language_available:
         return None, [], collection_name
+
+    dataset_path = os.path.join(cfg.data_dir, "processed", collection_name, lang)
+    if os.path.exists(dataset_path):
+        processed_test_split = datasets.load_from_disk(dataset_path)
+        return processed_test_split, metrics, collection_name
+
     for source, target in Helper.rename_cols.items():
-        dataset = dataset.rename_column(source, target)
-    k_shot_source = Helper.get_k_source(dataset, lang)
+        processed_test_split = processed_test_split.rename_column(source, target)
+    k_shot_source = Helper.get_k_source(processed_test_split, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
     k_shot_string = utils.prepare_kshot_str(
         k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
@@ -63,11 +75,8 @@ def process_dataset(
         test_indices = np.setdiff1d(np.arange(len(k_shot_source)), k_indices)
         test_split = k_shot_source.select(test_indices)
     else:
-        test_split = Helper.get_test_split(dataset, lang)
+        test_split = Helper.get_test_split(processed_test_split, lang)
 
-    cache_dir = os.path.join(cfg.data_dir, "processed", collection_name)
-    # create cache directory if it doesn't exist
-    Path(cache_dir).mkdir(parents=True, exist_ok=True)
     processed_test_split = test_split.map(
         utils.prepare_and_process,
         remove_columns=Helper.remove_cols,
@@ -77,11 +86,9 @@ def process_dataset(
             "preparer": Helper.prepare_example,
             "optioner": Helper.get_options,
         },
-        cache_file_name=os.path.join(cache_dir, lang + ".arrow"),
     )
-    if Helper.is_classification:
-        metrics = ["f1"]
-    else:
-        metrics = ["accuracy"]
+    # create save directory if it doesn't exist, and save to disk
+    Path(dataset_path).mkdir(parents=True, exist_ok=True)
+    processed_test_split.save_to_disk(dataset_path)
 
     return processed_test_split, metrics, collection_name
