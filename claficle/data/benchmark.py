@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from torch.utils.data import DataLoader, SequentialSampler
 import pytorch_lightning as pl
