@@ -3,7 +3,7 @@ from omegaconf import DictConfig
 from claficle.models.utils import NAME_TO_CLASS
 
 
-class EvalWrapper(pl.LightningModule):
+class BaseModel(pl.LightningModule):
     # todo
     def __init__(self, cfg: DictConfig):
         super().__init__()
