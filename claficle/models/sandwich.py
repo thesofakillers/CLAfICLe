@@ -1,4 +1,5 @@
 """Sandwich model: lang -> english -> lang"""
+from typing import Dict, List
 from googletrans import Translator
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer  # type: ignore
 from claficle.models.base import BaseModel
@@ -51,6 +52,18 @@ class Sandwich(BaseModel):
         )
 
         return bread_output
+
+    def pre_collate_proc(self, batch: List[Dict]) -> List[Dict]:
+        """Translates text from `bread` to `fill` language"""
+        for item in batch:
+            item["input"] = self.translate(
+                item["input"], src_lang=self.bread, dest_lang=self.fill
+            )
+            item["options"] = [
+                self.translate(str(option), src_lang=self.bread, dest_lang=self.fill)
+                for option in item["options"]
+            ]
+        return batch
 
 
 if __name__ == "__main__":
