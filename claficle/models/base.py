@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple
 import pytorch_lightning as pl
 from omegaconf import DictConfig
+import torch
 from claficle.models.utils import NAME_TO_CLASS
 
 
@@ -11,18 +12,11 @@ class BaseModel(pl.LightningModule):
         self.save_hyperparameters(cfg)
         self._set_evaluand()
 
-    def _set_evaluand(self):
-        """returns an instance the model we wish to evaluate"""
-        Evaluand_Class: pl.LightningModule = NAME_TO_CLASS[self.hparams.name]
-        self.evaluand = Evaluand_Class.load_from_checkpoint(
-            self.hparams.checkpoint_path
-        )
-
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
         batch = self.prep_batch(batch)
-        # TODO: get log-likelihood from evaluand for each option completing the input
+        # TODO: get log-lklhood from evaluand for each option completing the input
         # TODO: evaluate (max log-likelihood = prediction -> compare to label)
-        # log
+        # TODO: log
         pass
 
     def set_benchmark_metadata(self, metadata):
@@ -42,3 +36,19 @@ class BaseModel(pl.LightningModule):
         By default we do nothing
         """
         return batch
+
+    def collate_fn(self, batch: List[Dict]):
+        encodings = []
+        labels = []
+        for item in batch:
+            # TODO: for each option, need to encode input + option directly
+            # keeping track of which token ids are the completion and which aren't
+            # note that tokenize can handle batching
+            # note that we need to init tokenizer
+            # note that we need to add separator either at end of input or at beginning
+            # of each option
+            encoding = self.tokenize(item["text"])
+            encodings.append(encoding)
+            labels = labels.append(item["label"])
+        labels = torch.LongTensor(labels)
+        pass
