@@ -21,7 +21,7 @@ class AmazonHelper(ProcessHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(1, 6))
+        example["options"] = [str(x) for x in range(1, 6)]
         return example
 
     @staticmethod

@@ -27,7 +27,7 @@ class QAMHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(2))
+        example["options"] = [str(x) for x in range(2)]
         return example
 
     remove_cols = ["question", "answer"]
@@ -47,7 +47,7 @@ class QADSMHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(2))
+        example["options"] = [str(x) for x in range(2)]
         return example
 
     rename_cols = {"relevance_label": "label"}
@@ -67,7 +67,7 @@ class NCHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(10))
+        example["options"] = [str(x) for x in range(10)]
         return example
 
 
@@ -81,7 +81,7 @@ class PAWSXHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(2))
+        example["options"] = [str(x) for x in range(2)]
         return example
 
 
@@ -95,5 +95,5 @@ class XNLIHelper(XGLUEHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(3))
+        example["options"] = [str(x) for x in range(3)]
         return example

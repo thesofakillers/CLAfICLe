@@ -16,7 +16,7 @@ class SwissJudgeHelper(ProcessHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(range(2))
+        example["options"] = [str(x) for x in range(2)]
         return example
 
     @staticmethod
