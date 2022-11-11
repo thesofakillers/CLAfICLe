@@ -1,12 +1,15 @@
 from typing import Dict, List
 import pytorch_lightning as pl
 from omegaconf import DictConfig
+from transformers import AutoTokenizer
 
 
 class BaseModel(pl.LightningModule):
     # todo
-    def __init__(self):
+    def __init__(self, config: DictConfig):
         super().__init__()
+        self.save_hyperparameters(config)
+        self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name)
 
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
         batch = self.prep_batch(batch)
