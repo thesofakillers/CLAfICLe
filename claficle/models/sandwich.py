@@ -67,7 +67,9 @@ class Sandwich(BaseModel):
 
 
 if __name__ == "__main__":
-    test_sandwich = Sandwich(bread="it", model_name="google/t5-small-lm-adapt", fill="en")
+    test_sandwich = Sandwich(
+        bread="it", model_name="google/t5-small-lm-adapt", fill="en"
+    )
 
     test_output = test_sandwich.generate(
         "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
