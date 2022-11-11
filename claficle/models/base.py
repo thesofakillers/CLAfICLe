@@ -5,9 +5,8 @@ from omegaconf import DictConfig
 
 class BaseModel(pl.LightningModule):
     # todo
-    def __init__(self, cfg: DictConfig):
+    def __init__(self):
         super().__init__()
-        self.save_hyperparameters(cfg)
 
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
         batch = self.prep_batch(batch)
