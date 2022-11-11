@@ -1,7 +1,7 @@
 """Sandwich model: lang -> english -> lang"""
 from typing import Dict, List
 from googletrans import Translator
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer  # type: ignore
+from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
 from claficle.models.base import BaseModel
 
 
@@ -12,7 +12,7 @@ class Sandwich(BaseModel):
     BREAD_LANG -> FILL_LANG_MODEL -> BREAD_LANG
     """
 
-    def __init__(self, bread: str, model: str, fill: str = "en"):
+    def __init__(self, bread: str, model_name: str, fill: str = "en"):
         """Initialization
 
         :param bread: desired input and output language (ISO-639-1)
@@ -22,9 +22,9 @@ class Sandwich(BaseModel):
         """
         self.bread = bread
         self.fill = fill
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
         self._translator = Translator()
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.lm = AutoModelForCausalLM.from_pretrained(model_name)
 
     def translate(self, text: str, src_lang: str, dest_lang: str) -> str:
         """Translates a piece of text"""
@@ -40,7 +40,7 @@ class Sandwich(BaseModel):
         )
 
         fill_input_tokens = self.tokenizer.encode(fill_input, return_tensors="pt")
-        fill_output_tokens = self.model.generate(fill_input_tokens)[0]
+        fill_output_tokens = self.lm.generate(fill_input_tokens)[0]
         fill_output = self.tokenizer.decode(
             fill_output_tokens,
             skip_special_tokens=True,
@@ -67,7 +67,7 @@ class Sandwich(BaseModel):
 
 
 if __name__ == "__main__":
-    test_sandwich = Sandwich(bread="it", model="google/t5-small-lm-adapt", fill="en")
+    test_sandwich = Sandwich(bread="it", model_name="google/t5-small-lm-adapt", fill="en")
 
     test_output = test_sandwich.generate(
         "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
