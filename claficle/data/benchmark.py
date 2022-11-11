@@ -62,7 +62,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         encodings = []
         labels = []
         for item in proc_batch:
-            # TODO: for each option, need to encode input + option directly
+            # TODO: for each option, need to encode input + separator + option directly
             # keeping track of which token ids are the completion and which aren't
             # note that tokenizer can handle batching and padding
             # note that we need to add separator either at end of input or at beginning
