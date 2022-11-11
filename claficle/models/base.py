@@ -13,7 +13,6 @@ class BaseModel(pl.LightningModule):
         self.tokenizer.add_special_tokens({"pad_token": "[PAD]"})
 
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
-        batch = self.prep_batch(batch)
         # TODO: get log-lklhood from evaluand for each option completing the input
         # TODO: evaluate (max log-likelihood = prediction -> compare to label)
         # TODO: log
