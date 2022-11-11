@@ -8,7 +8,6 @@ class BaseModel(pl.LightningModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
         self.save_hyperparameters(cfg)
-        self._set_evaluand()
 
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
         batch = self.prep_batch(batch)
