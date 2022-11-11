@@ -1,8 +1,6 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 import pytorch_lightning as pl
 from omegaconf import DictConfig
-import torch
-from claficle.models.utils import NAME_TO_CLASS
 
 
 class BaseModel(pl.LightningModule):
