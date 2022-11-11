@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Dict
 
 from datasets.arrow_dataset import Dataset
 import numpy as np
@@ -51,26 +51,39 @@ class ProcessHelper:
 
     @staticmethod
     def get_k_source(dataset, lang):
+        """Gets the split from where the k-shot context data is sampled"""
         raise NotImplementedError
 
+    # whether the k-shot context originates from the same split as text
     k_from_test = False
 
     @staticmethod
     def get_test_split(dataset, lang):
+        """Gets the split from where the test data is"""
         raise NotImplementedError
 
     @staticmethod
-    def get_options(example):
+    def get_options(example: Dict) -> Dict:
+        """
+        Edits an example such that there is a column 'options' with the options for
+        that example
+        """
         raise NotImplementedError
 
     remove_cols = None
 
     @staticmethod
     def prepare_example(example, separator):
+        """
+        Edits an example such that there is a column 'input' with
+        the appropriate combination of fields
+        """
         raise NotImplementedError
 
+    # whether to use F1 or accuracy as a metric
     is_classification = True
 
+    # source name : target name
     rename_cols = {}
 
     @staticmethod
