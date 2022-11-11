@@ -2,10 +2,12 @@ import os
 from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import Callable, List, Optional, Dict
+from typing import Callable, List, Optional, Dict, Tuple
 
 from torch.utils.data import DataLoader, SequentialSampler
 import torch
+from torch import Tensor
+from torch.nn.utils.rnn import pad_sequence
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
@@ -54,24 +56,66 @@ class BenchmarkDataModule(pl.LightningDataModule):
     def get_metadata(self):
         return self._metadata
 
-    def collate_fn(self, batch: List[Dict]):
-        """Converts batch to list of dicts"""
+    def collate_fn(self, batch: List[Dict]) -> Tuple[Tensor, Tensor, Tensor]:
+        """
+        For each input, encodes it and concatenates it with each
+        of available (encoded) options
+        Padding is applied in the process
+        token_type_ids (0 is input, 1 is option, 2 is padding) are tracked throughout
+        Batches labels into LongTensor
+
+        Returns Tuple of (input_ids, token_type_ids, labels)
+        Dimensions of ((B x O x S), (B x O x S), (B, ))
+        where B is batch size, O is number of options, S is max sequence length in B
+        """
         # apply any pre-collation processing first
         proc_batch: List[Dict] = self._pre_collate_fn(batch)
 
-        encodings = []
-        labels = []
-        for item in proc_batch:
-            # TODO: for each option, need to encode input + separator + option directly
-            # keeping track of which token ids are the completion and which aren't
-            # note that tokenizer can handle batching and padding
-            # note that we need to add separator either at end of input or at beginning
-            # of each option
-            encoding = self.tokenizer(item["text"])
-            encodings.append(encoding)
-            labels = labels.append(item["label"])
-        labels = torch.LongTensor(labels)
-        return batch
+        # batch encode the inputs
+        input_encodings = self.tokenizer([x["input"] for x in proc_batch])["input_ids"]
+
+        # we then go through batch to concatenate each option to a given input
+        batch_concats = []
+        batch_tok_type_ids = []
+        batch_labels = []
+        for input_encoding, item in zip(input_encodings, proc_batch):
+            batch_labels.append(item["label"])
+            input_tok_type_ids = [0 for _ in input_encoding]
+
+            # encode each option, prefixed by separator
+            option_encodings = self.tokenizer(
+                [self.separator + option for option in item["options"]]
+            )["input_ids"]
+
+            # we then concatenate each option to our current input encoding
+            tok_type_ids = []
+            concat_encodings = []
+            for option_encoding in option_encodings:
+                concatenated = input_encoding + option_encoding
+                concat_encodings.append(torch.LongTensor(concatenated))
+                tok_type_id = input_tok_type_ids + [1 for _ in option_encoding]
+                tok_type_ids.append(torch.LongTensor(tok_type_id))
+
+            # here we are padding across options
+            concat_encodings = pad_sequence(
+                concat_encodings, batch_first=False, padding_value=self.pad_token_id
+            )
+            tok_type_ids = pad_sequence(
+                tok_type_ids, batch_first=False, padding_value=2
+            )
+
+            batch_concats.append(concat_encodings)
+            batch_tok_type_ids.append(tok_type_ids)
+
+        # here we pad across the batch
+        batch_concats = pad_sequence(
+            batch_concats, batch_first=True, padding_value=self.pad_token_id
+        ).permute(0, 2, 1)
+        batch_tok_type_ids = pad_sequence(
+            batch_tok_type_ids, batch_first=True, padding_value=2
+        ).permute(0, 2, 1)
+
+        return batch_concats, batch_tok_type_ids, torch.LongTensor(batch_labels)
 
     def test_dataloader(self) -> List[DataLoader]:
         """Returns a test dataloader for each processed dataset"""
@@ -122,6 +166,9 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
+        self.pad_token_id = tokenizer.convert_tokens_to_ids(
+            tokenizer.special_tokens_map["pad_token"]
+        )
 
 
 if __name__ == "__main__":
