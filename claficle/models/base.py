@@ -10,6 +10,7 @@ class BaseModel(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters(config)
         self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name)
+        self.tokenizer.add_special_tokens({"pad_token": "[PAD]"})
 
     def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
         batch = self.prep_batch(batch)
