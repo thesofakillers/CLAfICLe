@@ -64,15 +64,13 @@ class BenchmarkDataModule(pl.LightningDataModule):
         for item in proc_batch:
             # TODO: for each option, need to encode input + option directly
             # keeping track of which token ids are the completion and which aren't
-            # note that tokenize can handle batching
-            # note that we need to init tokenizer
+            # note that tokenizer can handle batching and padding
             # note that we need to add separator either at end of input or at beginning
             # of each option
-            encoding = self.tokenize(item["text"])
+            encoding = self.tokenizer(item["text"])
             encodings.append(encoding)
             labels = labels.append(item["label"])
         labels = torch.LongTensor(labels)
-        pass
         return batch
 
     def test_dataloader(self) -> List[DataLoader]:
@@ -121,6 +119,9 @@ class BenchmarkDataModule(pl.LightningDataModule):
         before collation
         """
         self._pre_collate_fn = pre_collate_fn
+
+    def set_tokenizer(self, tokenizer):
+        self.tokenizer = tokenizer
 
 
 if __name__ == "__main__":
