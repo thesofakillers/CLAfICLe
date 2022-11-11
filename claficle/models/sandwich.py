@@ -53,7 +53,7 @@ class Sandwich(BaseModel):
 
         return bread_output
 
-    def pre_collate_proc(self, batch: List[Dict]) -> List[Dict]:
+    def pre_collate(self, batch: List[Dict]) -> List[Dict]:
         """Translates text from `bread` to `fill` language"""
         for item in batch:
             item["input"] = self.translate(

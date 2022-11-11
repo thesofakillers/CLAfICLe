@@ -31,6 +31,7 @@ def main(cfg: DictConfig):
             continue
         # so that the model knows names and metrics of dataloaders before testing
         model.set_benchmark_metadata(benchmark.get_metadata())
+        benchmark.set_pre_collate_fn(ModelClass.pre_collate)
         trainer.test(model, datamodule=benchmark)
 
 

@@ -2,9 +2,10 @@ import os
 from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
-from typing import List, Optional
+from typing import Callable, List, Optional, Dict
 
 from torch.utils.data import DataLoader, SequentialSampler
+import torch
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
@@ -19,6 +20,9 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.lang = lang
         self.raw_save_path: str = os.path.join(self.cfg.data_dir, "raw")
         self._metadata = {"lang": self.lang, "datasets": []}
+        self._pre_collate_fn: Callable[
+            [List[Dict]], List[Dict]
+        ] = lambda batch: batch  # default no-op (can be set)
 
     def prepare_data(self):
         """takes care of downloading data"""
@@ -50,6 +54,27 @@ class BenchmarkDataModule(pl.LightningDataModule):
     def get_metadata(self):
         return self._metadata
 
+    def collate_fn(self, batch: List[Dict]):
+        """Converts batch to list of dicts"""
+        # apply any pre-collation processing first
+        proc_batch: List[Dict] = self._pre_collate_fn(batch)
+
+        encodings = []
+        labels = []
+        for item in proc_batch:
+            # TODO: for each option, need to encode input + option directly
+            # keeping track of which token ids are the completion and which aren't
+            # note that tokenize can handle batching
+            # note that we need to init tokenizer
+            # note that we need to add separator either at end of input or at beginning
+            # of each option
+            encoding = self.tokenize(item["text"])
+            encodings.append(encoding)
+            labels = labels.append(item["label"])
+        labels = torch.LongTensor(labels)
+        pass
+        return batch
+
     def test_dataloader(self) -> List[DataLoader]:
         """Returns a test dataloader for each processed dataset"""
         return [
@@ -57,12 +82,12 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 dataset,
                 batch_size=self.cfg.batch_size,
                 sampler=SequentialSampler(dataset),
-                collate_fn=lambda batch: batch,  # convert batch to list of dicts
+                collate_fn=self.collate_fn,
             )
             for dataset in self._processed_datasets
         ]
 
-    def _load_raw_dataset(self, dataset_name):
+    def _load_raw_dataset(self, dataset_name: str):
         # parses dataset name
         if ";" in dataset_name:
             collection: str
@@ -85,10 +110,17 @@ class BenchmarkDataModule(pl.LightningDataModule):
             dataset.save_to_disk(dataset_path)
         return dataset
 
-    def _download_dataset(self, dataset_name):
+    def _download_dataset(self, dataset_name: str):
         """Downloads huggingface dataset"""
         self._load_raw_dataset(dataset_name)
         return
+
+    def set_pre_collate_fn(self, pre_collate_fn: Callable[[List[Dict]], List[Dict]]):
+        """
+        Sets a pre-collate processing function, which is applied to each batch
+        before collation
+        """
+        self._pre_collate_fn = pre_collate_fn
 
 
 if __name__ == "__main__":
