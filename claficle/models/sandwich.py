@@ -70,6 +70,7 @@ if __name__ == "__main__":
     test_sandwich = Sandwich(
         bread="it", model_name="google/t5-small-lm-adapt", fill="en"
     )
+    # TODO: after completing implementation, run this once to save a PL checkpoint.
 
     test_output = test_sandwich.generate(
         "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
