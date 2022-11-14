@@ -77,7 +77,9 @@ class BenchmarkDataModule(pl.LightningDataModule):
         proc_batch: List[Dict] = self._pre_collate_fn(batch)
 
         # batch encode the inputs
-        input_encodings = self.tokenizer([x["input"] for x in proc_batch])["input_ids"]
+        input_encodings = self.tokenizer(
+            [x["input"] for x in proc_batch], truncation=True
+        )["input_ids"]
 
         # we then go through batch to concatenate each option to a given input
         batch_concats = []
@@ -89,7 +91,8 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
             # encode each option, prefixed by separator
             option_encodings = self.tokenizer(
-                [self.cfg.separator + option for option in item["options"]]
+                [self.cfg.separator + option for option in item["options"]],
+                truncation=True,
             )["input_ids"]
 
             # we then concatenate each option to our current input encoding
@@ -97,8 +100,12 @@ class BenchmarkDataModule(pl.LightningDataModule):
             concat_encodings = []
             for option_encoding in option_encodings:
                 concatenated = input_encoding + option_encoding
-                concat_encodings.append(torch.LongTensor(concatenated))
                 tok_type_id = input_tok_type_ids + [1 for _ in option_encoding]
+                # truncate from left side to see most recent tokens if necessary
+                concatenated = concatenated[-self.max_seq_length :]
+                tok_type_id = tok_type_id[-self.max_seq_length :]
+                # and add to options
+                concat_encodings.append(torch.LongTensor(concatenated))
                 tok_type_ids.append(torch.LongTensor(tok_type_id))
 
             # here we are padding across options
@@ -171,9 +178,11 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
+        self.tokenizer.truncation_side = "left"
         self.pad_token_id = tokenizer.convert_tokens_to_ids(
             tokenizer.special_tokens_map["pad_token"]
         )
+        self.max_seq_length = tokenizer.model_max_length
 
 
 if __name__ == "__main__":
