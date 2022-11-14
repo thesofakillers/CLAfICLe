@@ -1,7 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
+from torch import Tensor
 
 
 class BaseModel(pl.LightningModule):
@@ -12,7 +13,9 @@ class BaseModel(pl.LightningModule):
         self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name)
         self.tokenizer.add_special_tokens({"pad_token": "[PAD]"})
 
-    def test_step(self, batch: List[Dict], batch_idx: int, dataloader_idx: int):
+    def test_step(
+        self, batch: Tuple[Tensor, Tensor, Tensor], batch_idx: int, dataloader_idx: int
+    ):
         # TODO: get log-lklhood from evaluand for each option completing the input
         # TODO: evaluate (max log-likelihood = prediction -> compare to label)
         # TODO: log
