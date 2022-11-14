@@ -16,6 +16,10 @@ class BaseModel(pl.LightningModule):
         self.tokenizer.truncation_side = "left"
         # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
         self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.metric_to_fn = {
+            "f1": TF.f1_score,
+            "accuracy": TF.accuracy,
+        }
 
     def test_step(
         self, batch: Tuple[Tensor, Tensor, Tensor], batch_idx: int, dataloader_idx: int
@@ -35,8 +39,10 @@ class BaseModel(pl.LightningModule):
 
         preds, losses = self.do_inference(concats, tok_type_ids)
 
-        # TODO log
-        self.log("test metric", TF.f1_score(preds, labels))
+        dataloader_config = self.benchmark_metadata.datasets[dataloader_idx]
+        for metric in dataloader_config["metrics"]:
+            score = self.metric_to_fn[metric](preds, labels)
+            self.log(f"{dataloader_config['name']}/test/{metric}", score)
 
     def compute_loss(self, raw_logits, token_inputs, target_mask):
         """
