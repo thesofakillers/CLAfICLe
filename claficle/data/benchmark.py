@@ -25,6 +25,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._pre_collate_fn: Callable[
             [List[Dict]], List[Dict]
         ] = lambda batch: batch  # default no-op (can be set)
+        print("Note: run set_tokenizer(tokenizer) before asking for a dataloader")
 
     def prepare_data(self):
         """takes care of downloading data"""
