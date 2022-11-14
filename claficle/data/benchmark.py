@@ -85,7 +85,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
             # encode each option, prefixed by separator
             option_encodings = self.tokenizer(
-                [self.separator + option for option in item["options"]]
+                [self.cfg.separator + option for option in item["options"]]
             )["input_ids"]
 
             # we then concatenate each option to our current input encoding
