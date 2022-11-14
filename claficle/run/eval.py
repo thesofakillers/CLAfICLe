@@ -1,4 +1,6 @@
 """Evaluates model on benchmark of tasks"""
+import os
+
 import pytorch_lightning as pl
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -12,7 +14,7 @@ from claficle.models.base import BaseModel
 def main(cfg: DictConfig):
     pl.seed_everything(cfg.seed, workers=True)
     print(OmegaConf.to_yaml(cfg))
-    ModelClass: BaseModel = NAME_TO_CLASS[cfg.approach]
+    ModelClass: BaseModel = NAME_TO_CLASS[cfg.model.name]
     model = ModelClass.load_from_checkpoint(cfg.checkpoint_path)
     # separate benchmarks by language
     bmark_by_lang = {}
@@ -30,10 +32,15 @@ def main(cfg: DictConfig):
         else:
             continue
         # so that the model knows names and metrics of dataloaders before testing
+        log_save_dir = os.path.join(cfg.log_dir, cfg.model.name, lang)
+        logger = pl.loggers.TensorBoardLogger(
+            save_dir=log_save_dir,
+            name=f"{cfg.model.name}_{lang}",
+        )
         model.set_benchmark_metadata(benchmark.get_metadata())
         benchmark.set_tokenizer(model.tokenizer)
         benchmark.set_pre_collate_fn(ModelClass.pre_collate)
-        trainer.test(model, datamodule=benchmark)
+        trainer.test(model, datamodule=benchmark, logger=logger)
 
 
 if __name__ == "__main__":
