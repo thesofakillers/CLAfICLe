@@ -1,3 +1,4 @@
 name: "sandwich"
 causalLM_variant: "gpt2-large"
 checkpoint_path: "checkpoints/sandwich.pt"
+lm_checkpoint_path: "checkpoints/metaicl.pt"
