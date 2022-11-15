@@ -4,6 +4,7 @@ import os
 import pytorch_lightning as pl
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import torch
 
 from claficle.data.benchmark import BenchmarkDataModule
 from claficle.models.utils import NAME_TO_CLASS
@@ -15,7 +16,8 @@ def main(cfg: DictConfig):
     pl.seed_everything(cfg.seed, workers=True)
     print(OmegaConf.to_yaml(cfg))
     ModelClass: BaseModel = NAME_TO_CLASS[cfg.model.name]
-    model = ModelClass.load_from_checkpoint(cfg.checkpoint_path)
+    model = ModelClass(cfg.model)
+    model.load_state_dict(torch.load(cfg.model.checkpoint_path))
     # separate benchmarks by language
     bmark_by_lang = {}
     langs = ["en", "de", "fr"]
