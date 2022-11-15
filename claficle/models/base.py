@@ -12,7 +12,7 @@ class BaseModel(pl.LightningModule):
     def __init__(self, config: DictConfig):
         super().__init__()
         self.save_hyperparameters(config)
-        self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(config.causalLM_variant)
         self.tokenizer.truncation_side = "left"
         # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
         self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -39,7 +39,7 @@ class BaseModel(pl.LightningModule):
 
         preds, losses = self.do_inference(concats, tok_type_ids)
 
-        dataloader_config = self.benchmark_metadata.datasets[dataloader_idx]
+        dataloader_config = self.benchmark_metadata["datasets"][dataloader_idx]
         for metric in dataloader_config["metrics"]:
             score = self.metric_to_fn[metric](preds, labels)
             self.log(f"{dataloader_config['name']}/test/{metric}", score)
@@ -116,16 +116,23 @@ class BaseModel(pl.LightningModule):
         self.benchmark_metadata = metadata
 
     @staticmethod
-    def pre_collate(batch: List[Dict]) -> List[Dict]:
+    # allow for optional kwargs
+    def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
         """
         Optional pre-collation processing to be passed to a dataloader
         By default we do nothing
         """
         return batch
 
-    def run_causal_model(self, input_ids, attention_mask):
+    def run_causal_model(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
         """
         Runs the causal model on the input.
         To be implemented in inheriting classes.
+
+        input_ids is of shape (batch_size * num_options, seq_len)
+        attention_mask is of shape (batch_size * num_options, seq_len)
+
+        Returns `batch_logits`, a tensor of shape
+        (batch_size * num_options, seq_len, vocab_size)
         """
         raise NotImplementedError
