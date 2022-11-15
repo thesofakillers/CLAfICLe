@@ -1,7 +1,10 @@
 """Sandwich model: lang -> english -> lang"""
 from typing import Dict, List
+
 from googletrans import Translator
-from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
+from omegaconf import DictConfig
+from transformers import AutoModelForCausalLM
+import torch
 from claficle.models.base import BaseModel
 
 
@@ -12,68 +15,49 @@ class Sandwich(BaseModel):
     BREAD_LANG -> FILL_LANG_MODEL -> BREAD_LANG
     """
 
-    def __init__(self, bread: str, model_name: str, fill: str = "en"):
-        """Initialization
-
-        :param bread: desired input and output language (ISO-639-1)
-        :param model: HF Hub name or path to the model to use as the filling
-        :param fill: language the language model is capable of (ISO-639-1)
-
-        """
-        self.bread = bread
-        self.fill = fill
+    def __init__(self, config: DictConfig):
+        super().__init__(config)
         self._translator = Translator()
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.lm = AutoModelForCausalLM.from_pretrained(model_name)
+        state_dict = torch.load(config.lm_checkpoint_path)
+        self.lm = AutoModelForCausalLM.from_pretrained(
+            config.causalLM_variant, state_dict=state_dict
+        )
 
     def translate(self, text: str, src_lang: str, dest_lang: str) -> str:
         """Translates a piece of text"""
         return self._translator.translate(text, src=src_lang, dest=dest_lang).text
 
-    def generate(self, bread_input: str) -> str:
-        """
-        Translates BREAD to FILL  and passes to FILL model
-        Translates FILL model output to BREAD
-        """
-        fill_input: str = self.translate(
-            bread_input, src_lang=self.bread, dest_lang=self.fill
-        )
+    def run_causal_model(self, input_ids, attention_mask):
+        return self.lm(input_ids=input_ids, attention_mask=attention_mask)
 
-        fill_input_tokens = self.tokenizer.encode(fill_input, return_tensors="pt")
-        fill_output_tokens = self.lm.generate(fill_input_tokens)[0]
-        fill_output = self.tokenizer.decode(
-            fill_output_tokens,
-            skip_special_tokens=True,
-            clean_up_tokenization_spaces=True,
-        )
-
-        bread_output: str = self.translate(
-            fill_output, src_lang=self.fill, dest_lang=self.bread
-        )
-
-        return bread_output
-
-    def pre_collate(self, batch: List[Dict]) -> List[Dict]:
+    def pre_collate(
+        self, batch: List[Dict], src_lang: str, dest_lang: str = "en"
+    ) -> List[Dict]:
         """Translates text from `bread` to `fill` language"""
         for item in batch:
             item["input"] = self.translate(
-                item["input"], src_lang=self.bread, dest_lang=self.fill
+                item["input"], src_lang=src_lang, dest_lang=dest_lang
             )
             item["options"] = [
-                self.translate(str(option), src_lang=self.bread, dest_lang=self.fill)
+                self.translate(
+                    str(option),
+                    src_lang=src_lang,
+                    dest_lang=dest_lang,
+                )
                 for option in item["options"]
             ]
         return batch
 
 
 if __name__ == "__main__":
-    test_sandwich = Sandwich(
-        bread="it", model_name="google/t5-small-lm-adapt", fill="en"
-    )
-    # TODO: after completing implementation, run this once to save a PL checkpoint.
+    # generating checkpoint
+    import yaml
+    from omegaconf import OmegaConf
 
-    test_output = test_sandwich.generate(
-        "'Ho fame, che cosa mi suggerisci da mangiare?''Prova il "
-    )
+    with open("claficle/conf/model/sandwhich.yaml", "r") as f:
+        config: dict = yaml.safe_load(f)
+    cfg: DictConfig = OmegaConf.create(config)
 
-    print(test_output)
+    sandwich = Sandwich(config=cfg)
+
+    torch.save(sandwich.state_dict(), cfg.checkpoint_path)
