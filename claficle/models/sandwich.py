@@ -2,9 +2,11 @@
 from typing import Dict, List
 
 from googletrans import Translator
-from omegaconf import DictConfig
+import hydra
+from omegaconf import DictConfig, OmegaConf
 from transformers import AutoModelForCausalLM
 import torch
+
 from claficle.models.base import BaseModel
 
 
@@ -18,10 +20,6 @@ class Sandwich(BaseModel):
     def __init__(self, config: DictConfig):
         super().__init__(config)
         self._translator = Translator()
-        state_dict = torch.load(config.lm_checkpoint_path)
-        self.lm = AutoModelForCausalLM.from_pretrained(
-            config.causalLM_variant, state_dict=state_dict
-        )
 
     def translate(self, text: str, src_lang: str, dest_lang: str) -> str:
         """Translates a piece of text"""
@@ -48,16 +46,25 @@ class Sandwich(BaseModel):
             ]
         return batch
 
+    def load_non_pl_checkpoint(self, checkpoint_path: str):
+        state_dict = torch.load(checkpoint_path)
+        self.lm = AutoModelForCausalLM.from_pretrained(
+            self.hparams.causalLM_variant, state_dict=state_dict
+        )
+
+
+@hydra.main(version_base=None, config_path="../conf/model", config_name="sandwhich")
+def main(cfg: DictConfig):
+    # testing
+    print(cfg)
+    if cfg.pl_checkpoint:
+        model = Sandwich.load_from_checkpoint(cfg.checkpoint_path)
+    else:
+        model = Sandwich(cfg)
+        model.load_non_pl_checkpoint(cfg.checkpoint_path)
+
+    print(model)
+
 
 if __name__ == "__main__":
-    # generating checkpoint
-    import yaml
-    from omegaconf import OmegaConf
-
-    with open("claficle/conf/model/sandwhich.yaml", "r") as f:
-        config: dict = yaml.safe_load(f)
-    cfg: DictConfig = OmegaConf.create(config)
-
-    sandwich = Sandwich(config=cfg)
-
-    torch.save(sandwich.state_dict(), cfg.checkpoint_path)
+    main()

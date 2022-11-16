@@ -136,3 +136,9 @@ class BaseModel(pl.LightningModule):
         (batch_size * num_options, seq_len, vocab_size)
         """
         raise NotImplementedError
+
+    def load_non_pl_checkpoint(self, checkpoint_path: str):
+        """
+        Optional method to load a non-PL checkpoint
+        """
+        raise NotImplementedError
