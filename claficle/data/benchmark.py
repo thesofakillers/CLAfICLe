@@ -151,6 +151,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 batch_size=self.cfg.batch_size,
                 sampler=SequentialSampler(dataset),
                 collate_fn=self.collate_fn,
+                num_workers=self.cfg.num_workers,
             )
             for dataset in self._processed_datasets
         ]
