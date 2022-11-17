@@ -33,7 +33,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.raw_save_path: str = os.path.join(self.cfg.data_dir, "raw")
         self._metadata = {"lang": self.lang, "datasets": []}
         self._pre_collate_fn: Callable[
-            [List[Dict]], List[Dict]
+            ..., List[Dict]
         ] = lambda batch: batch  # default no-op (can be set)
         self.is_setup = False
 
@@ -85,7 +85,10 @@ class BenchmarkDataModule(pl.LightningDataModule):
         where B is batch size, O is number of options, S is max sequence length in B
         """
         # apply any pre-collation processing first
-        proc_batch: List[Dict] = self._pre_collate_fn(batch, src_lang=self.lang)
+        pre_collate_kwargs = {
+            "src_lang": self.lang,
+        }
+        proc_batch: List[Dict] = self._pre_collate_fn(batch=batch, **pre_collate_kwargs)
 
         # batch encode the inputs
         input_encodings = self.tokenizer(
