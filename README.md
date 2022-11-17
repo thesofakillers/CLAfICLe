@@ -41,7 +41,7 @@ We provide the checkpoints for the models used in our paper. These can be
 downloaded using the `claficle/run/checkpoints.py` script.
 
 The above script downloads all checkpoints except for the one necessary for our
-baseline sandwhich model, which wraps an English `hr_to_lr` MetaICL model with a
+baseline sandwich model, which wraps an English `hr_to_lr` MetaICL model with a
 translation API. For this checkpoint, please refer to the instructions on the
 [MetaICL repo](https://github.com/facebookresearch/MetaICL) for downloading
 their `metaicl` model in the `hr_to_lr` setting. Once downloaded, rename this to
