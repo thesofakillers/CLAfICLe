@@ -12,9 +12,26 @@ from claficle.models.base import BaseModel
 translator = Translator()
 
 
-def translate(text: str, src_lang: str, dest_lang: str) -> str:
-    """Translates a piece of text"""
-    return translator.translate(text, src=src_lang, dest=dest_lang).text
+def translate_batch(texts: List[str], src_lang: str, dest_lang: str) -> List[str]:
+    """Translate a batch of strings"""
+    res = translator.translate(texts, src=src_lang, dest=dest_lang)
+    return [trans.text for trans in res]
+
+
+def translate_single_text(
+    text: str, src_lang: str, dest_lang: str, separator: str
+) -> str:
+    """Translate a single string. Will chunk string if too long"""
+    if len(text) > 4000:
+        chunks = text.split(separator * 3)
+        print(len(chunks))
+        lens = [len(chunk) for chunk in chunks]
+        print(lens)
+        trans_chunks = translate_batch(chunks, src_lang, dest_lang)
+        text = (separator * 3).join(trans_chunks)
+    else:
+        text = translator.translate(text, src=src_lang, dest=dest_lang)
+    return text
 
 
 class Sandwich(BaseModel):
@@ -27,33 +44,29 @@ class Sandwich(BaseModel):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    @staticmethod
     def run_causal_model(self, input_ids, attention_mask):
         return self.lm(input_ids=input_ids, attention_mask=attention_mask)
 
     @staticmethod
     def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
         """Translates text from `src_lang` to `dest_lang` language"""
-        default_kwargs = {
-            "src_lang": "en",
-            "dest_lang": "en",
-        }
+        default_kwargs = {"src_lang": "en", "dest_lang": "en", "separator": "\n"}
         kwargs = {**default_kwargs, **kwargs}
-        src_lang, dest_lang = kwargs["src_lang"], kwargs["dest_lang"]
+        src_lang, dest_lang, separator = (
+            kwargs["src_lang"],
+            kwargs["dest_lang"],
+            kwargs["separator"],
+        )
         if src_lang == dest_lang:
             return batch
+        inputs = []
         for item in batch:
-            item["input"] = translate(
-                item["input"], src_lang=src_lang, dest_lang=dest_lang
+            item["input"] = translate_single_text(
+                item["input"], src_lang, dest_lang, separator
             )
-            item["options"] = [
-                translate(
-                    str(option),
-                    src_lang=src_lang,
-                    dest_lang=dest_lang,
-                )
-                for option in item["options"]
-            ]
+            inputs.append(item)
+            item["options"] = translate_batch(item["options"], src_lang, dest_lang)
+
         return batch
 
     def load_non_pl_checkpoint(self, checkpoint_path: Optional[str] = None):
