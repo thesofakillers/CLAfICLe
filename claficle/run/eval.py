@@ -48,7 +48,12 @@ def main(cfg: DictConfig):
         benchmark.set_pre_collate_fn(ModelClass.pre_collate)
 
         print(f"Evaluating in {lang}...")
-        trainer.test(model, datamodule=benchmark, logger=logger)
+        trainer.test(
+            model,
+            datamodule=benchmark,
+            logger=logger,
+            enable_progress_bar=cfg.progress_bar,
+        )
     print("Done.")
 
 
