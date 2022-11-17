@@ -58,6 +58,7 @@ their `metaicl` model in the `hr_to_lr` setting. Once downloaded, rename this to
     │   └── raw/           <- The original, immutable data dump.
     ├── checkpoints/       <- Trained and serialized models.
     ├── notebooks/         <- Jupyter notebooks.
+    ├── slurm/             <- Slurm scripts
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     ├── pyproject.toml     <- project metadata, handled by poetry.
     ├── poetry.lock        <- resolving and locking dependencies, handled by poetry.
