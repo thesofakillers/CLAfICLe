@@ -4,6 +4,7 @@ notebooks/sandbox.ipynb
 /data/
 /checkpoints/
 /logs/
+/slurm/outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
