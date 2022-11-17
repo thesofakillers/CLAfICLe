@@ -24,9 +24,6 @@ def translate_single_text(
     """Translate a single string. Will chunk string if too long"""
     if len(text) > 4000:
         chunks = text.split(separator * 3)
-        print(len(chunks))
-        lens = [len(chunk) for chunk in chunks]
-        print(lens)
         trans_chunks = translate_batch(chunks, src_lang, dest_lang)
         text = (separator * 3).join(trans_chunks)
     else:
