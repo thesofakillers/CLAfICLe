@@ -1,0 +1,19 @@
+
+#!/bin/bash
+
+#SBATCH --partition=gpu_titanrtx
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=SW_EVAL
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --time=04:00:00
+#SBATCH --mem=32000M
+#SBATCH --output=slurm/outputs/sandwich_eval_%A.out
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+srun python -u claficle/run/eval.py model=sandwich
