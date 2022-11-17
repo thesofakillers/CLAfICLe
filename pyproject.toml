@@ -9,10 +9,11 @@ license = "MIT"
 python = "^3.8"
 datasets = "^2.5"
 transformers = "^4.21.1"
-pytorch-lightning = "^1.7.0"
+pytorch-lightning = "~1.7.0"
 hydra-core = "^1.2.0"
 torch = "~1.12.1"
 googletrans = "3.1.0a0"
+termcolor = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.4.3"
