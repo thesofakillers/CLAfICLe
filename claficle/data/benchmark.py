@@ -25,6 +25,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._pre_collate_fn: Callable[
             [List[Dict]], List[Dict]
         ] = lambda batch: batch  # default no-op (can be set)
+        self.is_setup = False
         print("Note: run set_tokenizer(tokenizer) before asking for a dataloader")
         print(
             "PS: you may also wish to run set_pre_collate_fn(fn) "
@@ -33,6 +34,8 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         """takes care of downloading data"""
+        if self.is_setup:
+            return
         print("Loading datasets...")
         # make use of multithreading to speed up by downloading in parallel
         thread_pool = ThreadPool(cpu_count())
@@ -42,6 +45,8 @@ class BenchmarkDataModule(pl.LightningDataModule):
         """
         processes each dataset, obtaining test split and relevant metric(s)
         """
+        if self.is_setup:
+            return
         print("Processing datasets...")
         self._processed_datasets = []
         for dataset_name in self.cfg.dataset_names:
@@ -57,6 +62,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 )
                 self._processed_datasets.append(test_dataset)
         print("Done.")
+        self.is_setup = True
 
     def get_metadata(self):
         return self._metadata
