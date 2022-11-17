@@ -31,7 +31,9 @@ class Sandwich(BaseModel):
     def pre_collate(
         self, batch: List[Dict], src_lang: str, dest_lang: str = "en"
     ) -> List[Dict]:
-        """Translates text from `bread` to `fill` language"""
+        """Translates text from `src_lang` to `dest_lang` language"""
+        if src_lang == dest_lang:
+            return batch
         for item in batch:
             item["input"] = self.translate(
                 item["input"], src_lang=src_lang, dest_lang=dest_lang
