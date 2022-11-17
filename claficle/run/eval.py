@@ -49,7 +49,10 @@ def main(cfg: DictConfig):
             name=f"{cfg.model.name}_{lang}",
         )
         trainer = pl.Trainer(
-            logger=logger, enable_progress_bar=cfg.trainer.progress_bar
+            logger=logger,
+            enable_progress_bar=cfg.trainer.progress_bar,
+            accelerator=cfg.trainer.accelerator,
+            devices=cfg.trainer.devices,
         )
         print(f"Evaluating in {lang}...")
         trainer.test(model, datamodule=benchmark)
