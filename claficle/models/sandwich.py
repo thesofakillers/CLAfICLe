@@ -9,6 +9,13 @@ import torch
 
 from claficle.models.base import BaseModel
 
+translator = Translator()
+
+
+def translate(text: str, src_lang: str, dest_lang: str) -> str:
+    """Translates a piece of text"""
+    return translator.translate(text, src=src_lang, dest=dest_lang).text
+
 
 class Sandwich(BaseModel):
 
@@ -19,27 +26,23 @@ class Sandwich(BaseModel):
 
     def __init__(self, config: DictConfig):
         super().__init__(config)
-        self._translator = Translator()
 
-    def translate(self, text: str, src_lang: str, dest_lang: str) -> str:
-        """Translates a piece of text"""
-        return self._translator.translate(text, src=src_lang, dest=dest_lang).text
-
+    @staticmethod
     def run_causal_model(self, input_ids, attention_mask):
         return self.lm(input_ids=input_ids, attention_mask=attention_mask)
 
-    def pre_collate(
-        self, batch: List[Dict], src_lang: str, dest_lang: str = "en"
-    ) -> List[Dict]:
+    @staticmethod
+    def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
         """Translates text from `src_lang` to `dest_lang` language"""
+        src_lang, dest_lang = kwargs["src_lang"], kwargs["dest_lang"]
         if src_lang == dest_lang:
             return batch
         for item in batch:
-            item["input"] = self.translate(
+            item["input"] = translate(
                 item["input"], src_lang=src_lang, dest_lang=dest_lang
             )
             item["options"] = [
-                self.translate(
+                translate(
                     str(option),
                     src_lang=src_lang,
                     dest_lang=dest_lang,
