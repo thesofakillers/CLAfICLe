@@ -1,9 +1,9 @@
 """Sandwich model: lang -> english -> lang"""
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from googletrans import Translator
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 from transformers import AutoModelForCausalLM
 import torch
 
@@ -46,14 +46,18 @@ class Sandwich(BaseModel):
             ]
         return batch
 
-    def load_non_pl_checkpoint(self, checkpoint_path: str):
-        state_dict = torch.load(checkpoint_path)
+    def load_non_pl_checkpoint(self, checkpoint_path: Optional[str] = None):
+        if checkpoint_path is not None:
+            state_dict = torch.load(checkpoint_path)
+        else:
+            state_dict = None
+
         self.lm = AutoModelForCausalLM.from_pretrained(
             self.hparams.causalLM_variant, state_dict=state_dict
         )
 
 
-@hydra.main(version_base=None, config_path="../conf/model", config_name="sandwhich")
+@hydra.main(version_base=None, config_path="../conf/model", config_name="sandwich")
 def main(cfg: DictConfig):
     # testing
     print(cfg)
