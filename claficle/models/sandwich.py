@@ -34,6 +34,11 @@ class Sandwich(BaseModel):
     @staticmethod
     def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
         """Translates text from `src_lang` to `dest_lang` language"""
+        default_kwargs = {
+            "src_lang": "en",
+            "dest_lang": "en",
+        }
+        kwargs = {**default_kwargs, **kwargs}
         src_lang, dest_lang = kwargs["src_lang"], kwargs["dest_lang"]
         if src_lang == dest_lang:
             return batch
