@@ -16,6 +16,16 @@ from claficle.data.process import process_dataset
 
 
 class BenchmarkDataModule(pl.LightningDataModule):
+    """
+    PL DataModule responsible for dataloaders for various datasets used
+    for our multitask benchmarking.
+
+    Note: run `set_tokenizer(tokenizer)` before asking for a dataloader
+
+    PS: you may also wish to run `set_pre_collate_fn(fn)`
+    to apply any pre-collation processing
+    """
+
     def __init__(self, config: DictConfig, lang: str):
         super().__init__()
         self.cfg = config
@@ -26,11 +36,6 @@ class BenchmarkDataModule(pl.LightningDataModule):
             [List[Dict]], List[Dict]
         ] = lambda batch: batch  # default no-op (can be set)
         self.is_setup = False
-        print("Note: run set_tokenizer(tokenizer) before asking for a dataloader")
-        print(
-            "PS: you may also wish to run set_pre_collate_fn(fn) "
-            "to apply any pre-collation processing"
-        )
 
     def prepare_data(self):
         """takes care of downloading data"""
