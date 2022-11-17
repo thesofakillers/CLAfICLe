@@ -28,32 +28,31 @@ def main(cfg: DictConfig):
     assert any(lang_flags.values()), "At least one of en, de, fr must be True"
     for lang, flag in lang_flags.items():
         if flag is True:
-            benchmark = BenchmarkDataModule(config=cfg.benchmark, lang=lang)
-            bmark_by_lang[lang] = benchmark
-    trainer = pl.Trainer(cfg.trainer)
+            print(f"Setting up data for evaluation in {lang}...")
+            bmark_by_lang[lang] = BenchmarkDataModule(config=cfg.benchmark, lang=lang)
+            bmark_by_lang[lang].prepare_data()
+            bmark_by_lang[lang].setup()
     for lang in langs:
         if lang in bmark_by_lang:
-            print(f"Setting up data for evaluation in {lang}...")
             benchmark = bmark_by_lang[lang]
         else:
             continue
         # so that the model knows names and metrics of dataloaders before testing
-        log_save_dir = os.path.join(cfg.log_dir, cfg.model.name, lang)
-        logger = pl.loggers.TensorBoardLogger(
-            save_dir=log_save_dir,
-            name=f"{cfg.model.name}_{lang}",
-        )
         model.set_benchmark_metadata(benchmark.get_metadata())
         benchmark.set_tokenizer(model.tokenizer)
         benchmark.set_pre_collate_fn(ModelClass.pre_collate)
 
-        print(f"Evaluating in {lang}...")
-        trainer.test(
-            model,
-            datamodule=benchmark,
-            logger=logger,
-            enable_progress_bar=cfg.progress_bar,
+        # set up pl trainer (tester)
+        log_save_dir = os.path.join(cfg.trainer.log_dir, cfg.model.name, lang)
+        logger = pl.loggers.TensorBoardLogger(
+            save_dir=log_save_dir,
+            name=f"{cfg.model.name}_{lang}",
         )
+        trainer = pl.Trainer(
+            logger=logger, enable_progress_bar=cfg.trainer.progress_bar
+        )
+        print(f"Evaluating in {lang}...")
+        trainer.test(model, datamodule=benchmark)
     print("Done.")
 
 

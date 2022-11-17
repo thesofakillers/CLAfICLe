@@ -1,1 +1,3 @@
 # trainer configuration for eval run
+progress_bar: False
+log_dir: "./logs/"

@@ -85,7 +85,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         where B is batch size, O is number of options, S is max sequence length in B
         """
         # apply any pre-collation processing first
-        proc_batch: List[Dict] = self._pre_collate_fn(batch, src_lang=lang)
+        proc_batch: List[Dict] = self._pre_collate_fn(batch, src_lang=self.lang)
 
         # batch encode the inputs
         input_encodings = self.tokenizer(

@@ -12,8 +12,6 @@ en: true
 de: true
 fr: true
 seed: 42
-progress_bar: False
-log_dir: "./logs/"
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
 hydra:
