@@ -15,6 +15,10 @@ import datasets
 from claficle.data.process import process_dataset
 
 
+def default_collate_fn(batch) -> List[Dict]:
+    return batch
+
+
 class BenchmarkDataModule(pl.LightningDataModule):
     """
     PL DataModule responsible for dataloaders for various datasets used
@@ -34,7 +38,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._metadata = {"lang": self.lang, "datasets": []}
         self._pre_collate_fn: Callable[
             ..., List[Dict]
-        ] = lambda batch: batch  # default no-op (can be set)
+        ] = default_collate_fn  # default no-op (can be set)
         self.is_setup = False
 
     def prepare_data(self):
@@ -85,9 +89,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         where B is batch size, O is number of options, S is max sequence length in B
         """
         # apply any pre-collation processing first
-        pre_collate_kwargs = {
-            "src_lang": self.lang,
-        }
+        pre_collate_kwargs = {"src_lang": self.lang, "separator": self.cfg.separator}
         proc_batch: List[Dict] = self._pre_collate_fn(batch=batch, **pre_collate_kwargs)
 
         # batch encode the inputs
