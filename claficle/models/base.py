@@ -101,7 +101,7 @@ class BaseModel(pl.LightningModule):
         # (batch_size * num_options, seq_len, vocab_size)
         output_logits: Tensor = self.run_causal_model(
             input_ids=reshaped_concats, attention_mask=reshaped_attention_mask
-        )
+        ).logits
 
         # preds where conditioned NLL is lowest
         losses = self.compute_loss(output_logits, reshaped_concats, target_mask)
