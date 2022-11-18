@@ -39,3 +39,9 @@ dataset_names: # list of huggingface dataset;split names
   - amazon_reviews_multi;en
   - amazon_reviews_multi;de
   - amazon_reviews_multi;fr
+
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
+  output_subdir: null
