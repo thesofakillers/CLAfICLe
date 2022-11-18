@@ -3,6 +3,7 @@ from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool  # multithreading for IO operations
 from multiprocessing import cpu_count
 from typing import Callable, List, Optional, Dict, Tuple
+from pprint import pprint
 
 from torch.utils.data import DataLoader, SequentialSampler
 import torch
@@ -11,6 +12,7 @@ from torch.nn.utils.rnn import pad_sequence
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 import datasets
+import hydra
 
 from claficle.data.process import process_dataset
 
@@ -202,18 +204,17 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.max_seq_length = tokenizer.model_max_length
 
 
-if __name__ == "__main__":
-    # testing
-    from pprint import pprint
-    import yaml
-    from omegaconf import OmegaConf
-
-    with open("claficle/conf/benchmark/eval.yaml", "r") as f:
-        config: dict = yaml.safe_load(f)
-    cfg: DictConfig = OmegaConf.create(config)
+@hydra.main(version_base=None, config_path="../conf/benchmark", config_name="eval")
+def main(cfg: DictConfig):
+    """downloads the data for benchmark for each of the available languages"""
+    cfg.data_dir = "data/"
 
     for lang in ["en", "fr", "de"]:
         benchmark = BenchmarkDataModule(cfg, lang)
         benchmark.prepare_data()
         benchmark.setup()
         pprint(benchmark.get_metadata())
+
+
+if __name__ == "__main__":
+    main()
