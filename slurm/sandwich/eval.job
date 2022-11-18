@@ -19,7 +19,8 @@ source activate claficle
 datadir=$TMPDIR/gstarace/claficle/data
 
 # set cache directory in scratch dir
-export HF_DATASETS_CACHE="$TMPDIR/gstarace/claficle/cache"
+export HF_DATASETS_CACHE="$TMPDIR/gstarace/.cache/huggingface/datasets"
+export TRANSFORMERS_CACHE="$TMPDIR/gstarace/.cache/huggingface/transformers"
 
 # will only create this directory if it doesn't exist
 mkdir -p $datadir
