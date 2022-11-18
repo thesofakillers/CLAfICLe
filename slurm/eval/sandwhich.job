@@ -18,6 +18,9 @@ source activate claficle
 # variable for datadir. Need to use scratch dir
 datadir=$TMPDIR/gstarace/claficle/data
 
+# set cache directory in scratch dir
+export HF_DATASETS_CACHE="$TMPDIR/gstarace/claficle/cache"
+
 # will only create this directory if it doesn't exist
 mkdir -p $datadir
 
