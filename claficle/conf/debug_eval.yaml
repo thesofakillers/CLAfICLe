@@ -1,0 +1,20 @@
+# Config for running evaluation
+defaults:
+  - _self_
+  - benchmark: debug
+  - trainer: debug
+  - model: debug
+  # https://stackoverflow.com/a/70777327/9889508
+  - override hydra/hydra_logging: none
+  - override hydra/job_logging: none
+
+en: false
+de: false
+fr: true
+seed: 42
+
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
+  output_subdir: null
