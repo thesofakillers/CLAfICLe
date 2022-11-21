@@ -3,7 +3,7 @@ notebooks/sandbox.ipynb
 .hydra
 /data/
 /checkpoints/
-/logs/
+/*logs/
 /slurm/outputs/
 
 # Byte-compiled / optimized / DLL files
