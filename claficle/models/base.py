@@ -1,4 +1,5 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
@@ -20,6 +21,7 @@ class BaseModel(pl.LightningModule):
             "f1": TF.f1_score,
             "accuracy": TF.accuracy,
         }
+        self.curr_dataloader_name: Optional[str] = None
 
     def test_step(
         self,
@@ -45,7 +47,18 @@ class BaseModel(pl.LightningModule):
         dataloader_config = self.benchmark_metadata["datasets"][dataloader_idx]
         for metric in dataloader_config["metrics"]:
             score = self.metric_to_fn[metric](preds, labels)
-            self.log(f"{dataloader_config['name']}/test/{metric}", score)
+            self.log(
+                f"{dataloader_config['name']}/test/{metric}",
+                score,
+                add_dataloader_idx=False,
+            )
+
+    def on_test_batch_start(self, batch, batch_idx, dataloader_idx):
+        dataloader_config = self.benchmark_metadata["datasets"][dataloader_idx]
+        dataloader_name = dataloader_config["name"]
+        if self.curr_dataloader_name != dataloader_name:
+            self.curr_dataloader_name = dataloader_name
+            print(f"Evaluating {dataloader_name}...")
 
     def compute_loss(self, raw_logits, token_inputs, target_mask):
         """
