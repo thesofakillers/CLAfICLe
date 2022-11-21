@@ -52,6 +52,8 @@ class BaseModel(pl.LightningModule):
         raw_logits: (batch_size * num_options, seq_len, vocab_size)
         token_inputs: (batch_size * num_options, seq_len)
         target_mask: (batch_size, num_options, seq_len)
+
+        returns: loss, of shape (batch_size, num_options)
         """
         # remove last element from logits and first element from inputs to get targets
         # see https://github.com/facebookresearch/MetaICL/issues/9
@@ -105,7 +107,7 @@ class BaseModel(pl.LightningModule):
 
         # preds where conditioned NLL is lowest
         losses = self.compute_loss(output_logits, reshaped_concats, target_mask)
-        preds = losses.sum(dim=-1).argmin(dim=-1)
+        preds = losses.argmin(dim=-1)
 
         return preds, losses
 
