@@ -51,6 +51,7 @@ class BaseModel(pl.LightningModule):
                 f"{dataloader_config['name']}/test/{metric}",
                 score,
                 add_dataloader_idx=False,
+                on_step=True,
             )
 
     def on_test_batch_start(self, batch, batch_idx, dataloader_idx):
