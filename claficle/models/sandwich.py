@@ -56,12 +56,10 @@ class Sandwich(BaseModel):
         )
         if src_lang == dest_lang:
             return batch
-        inputs = []
         for item in batch:
             item["input"] = translate_single_text(
                 item["input"], src_lang, dest_lang, separator
             )
-            inputs.append(item)
             item["options"] = translate_batch(item["options"], src_lang, dest_lang)
 
         return batch
