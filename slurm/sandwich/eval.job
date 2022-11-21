@@ -5,7 +5,7 @@
 #SBATCH --job-name=SW_EVAL
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=3
-#SBATCH --time=06:00:00
+#SBATCH --time=24:00:00
 #SBATCH --mem=32000M
 #SBATCH --output=slurm/outputs/sandwich_eval_%A.out
 
