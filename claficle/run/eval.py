@@ -46,7 +46,7 @@ def main(cfg: DictConfig):
         log_save_dir = os.path.join(cfg.trainer.log_dir, cfg.model.name, lang)
         logger = pl.loggers.TensorBoardLogger(
             save_dir=log_save_dir,
-            name=f"{cfg.model.name}_{lang}",
+            name="eval",
         )
         trainer = pl.Trainer(
             logger=logger,
