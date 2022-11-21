@@ -22,7 +22,10 @@ class BaseModel(pl.LightningModule):
         }
 
     def test_step(
-        self, batch: Tuple[Tensor, Tensor, Tensor], batch_idx: int, dataloader_idx: int
+        self,
+        batch: Tuple[Tensor, Tensor, Tensor],
+        batch_idx: int,
+        dataloader_idx: int = 0,
     ):
         """
         Performs inference, computes relevant metrics and logs
