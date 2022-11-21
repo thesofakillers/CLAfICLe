@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_titanrtx
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=SW_DEBUG
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --time=02:00:00
+#SBATCH --mem=32000M
+#SBATCH --output=slurm/outputs/sandwich_debug_%A.out
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+# copy the data to the scratch dir $TMPDIR for quicker access
+cp -r $HOME/repos/claficle/data $TMPDIR
+
+srun python -u claficle/run/eval.py --config-name=debug_eval benchmark.data_dir=$TMPDIR
