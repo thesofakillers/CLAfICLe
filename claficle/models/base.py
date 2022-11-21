@@ -52,6 +52,7 @@ class BaseModel(pl.LightningModule):
                 score,
                 add_dataloader_idx=False,
                 on_step=True,
+                on_epoch=True,
             )
 
     def on_test_batch_start(self, batch, batch_idx, dataloader_idx):
