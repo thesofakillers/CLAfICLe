@@ -2,7 +2,7 @@ name: "sandwich"
 causalLM_variant: "gpt2-large"
 checkpoint_path: "checkpoints/metaicl.pt"
 pl_checkpoint: False
-  #
+
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
 hydra:
   run:
