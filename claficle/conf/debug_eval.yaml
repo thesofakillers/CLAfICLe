@@ -8,9 +8,9 @@ defaults:
   - override hydra/hydra_logging: none
   - override hydra/job_logging: none
 
-en: false
+en: true
 de: false
-fr: true
+fr: false
 seed: 42
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
