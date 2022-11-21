@@ -57,7 +57,7 @@ class BaseModel(pl.LightningModule):
         # see https://github.com/facebookresearch/MetaICL/issues/9
         raw_logits = raw_logits[:, :-1, :]
         token_inputs = token_inputs[:, 1:]
-        target_mask = target_mask[:, 1:]
+        target_mask = target_mask[:, :, 1:]
 
         # flatten further, for cross_entropy
         flattened_logits = raw_logits.reshape(-1, raw_logits.size(-1))
