@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Tuple, List
+from typing import Any, Callable, Dict, Tuple, List, Optional
 
 from omegaconf import DictConfig
 from datasets.arrow_dataset import Dataset
@@ -11,7 +11,14 @@ import claficle.data.process.utils as utils
 
 from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, amazon
 
-helper_by_name: Dict[str, Dict] = {
+
+def translate(example, **kwargs):
+    # TODO
+    pass
+
+
+# maps dataset name to helper class
+HELPER_BY_NAME: Dict[str, Dict] = {
     "xglue;qam": xglue.QAMHelper,
     "xglue;qadsm": xglue.QADSMHelper,
     "xglue;nc": xglue.NCHelper,
@@ -36,6 +43,11 @@ helper_by_name: Dict[str, Dict] = {
     "amazon_reviews_multi;fr": amazon.AmazonHelper,
 }
 
+EXTRA_FN_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
+    None: None,
+    "translate": translate,
+}
+
 
 def process_dataset(
     processed_test_split: Dataset, lang: str, cfg: DictConfig, dataset_name: str
@@ -47,7 +59,7 @@ def process_dataset(
     Adds options column to track options
     Returns processed test dataset and relevant metrics
     """
-    Helper = helper_by_name[dataset_name]
+    Helper = HELPER_BY_NAME[dataset_name]
 
     if Helper.is_classification:
         metrics = ["f1"]
@@ -58,6 +70,7 @@ def process_dataset(
     if not language_available:
         return None, [], collection_name
 
+    extra_proc_fn: Optional[Callable] = EXTRA_FN_BY_NAME[cfg.extra_proc_fn]
     dataset_path = os.path.join(cfg.data_dir, "processed", collection_name, lang)
     if os.path.exists(dataset_path):
         processed_test_split = datasets.load_from_disk(dataset_path)
@@ -87,6 +100,11 @@ def process_dataset(
             "optioner": Helper.get_options,
         },
     )
+    # additional processing if needed
+    if extra_proc_fn is not None:
+        processed_test_split = processed_test_split.map(
+            extra_proc_fn, fn_kwarfs={"src_lang": lang, "dest_lang": "en"}
+        )
     # create save directory if it doesn't exist, and save to disk
     Path(dataset_path).mkdir(parents=True, exist_ok=True)
     processed_test_split.save_to_disk(dataset_path)
