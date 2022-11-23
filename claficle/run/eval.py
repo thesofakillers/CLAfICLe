@@ -21,6 +21,9 @@ def main(cfg: DictConfig):
     else:
         model = ModelClass(cfg.model)
         model.load_non_pl_checkpoint(cfg.model.checkpoint_path)
+    # get possible additional preprocessing from model and set in benchmark cfg
+    cfg.benchmark.extra_proc_fn = model.extra_proc_fn
+
     # separate benchmarks by language
     bmark_by_lang = {}
     langs = ["en", "de", "fr"]

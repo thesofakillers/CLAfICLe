@@ -4,7 +4,7 @@ k: 16 # number of examples shown
 separator: "\n" # what to separate each example with
 data_dir: "data/" # where to store the data
 num_workers: 3 # num_workers for dataloaders
-extra_proc_fn: null  # name of additional processing func, such as `translate`
+extra_proc_fn: null # additional processing func, such as `translate`; override
 dataset_names: # list of huggingface dataset;split names
   # XGLUE
   - xglue;qam
