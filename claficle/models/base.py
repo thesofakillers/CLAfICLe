@@ -120,13 +120,11 @@ class BaseModel(pl.LightningModule):
         reshaped_concats = concats.view(-1, concats.size(-1))
         reshaped_attention_mask = attention_mask.view(-1, attention_mask.size(-1))
 
-        print("run forward")
         # (batch_size * num_options, seq_len, vocab_size)
         output_logits: Tensor = self.run_causal_model(
             input_ids=reshaped_concats, attention_mask=reshaped_attention_mask
         ).logits
 
-        print("run loss computation")
         # preds where conditioned NLL is lowest
         losses = self.compute_loss(output_logits, reshaped_concats, target_mask)
 
