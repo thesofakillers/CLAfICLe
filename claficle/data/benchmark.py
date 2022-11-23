@@ -138,12 +138,18 @@ class BenchmarkDataModule(pl.LightningDataModule):
             batch_tok_type_ids.append(tok_type_ids)
 
         # here we pad across the batch
-        batch_concats = pad_sequence(
-            batch_concats, batch_first=True, padding_value=self.pad_token_id
-        ).permute(0, 2, 1)
-        batch_tok_type_ids = pad_sequence(
-            batch_tok_type_ids, batch_first=True, padding_value=2
-        ).permute(0, 2, 1)
+        batch_concats = (
+            pad_sequence(
+                batch_concats, batch_first=True, padding_value=self.pad_token_id
+            )
+            .permute(0, 2, 1)
+            .contiguous()
+        )
+        batch_tok_type_ids = (
+            pad_sequence(batch_tok_type_ids, batch_first=True, padding_value=2)
+            .permute(0, 2, 1)
+            .contiguous()
+        )
 
         return batch_concats, batch_tok_type_ids, torch.LongTensor(batch_labels)
 
@@ -156,6 +162,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
                 sampler=SequentialSampler(dataset),
                 collate_fn=self.collate_fn,
                 num_workers=self.cfg.num_workers,
+                pin_memory=True,
             )
             for dataset in self._processed_datasets
         ]
