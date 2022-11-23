@@ -10,18 +10,28 @@ import numpy as np
 import claficle.data.process.utils as utils
 
 from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, amazon
-from claficle.data.process.utils import translate_bulk, translate_single_text
+from claficle.data.process.utils import translate_bulk
 
 
-def translate(example, src_lang: str, dest_lang: str, separator: str):
+def translate_options(options: List, fn_kwargs: Dict):
+    src_lang, dest_lang = fn_kwargs["src_lang"], fn_kwargs["dest_lang"]
+    return translate_bulk(options, src_lang, dest_lang)
+
+
+def translate(
+    batch, src_lang: str, dest_lang: str, separator: str, processed_options=None
+):
     if src_lang == dest_lang:
-        return example
-    example["input"] = translate_single_text(
-        example["input"], src_lang, dest_lang, separator
-    )
-    example["options"] = translate_bulk(example["options"], src_lang, dest_lang)
+        return batch
+    batch["input"] = translate_bulk(batch["input"], src_lang, dest_lang)
+    if processed_options is not None:
+        batch["options"] = [processed_options for _x in batch["input"]]
+    else:
+        batch["options"] = [
+            translate_bulk(options, src_lang, dest_lang) for options in batch["options"]
+        ]
 
-    return example
+    return batch
 
 
 # maps dataset name to helper class
@@ -55,6 +65,11 @@ EXTRA_FN_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
     "translate": translate,
 }
 
+EXTRA_FN_OPS_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
+    None: None,
+    "translate": translate_options,
+}
+
 
 def process_dataset(
     processed_test_split: Dataset, lang: str, cfg: DictConfig, dataset_name: str
@@ -78,6 +93,7 @@ def process_dataset(
         return None, [], collection_name
 
     extra_proc_fn: Optional[Callable] = EXTRA_FN_BY_NAME[cfg.extra_proc_fn]
+    extra_proc_fn_options: Optional[Callable] = EXTRA_FN_OPS_BY_NAME[cfg.extra_proc_fn]
     dataset_path = os.path.join(
         cfg.data_dir,
         "processed",
@@ -115,9 +131,24 @@ def process_dataset(
     )
     # additional processing if needed
     if extra_proc_fn is not None:
+        # if we're doing classification, options are same for every example
+        if Helper.is_classification:
+            processed_options = extra_proc_fn_options(
+                processed_test_split[0]["options"],
+                fn_kwargs={"src_lang": lang, "dest_lang": "en"},
+            )
+        else:
+            processed_options = None
         processed_test_split = processed_test_split.map(
             extra_proc_fn,
-            fn_kwargs={"src_lang": lang, "dest_lang": "en", "separator": cfg.separator},
+            fn_kwargs={
+                "src_lang": lang,
+                "dest_lang": "en",
+                "separator": cfg.separator,
+                "processed_options": processed_options,
+            },
+            batched=True,
+            batch_size=cfg.batch_size,
         )
     # create save directory if it doesn't exist, and save to disk
     Path(dataset_path).mkdir(parents=True, exist_ok=True)
