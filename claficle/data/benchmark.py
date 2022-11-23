@@ -213,7 +213,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
 
 @hydra.main(version_base=None, config_path="../conf/benchmark", config_name="eval")
 def main(cfg: DictConfig):
-    """downloads the data for benchmark for each of the available languages"""
+    """downloads and processes the data for benchmark for each of the available languages"""
     cfg.data_dir = "data/"
 
     for lang in ["en", "fr", "de"]:
