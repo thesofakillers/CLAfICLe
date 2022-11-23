@@ -10,11 +10,18 @@ import numpy as np
 import claficle.data.process.utils as utils
 
 from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, amazon
+from claficle.data.process.utils import translate_bulk, translate_single_text
 
 
-def translate(example, **kwargs):
-    # TODO
-    pass
+def translate(example, src_lang: str, dest_lang: str, separator: str):
+    if src_lang == dest_lang:
+        return example
+    example["input"] = translate_single_text(
+        example["input"], src_lang, dest_lang, separator
+    )
+    example["options"] = translate_bulk(example["options"], src_lang, dest_lang)
+
+    return example
 
 
 # maps dataset name to helper class
@@ -71,7 +78,13 @@ def process_dataset(
         return None, [], collection_name
 
     extra_proc_fn: Optional[Callable] = EXTRA_FN_BY_NAME[cfg.extra_proc_fn]
-    dataset_path = os.path.join(cfg.data_dir, "processed", collection_name, lang)
+    dataset_path = os.path.join(
+        cfg.data_dir,
+        "processed",
+        collection_name,
+        cfg.extra_proc_fn if cfg.extra_proc_fn is not None else "",
+        lang,
+    )
     if os.path.exists(dataset_path):
         processed_test_split = datasets.load_from_disk(dataset_path)
         return processed_test_split, metrics, collection_name
@@ -103,7 +116,8 @@ def process_dataset(
     # additional processing if needed
     if extra_proc_fn is not None:
         processed_test_split = processed_test_split.map(
-            extra_proc_fn, fn_kwarfs={"src_lang": lang, "dest_lang": "en"}
+            extra_proc_fn,
+            fn_kwargs={"src_lang": lang, "dest_lang": "en", "separator": cfg.separator},
         )
     # create save directory if it doesn't exist, and save to disk
     Path(dataset_path).mkdir(parents=True, exist_ok=True)

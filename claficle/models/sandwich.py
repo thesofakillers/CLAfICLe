@@ -1,34 +1,13 @@
 """Sandwich model: lang -> english -> lang"""
 from typing import Dict, List, Optional
 
-from googletrans import Translator
 import hydra
 from omegaconf import DictConfig
 from transformers import AutoModelForCausalLM
 import torch
 
 from claficle.models.base import BaseModel
-
-translator = Translator()
-
-
-def translate_batch(texts: List[str], src_lang: str, dest_lang: str) -> List[str]:
-    """Translate a batch of strings"""
-    res = translator.translate(texts, src=src_lang, dest=dest_lang)
-    return [trans.text for trans in res]
-
-
-def translate_single_text(
-    text: str, src_lang: str, dest_lang: str, separator: str
-) -> str:
-    """Translate a single string. Will chunk string if too long"""
-    if len(text) > 4000:
-        chunks = text.split(separator * 3)
-        trans_chunks = translate_batch(chunks, src_lang, dest_lang)
-        text = (separator * 3).join(trans_chunks)
-    else:
-        text = translator.translate(text, src=src_lang, dest=dest_lang)
-    return text
+from claficle.data.process.utils import translate_bulk, translate_single_text
 
 
 class Sandwich(BaseModel):
@@ -60,7 +39,7 @@ class Sandwich(BaseModel):
             item["input"] = translate_single_text(
                 item["input"], src_lang, dest_lang, separator
             )
-            item["options"] = translate_batch(item["options"], src_lang, dest_lang)
+            item["options"] = translate_bulk(item["options"], src_lang, dest_lang)
 
         return batch
 
