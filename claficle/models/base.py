@@ -7,6 +7,8 @@ from torch import Tensor
 import torch.nn.functional as F
 import torchmetrics.functional as TF
 
+import torch
+
 
 class BaseModel(pl.LightningModule):
     # todo
@@ -38,7 +40,7 @@ class BaseModel(pl.LightningModule):
         dataloader_idx: int describing which dataloader is being used
             to be paired with self.metadata
         """
-
+        torch.set_grad_enabled(False)  # because I don't trust PL to do this
         # parse batch
         concats, tok_type_ids, labels = batch
 
@@ -79,16 +81,16 @@ class BaseModel(pl.LightningModule):
         token_inputs = token_inputs[:, 1:]
         target_mask = target_mask[:, :, 1:]
 
-        # flatten further, for cross_entropy
+        # flatten further, for cross_entropy; .view() cant be used because not contig
         flattened_logits = raw_logits.reshape(-1, raw_logits.size(-1))
         flattened_targets = token_inputs.reshape(-1)
 
         # compute loss
-        flattened_losses = F.cross_entropy(
+        flattened_losses = F.nll_loss(
             flattened_logits, flattened_targets, reduction="none"
         )
         # reshape back to (batch_size, num_options, seq_len-1)
-        losses = flattened_losses.reshape(*target_mask.shape[:-1], -1)
+        losses = flattened_losses.view(*target_mask.shape[:-1], -1)
 
         # apply target mask to loss to only consider neg log likelihood of concat options
         masked_losses = losses * target_mask
@@ -115,16 +117,19 @@ class BaseModel(pl.LightningModule):
         target_mask = (tok_type_ids == 1).long()
 
         # reshape for hf causal LM, new shape is (batch_size * num_options, seq_len)
-        reshaped_concats = concats.reshape(-1, concats.size(-1))
-        reshaped_attention_mask = attention_mask.reshape(-1, attention_mask.size(-1))
+        reshaped_concats = concats.view(-1, concats.size(-1))
+        reshaped_attention_mask = attention_mask.view(-1, attention_mask.size(-1))
 
+        print("run forward")
         # (batch_size * num_options, seq_len, vocab_size)
         output_logits: Tensor = self.run_causal_model(
             input_ids=reshaped_concats, attention_mask=reshaped_attention_mask
         ).logits
 
+        print("run loss computation")
         # preds where conditioned NLL is lowest
         losses = self.compute_loss(output_logits, reshaped_concats, target_mask)
+
         preds = losses.argmin(dim=-1)
 
         return preds, losses
