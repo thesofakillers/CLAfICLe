@@ -19,15 +19,19 @@ def translate_kshot(k_shot: str, fn_kwargs: Dict) -> str:
         fn_kwargs["dest_lang"],
         fn_kwargs["separator"],
     )
+    if src_lang == dest_lang:
+        return k_shot
+    k_shot = k_shot.strip()  # translate single text expects stripped string
     translated = translate_single_text(k_shot, src_lang, dest_lang, separator)
-    # if stripped, we need to add the separator back
-    if translated[-3:] != separator * 3:
-        translated += separator * 3
+    # since  we stripped, we need to add the final separator back
+    translated += separator * 3
     return translated
 
 
 def translate_options(options: List, fn_kwargs: Dict):
     src_lang, dest_lang = fn_kwargs["src_lang"], fn_kwargs["dest_lang"]
+    if src_lang == dest_lang:
+        return options
     return translate_bulk(options, src_lang, dest_lang)
 
 
