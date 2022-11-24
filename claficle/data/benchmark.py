@@ -62,16 +62,21 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self._processed_datasets = []
         for dataset_name in self.cfg.dataset_names:
             dataset = self._load_raw_dataset(dataset_name)
-            test_dataset, metrics, collection_name = process_dataset(
-                dataset, self.lang, self.cfg, dataset_name
-            )
-            # test_dataset is None if dataset is not available in language
-            if test_dataset is not None:
-                # map dataset idx to name & metrics, so to track in LightningModule
-                self._metadata["datasets"].append(
-                    {"name": collection_name, "metrics": metrics}
+            try:
+                test_dataset, metrics, collection_name = process_dataset(
+                    dataset, self.lang, self.cfg, dataset_name
                 )
-                self._processed_datasets.append(test_dataset)
+                # test_dataset is None if dataset is not available in language
+                if test_dataset is not None:
+                    # map dataset idx to name & metrics, so to track in LightningModule
+                    self._metadata["datasets"].append(
+                        {"name": collection_name, "metrics": metrics}
+                    )
+                    self._processed_datasets.append(test_dataset)
+            except Exception as e:
+                # skip to the next dataset if there's an error
+                print(f"Error processing dataset {dataset_name}: {e}")
+                continue
         print("Done.")
         self.is_setup = True
 
