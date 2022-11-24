@@ -13,19 +13,43 @@ from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, ama
 from claficle.data.process.utils import translate_bulk, translate_single_text
 
 
+def translate_kshot(k_shot: str, fn_kwargs: Dict) -> str:
+    src_lang, dest_lang, separator = (
+        fn_kwargs["src_lang"],
+        fn_kwargs["dest_lang"],
+        fn_kwargs["separator"],
+    )
+    translated = translate_single_text(k_shot, src_lang, dest_lang, separator)
+    # if stripped, we need to add the separator back
+    if translated[-3:] != separator * 3:
+        translated += separator * 3
+    return translated
+
+
 def translate_options(options: List, fn_kwargs: Dict):
     src_lang, dest_lang = fn_kwargs["src_lang"], fn_kwargs["dest_lang"]
     return translate_bulk(options, src_lang, dest_lang)
 
 
-def translate(
+def translate_batch(
     batch, src_lang: str, dest_lang: str, separator: str, processed_options=None
 ):
+    # no work necessary
     if src_lang == dest_lang:
         return batch
-    if len(batch) == 1:
-        batch["input"] = [translate_single_text(batch["input"][0], src_lang, dest_lang)]
-    batch["input"] = translate_bulk(batch["input"], src_lang, dest_lang)
+    # since we already translated the k-shot context, we only need to translate the input
+    split_batch: List[List[str]] = [x.split(separator * 3) for x in batch["input"]]
+    inputs = [batch_elems[-1] for batch_elems in split_batch]
+    # no need to translate if inputs are all ''
+    if all([x == "" for x in inputs]):
+        trans_inputs = inputs
+    else:
+        trans_inputs = translate_bulk(inputs, src_lang, dest_lang)
+    batch["input"] = [  # when done, we need to rejoin the k-shot context
+        (separator * 3).join([*batch_elems[:-1], x])
+        for batch_elems, x in zip(split_batch, trans_inputs)
+    ]
+    # options
     if processed_options is not None:
         batch["options"] = [processed_options for _x in batch["input"]]
     else:
@@ -64,12 +88,17 @@ HELPER_BY_NAME: Dict[str, Dict] = {
 
 EXTRA_FN_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
     None: None,
-    "translate": translate,
+    "translate": translate_batch,
 }
 
 EXTRA_FN_OPS_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
     None: None,
     "translate": translate_options,
+}
+
+EXTRA_FN_KSHOT_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
+    None: None,
+    "translate": translate_kshot,
 }
 
 
@@ -93,10 +122,14 @@ def process_dataset(
     collection_name, language_available = Helper.language_available(dataset_name, lang)
     if not language_available:
         return None, [], collection_name
+    print(f"Processing {collection_name}")
 
-    print(collection_name)
+    # extra proc fns
     extra_proc_fn: Optional[Callable] = EXTRA_FN_BY_NAME[cfg.extra_proc_fn]
     extra_proc_fn_options: Optional[Callable] = EXTRA_FN_OPS_BY_NAME[cfg.extra_proc_fn]
+    extra_proc_fn_kshot: Optional[Callable] = EXTRA_FN_KSHOT_BY_NAME[cfg.extra_proc_fn]
+
+    # where to save/load processed data
     dataset_path = os.path.join(
         cfg.data_dir,
         "processed",
@@ -104,24 +137,34 @@ def process_dataset(
         cfg.extra_proc_fn if cfg.extra_proc_fn is not None else "",
         lang,
     )
-    if os.path.exists(dataset_path):
+    if os.path.exists(dataset_path):  # no need to process again
         processed_test_split = datasets.load_from_disk(dataset_path)
         return processed_test_split, metrics, collection_name
 
+    # column renaming
     for source, target in Helper.rename_cols.items():
         processed_test_split = processed_test_split.rename_column(source, target)
+
+    # k-shot context handling
     k_shot_source = Helper.get_k_source(processed_test_split, lang)
     k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
     k_shot_string = utils.prepare_kshot_str(
         k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
     )
+    if extra_proc_fn_kshot is not None:  # additional k_shot processing if requested
+        k_shot_string = extra_proc_fn_kshot(
+            k_shot_string,
+            fn_kwargs={"src_lang": lang, "dest_lang": "en", "separator": cfg.separator},
+        )
 
+    # handling splits
     if Helper.k_from_test:
         test_indices = np.setdiff1d(np.arange(len(k_shot_source)), k_indices)
         test_split = k_shot_source.select(test_indices)
     else:
         test_split = Helper.get_test_split(processed_test_split, lang)
 
+    # finally, processing
     processed_test_split = test_split.map(
         utils.prepare_and_process,
         remove_columns=Helper.remove_cols,
@@ -132,6 +175,7 @@ def process_dataset(
             "optioner": Helper.get_options,
         },
     )
+
     # additional processing if needed
     if extra_proc_fn is not None:
         # if we're doing classification, options are same for every example
