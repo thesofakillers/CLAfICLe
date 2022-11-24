@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import Any, Callable, Dict, Tuple, List, Optional
+from googletrans.gtoken import time
 
 from omegaconf import DictConfig
 from datasets.arrow_dataset import Dataset
@@ -48,7 +49,16 @@ def translate_batch(
     if all([x == "" for x in inputs]):
         trans_inputs = inputs
     else:
-        trans_inputs = translate_bulk(inputs, src_lang, dest_lang)
+        trans_inputs = None
+        while trans_inputs is None:
+            try:
+                trans_inputs = translate_bulk(inputs, src_lang, dest_lang)
+            except Exception as e:
+                print("Error translating input, retrying in 2 seconds...")
+                print(inputs)
+                print(e)
+                time.sleep(2)
+                pass
     batch["input"] = [  # when done, we need to rejoin the k-shot context
         (separator * 3).join([*batch_elems[:-1], x])
         for batch_elems, x in zip(split_batch, trans_inputs)
@@ -57,10 +67,20 @@ def translate_batch(
     if processed_options is not None:
         batch["options"] = [processed_options for _x in batch["input"]]
     else:
-        batch["options"] = [
-            translate_bulk(options, src_lang, dest_lang) for options in batch["options"]
-        ]
-
+        trans_options = None
+        while trans_options is None:
+            try:
+                trans_options = [
+                    translate_bulk(options, src_lang, dest_lang)
+                    for options in batch["options"]
+                ]
+            except Exception as e:
+                print("Error translating options, retrying in 2 seconds...")
+                print(batch["options"])
+                print(e)
+                time.sleep(2)
+                pass
+        batch["options"] = trans_options
     return batch
 
 
