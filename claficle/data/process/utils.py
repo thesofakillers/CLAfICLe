@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Optional
 
 from datasets.arrow_dataset import Dataset
 import numpy as np
@@ -22,7 +22,7 @@ def translate_single_text(
         trans_chunks = translate_bulk(chunks, src_lang, dest_lang)
         text = (separator * 3).join(trans_chunks)
     else:
-        text = translator.translate(text, src=src_lang, dest=dest_lang)
+        text = translator.translate(text, src=src_lang, dest=dest_lang).text
     return text
 
 
@@ -52,12 +52,14 @@ def prepend_kshot(example, k_shot_str):
 def prepare_and_process(
     example, k_shot_str: str, separator: str, preparer: Callable, optioner: Callable
 ) -> dict:
-    # prepare so we have 'input' field
-    prepared_example = preparer(example, separator)
-    # prepend k-shot context to 'input'
-    processed_example = prepend_kshot(prepared_example, k_shot_str)
-    # add 'options' field
-    proc_example_with_options = optioner(processed_example)
+    """
+    Prepares an example s.t. it has an input field
+    Prepends the input with the k-shot context
+    Adds an option field
+    """
+    prepared_example = preparer(example, separator)  # 'input' field
+    processed_example = prepend_kshot(prepared_example, k_shot_str)  # k-shot context
+    proc_example_with_options = optioner(processed_example)  # 'options' field
     return proc_example_with_options
 
 
