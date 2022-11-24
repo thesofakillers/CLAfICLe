@@ -23,6 +23,8 @@ def main(cfg: DictConfig):
         model.load_non_pl_checkpoint(cfg.model.checkpoint_path)
     # get possible additional preprocessing from model and set in benchmark cfg
     cfg.benchmark.extra_proc_fn = model.extra_proc_fn
+    # overwrite benchmark cfg seed with eval cfg seed
+    cfg.benchmark.seed = cfg.seed
 
     # separate benchmarks by language
     bmark_by_lang = {}
@@ -47,7 +49,9 @@ def main(cfg: DictConfig):
             benchmark.set_pre_collate_fn(ModelClass.pre_collate)
 
         # set up pl trainer (tester)
-        log_save_dir = os.path.join(cfg.trainer.log_dir, cfg.model.name, lang)
+        log_save_dir = os.path.join(
+            cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", lang
+        )
         logger = pl.loggers.TensorBoardLogger(
             save_dir=log_save_dir,
             name="eval",

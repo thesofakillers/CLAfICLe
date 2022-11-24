@@ -42,6 +42,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
             ..., List[Dict]
         ] = default_collate_fn  # default no-op (can be set)
         self.is_setup = False
+        pl.seed_everything(self.cfg.seed)
 
     def prepare_data(self):
         """takes care of downloading data"""

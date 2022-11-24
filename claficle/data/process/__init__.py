@@ -135,6 +135,7 @@ def process_dataset(
     Returns processed test dataset and relevant metrics
     """
     Helper = HELPER_BY_NAME[dataset_name]
+    rng = np.random.default_rng(cfg.seed)
 
     if Helper.is_classification:
         metrics = ["f1"]
@@ -155,6 +156,7 @@ def process_dataset(
     dataset_path = os.path.join(
         cfg.data_dir,
         "processed",
+        f"seed_{cfg.seed}" if cfg.seed is not None else "",
         collection_name,
         cfg.extra_proc_fn if cfg.extra_proc_fn is not None else "",
         lang,
@@ -169,7 +171,7 @@ def process_dataset(
 
     # k-shot context handling
     k_shot_source = Helper.get_k_source(processed_test_split, lang)
-    k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k)
+    k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k, rng)
     k_shot_string = utils.prepare_kshot_str(
         k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
     )

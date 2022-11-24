@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List
 
 from datasets.arrow_dataset import Dataset
 import numpy as np
@@ -63,9 +63,9 @@ def prepare_and_process(
     return proc_example_with_options
 
 
-def get_k_shot_subset(dataset: Dataset, k: int):
+def get_k_shot_subset(dataset: Dataset, k: int, rng: np.random.Generator):
     data_len = len(dataset)
-    k_indices = np.random.choice(data_len, k, replace=False)
+    k_indices = rng.choice(data_len, k, replace=False)
     k_shot = dataset.select(k_indices)
     return k_shot, k_indices
 
