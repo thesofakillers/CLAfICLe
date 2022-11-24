@@ -1,18 +1,21 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_titanrtx
+#SBATCH --partition=normal*
 #SBATCH --gres=gpu:0
 #SBATCH --job-name=DATA
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=3
-#SBATCH --time=01:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --time=24:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=slurm/outputs/data_%A.out
+#SBATCH --array=1-10%10
+#SBATCH --output=data_%A_%a.out
 
 module purge
 module load 2022
 module load Miniconda3/4.12.0
 
 source activate claficle
+
+HPARAMS_FILE=./process.array.txt
 
 srun python -u claficle/data/benchmark.py

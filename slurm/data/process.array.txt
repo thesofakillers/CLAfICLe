@@ -1,0 +1,10 @@
+seed=1
+seed=2
+seed=3
+seed=4
+seed=5
+seed=1 extra_proc_fn=translate batch_size=100
+seed=2 extra_proc_fn=translate batch_size=100
+seed=3 extra_proc_fn=translate batch_size=100
+seed=4 extra_proc_fn=translate batch_size=100
+seed=5 extra_proc_fn=translate batch_size=100
