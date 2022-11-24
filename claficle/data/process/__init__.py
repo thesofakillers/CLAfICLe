@@ -156,8 +156,8 @@ def process_dataset(
     dataset_path = os.path.join(
         cfg.data_dir,
         "processed",
-        f"seed_{cfg.seed}" if cfg.seed is not None else "",
         collection_name,
+        f"seed_{cfg.seed}",
         cfg.extra_proc_fn if cfg.extra_proc_fn is not None else "",
         lang,
     )
