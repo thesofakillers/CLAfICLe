@@ -55,7 +55,6 @@ def translate_batch(
                 trans_inputs = translate_bulk(inputs, src_lang, dest_lang)
             except Exception as e:
                 print("Error translating input, retrying in 2 seconds...")
-                print(inputs)
                 print(e)
                 time.sleep(2)
                 pass
@@ -76,7 +75,6 @@ def translate_batch(
                 ]
             except Exception as e:
                 print("Error translating options, retrying in 2 seconds...")
-                print(batch["options"])
                 print(e)
                 time.sleep(2)
                 pass
