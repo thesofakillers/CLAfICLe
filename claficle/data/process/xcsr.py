@@ -26,7 +26,10 @@ class CSQAHelper(XCSRHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = example["question"]["choices"]["text"]
+        example["options"] = [
+            text if text != "" else "-"
+            for text in example["question"]["choices"]["text"]
+        ]
         return example
 
     @staticmethod
@@ -42,16 +45,11 @@ class CODAHHelper(XCSRHelper):
 
     @staticmethod
     def get_options(example):
-        example["options"] = tuple(
-            [
-                ".".join(text.split(".")[1:])
-                for text in example["question"]["choices"]["text"]
-            ]
-        )
+        example["options"] = example["question"]["choices"]["text"]
         return example
 
     @staticmethod
     def prepare_example(example, separator):
-        example["input"] = example["question"]["choices"]["text"][0].split(".")[0] + "."
+        example["input"] = ""
         example["label"] = ord(example["label"].lower()) - ord("a")
         return example
