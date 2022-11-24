@@ -10,7 +10,7 @@ import numpy as np
 import claficle.data.process.utils as utils
 
 from claficle.data.process import xglue, xcsr, hatecheck, winox, swissjudge, amazon
-from claficle.data.process.utils import translate_bulk
+from claficle.data.process.utils import translate_bulk, translate_single_text
 
 
 def translate_options(options: List, fn_kwargs: Dict):
@@ -23,6 +23,8 @@ def translate(
 ):
     if src_lang == dest_lang:
         return batch
+    if len(batch) == 1:
+        batch["input"] = [translate_single_text(batch["input"][0], src_lang, dest_lang)]
     batch["input"] = translate_bulk(batch["input"], src_lang, dest_lang)
     if processed_options is not None:
         batch["options"] = [processed_options for _x in batch["input"]]
@@ -92,6 +94,7 @@ def process_dataset(
     if not language_available:
         return None, [], collection_name
 
+    print(collection_name)
     extra_proc_fn: Optional[Callable] = EXTRA_FN_BY_NAME[cfg.extra_proc_fn]
     extra_proc_fn_options: Optional[Callable] = EXTRA_FN_OPS_BY_NAME[cfg.extra_proc_fn]
     dataset_path = os.path.join(
