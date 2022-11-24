@@ -15,7 +15,11 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-# copy the data to the scratch dir $TMPDIR for quicker access
-cp -r $HOME/repos/claficle/data $TMPDIR
+# name datadir in scratch directory
+datadir=$TMPDIR/$USER/data
 
-srun python -u claficle/run/eval.py --config-name=debug_eval benchmark.data_dir=$TMPDIR
+# copy the data to the scratch dir $TMPDIR for quicker access
+cp -r $HOME/repos/claficle/data/* $datadir/
+
+srun python -u claficle/run/eval.py --config-name=debug_eval \
+  benchmark.data_dir=$datadir
