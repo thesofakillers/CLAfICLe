@@ -22,7 +22,7 @@ def main(cfg: DictConfig):
         model = ModelClass(cfg.model)
         model.load_non_pl_checkpoint(cfg.model.checkpoint_path)
     # get possible additional preprocessing from model and set in benchmark cfg
-    cfg.benchmark.extra_proc_fn = model.extra_proc_fn
+    cfg.benchmark.extra_proc_fn = model.cfg.extra_proc_fn
     # overwrite benchmark cfg seed with eval cfg seed
     cfg.benchmark.seed = cfg.seed
 
