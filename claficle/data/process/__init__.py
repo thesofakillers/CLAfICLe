@@ -137,10 +137,7 @@ def process_dataset(
     Helper = HELPER_BY_NAME[dataset_name]
     rng = np.random.default_rng(cfg.seed)
 
-    if Helper.is_classification:
-        metrics = ["f1"]
-    else:
-        metrics = ["accuracy"]
+    metrics = ["f1", "accuracy"]
 
     collection_name, language_available = Helper.language_available(dataset_name, lang)
     if not language_available:
