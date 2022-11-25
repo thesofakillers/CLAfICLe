@@ -23,7 +23,7 @@ mkdir -p $datadir
 # copy the data to the scratch dir $TMPDIR for quicker access
 cp -r $HOME/repos/claficle/data/* $datadir/
 
-HPARAMS_FILE=slurm/eval/sandwhich.array.txt
+HPARAMS_FILE=slurm/eval/sandwich.array.txt
 
 srun python -u claficle/run/eval.py model=sandwich \
   benchmark.data_dir=$datadir \
