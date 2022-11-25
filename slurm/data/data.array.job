@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --partition=normal*
+#SBATCH --partition=gpu_titanrtx_shared
 #SBATCH --gres=gpu:0
 #SBATCH --job-name=DATA
 #SBATCH --ntasks=1
@@ -8,7 +8,7 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
 #SBATCH --array=1-10%10
-#SBATCH --output=data_%A_%a.out
+#SBATCH --output=slurm/outputs/data_%A_%a.out
 
 module purge
 module load 2022
@@ -16,6 +16,7 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-HPARAMS_FILE=./process.array.txt
+HPARAMS_FILE=slurm/data/process.array.txt
 
-srun python -u claficle/data/benchmark.py
+srun python -u claficle/data/benchmark.py \
+  $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)
