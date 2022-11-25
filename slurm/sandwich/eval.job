@@ -22,7 +22,7 @@ datadir=$TMPDIR/$USER/data
 mkdir -p $datadir
 
 # copy the data to the scratch dir $TMPDIR for quicker access
-cp -r -v $HOME/repos/claficle/data/* $datadir/
+cp -r $HOME/repos/claficle/data/* $datadir/
 
 srun python -u claficle/run/eval.py model=sandwich \
   benchmark.data_dir=$datadir \
