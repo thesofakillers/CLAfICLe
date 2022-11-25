@@ -6,8 +6,8 @@ data_dir: "data/" # where to store the data
 num_workers: 16 # num_workers for dataloaders
 dataset_names: # list of huggingface dataset;split names
   # XGLUE
-  - xglue;nc
   - xcsr;X-CODAH-en
+  - xcsr;X-CSQA-en
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
 hydra:
