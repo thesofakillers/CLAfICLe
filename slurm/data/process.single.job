@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=slurm/outputs/data_%A_single.out
+#SBATCH --output=slurm/outputs/data/data_%A_single.out
 
 module purge
 module load 2022

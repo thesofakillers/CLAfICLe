@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=slurm/outputs/sandwich_eval_%A.out
+#SBATCH --output=slurm/outputs/eval/sandwhich/sandwich_eval_%A.out
 
 module purge
 module load 2022
