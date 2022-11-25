@@ -1,13 +1,13 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_titanrtx
+#SBATCH --partition=gpu_titanrtx_shared
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=SW_DEBUG
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=slurm/outputs/sandwich_debug_%A.out
+#SBATCH --output=slurm/outputs/eval/sandwich/sandwich_debug_%A.out
 
 module purge
 module load 2022
@@ -22,7 +22,7 @@ datadir=$TMPDIR/$USER/data
 mkdir -p $datadir
 
 # copy the data to the scratch dir $TMPDIR for quicker access
-cp -r -v $HOME/repos/claficle/data/* $datadir/
+cp -r $HOME/repos/claficle/data/* $datadir/
 
 srun python -u claficle/run/eval.py --config-name=debug_eval \
   benchmark.data_dir=$datadir
