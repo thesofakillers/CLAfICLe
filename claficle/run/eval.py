@@ -45,7 +45,7 @@ def main(cfg: DictConfig):
         # so that the model knows names and metrics of dataloaders before testing
         model.set_benchmark_metadata(benchmark.get_metadata())
         benchmark.set_tokenizer(model.tokenizer)
-        if cfg.benchmark.extra_proc_fn is not None:
+        if cfg.benchmark.extra_proc_fn is None:
             benchmark.set_pre_collate_fn(ModelClass.pre_collate)
 
         # set up pl trainer (tester)
