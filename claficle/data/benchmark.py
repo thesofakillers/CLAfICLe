@@ -17,7 +17,7 @@ import hydra
 from claficle.data.process import process_dataset
 
 
-def default_collate_fn(batch) -> List[Dict]:
+def default_collate_fn(batch, **kwargs) -> List[Dict]:
     return batch
 
 
