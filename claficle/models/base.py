@@ -11,7 +11,9 @@ import torch
 
 
 class BaseModel(pl.LightningModule):
-    # todo
+    """
+    Abstract class from which to inherit from
+    """
     def __init__(self, config: DictConfig):
         super().__init__()
         self.save_hyperparameters(config)
