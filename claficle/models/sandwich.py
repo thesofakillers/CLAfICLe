@@ -13,8 +13,8 @@ from claficle.data.process.utils import translate_bulk, translate_single_text
 class Sandwich(BaseModel):
 
     """
-    Uses Google Translate API to use BREAD_LANG inputs on a FILL_LANG model
-    BREAD_LANG -> FILL_LANG_MODEL -> BREAD_LANG
+    Translates incoming data to English
+    before passing to an English language model
     """
 
     def __init__(self, config: DictConfig):
