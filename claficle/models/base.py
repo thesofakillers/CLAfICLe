@@ -14,6 +14,7 @@ class BaseModel(pl.LightningModule):
     """
     Abstract class from which to inherit from
     """
+
     def __init__(self, config: DictConfig):
         super().__init__()
         self.save_hyperparameters(config)
@@ -140,15 +141,6 @@ class BaseModel(pl.LightningModule):
         """
         self.benchmark_metadata = metadata
 
-    @staticmethod
-    # allow for optional kwargs
-    def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
-        """
-        Optional pre-collation processing to be passed to a dataloader
-        By default we do nothing
-        """
-        return batch
-
     def run_causal_model(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
         """
         Runs the causal model on the input.
@@ -167,6 +159,21 @@ class BaseModel(pl.LightningModule):
 
     def load_non_pl_checkpoint(self, checkpoint_path: str):
         """
-        Optional method to load a non-PL checkpoint
+        To be able to load a non-PL checkpoint
         """
-        raise NotImplementedError
+        if checkpoint_path is not None:
+            state_dict = torch.load(checkpoint_path)
+        else:
+            state_dict = None
+
+        self.lm = AutoModelForCausalLM.from_pretrained(
+            self.hparams.causalLM_variant, state_dict=state_dict
+        )
+
+    @staticmethod
+    def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
+        """
+        Optional pre-collation processing to be passed to a dataloader
+        By default we do nothing
+        """
+        return batch

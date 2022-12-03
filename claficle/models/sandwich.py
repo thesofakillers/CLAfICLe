@@ -43,16 +43,6 @@ class Sandwich(BaseModel):
 
         return batch
 
-    def load_non_pl_checkpoint(self, checkpoint_path: Optional[str] = None):
-        if checkpoint_path is not None:
-            state_dict = torch.load(checkpoint_path)
-        else:
-            state_dict = None
-
-        self.lm = AutoModelForCausalLM.from_pretrained(
-            self.hparams.causalLM_variant, state_dict=state_dict
-        )
-
 
 @hydra.main(version_base=None, config_path="../conf/model", config_name="sandwich")
 def main(cfg: DictConfig):
