@@ -154,11 +154,14 @@ class BaseModel(pl.LightningModule):
         Runs the causal model on the input.
         To be implemented in inheriting classes.
 
-        input_ids is of shape (batch_size * num_options, seq_len)
-        attention_mask is of shape (batch_size * num_options, seq_len)
+        input_ids is of shape (pseudo_batch_size, seq_len)
+        attention_mask is of shape (pseudo_batch_size, seq_len)
+
+        where pseudo_batch_size is the result of flattening
+        e.g. pseudo_batch_size = batch_size * num_options
 
         Returns `batch_logits`, a tensor of shape
-        (batch_size * num_options, seq_len, vocab_size)
+        (pseudo_batch_size, seq_len, vocab_size)
         """
         raise NotImplementedError
 
