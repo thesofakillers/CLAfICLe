@@ -1,7 +1,7 @@
 name: "sandwich"
 causalLM_variant: "distilgpt2"
-checkpoint_path: null
-pl_checkpoint: False
+base_checkpoint: null
+pl_checkpoint: null
 extra_proc_fn: "translate"
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508

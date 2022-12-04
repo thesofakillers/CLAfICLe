@@ -1,7 +1,7 @@
 name: "sandwich"
 causalLM_variant: "gpt2-large"
-checkpoint_path: "checkpoints/metaicl.pt"
-pl_checkpoint: False
+base_checkpoint: "checkpoints/metaicl.pt"
+pl_checkpoint: null
 extra_proc_fn: "translate"
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508

@@ -17,10 +17,9 @@ def main(cfg: DictConfig):
     ModelClass: BaseModel = NAME_TO_CLASS[cfg.model.name]
     print("Loading model from checkpoint...")
     if cfg.model.pl_checkpoint:
-        model = ModelClass.load_from_checkpoint(cfg.model.checkpoint_path)
+        model = ModelClass.load_from_checkpoint(cfg.model.pl_checkpoint)
     else:
         model = ModelClass(cfg.model)
-        model.load_non_pl_checkpoint(cfg.model.checkpoint_path)
     # get possible additional preprocessing from model and set in benchmark cfg
     cfg.benchmark.extra_proc_fn = cfg.model.extra_proc_fn
     # overwrite benchmark cfg seed with eval cfg seed

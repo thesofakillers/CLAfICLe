@@ -3,8 +3,6 @@ from typing import Dict, List, Optional
 
 import hydra
 from omegaconf import DictConfig
-from transformers import AutoModelForCausalLM
-import torch
 
 from claficle.models.base import BaseModel
 from claficle.data.process.utils import translate_bulk, translate_single_text
@@ -52,7 +50,6 @@ def main(cfg: DictConfig):
         model = Sandwich.load_from_checkpoint(cfg.checkpoint_path)
     else:
         model = Sandwich(cfg)
-        model.load_non_pl_checkpoint(cfg.checkpoint_path)
 
     print(model)
 

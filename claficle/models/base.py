@@ -2,11 +2,10 @@ from typing import Dict, List, Tuple, Optional
 
 import pytorch_lightning as pl
 from omegaconf import DictConfig
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from torch import Tensor
 import torch.nn.functional as F
 import torchmetrics.functional as TF
-
 import torch
 
 
@@ -18,15 +17,30 @@ class BaseModel(pl.LightningModule):
     def __init__(self, config: DictConfig):
         super().__init__()
         self.save_hyperparameters(config)
-        self.tokenizer = AutoTokenizer.from_pretrained(config.causalLM_variant)
-        self.tokenizer.truncation_side = "left"
-        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.curr_dataloader_name: Optional[str] = None
         self.metric_to_fn = {
             "f1": TF.f1_score,
             "accuracy": TF.accuracy,
         }
-        self.curr_dataloader_name: Optional[str] = None
+        self.tokenizer, self.lm = self.initialize(config)
+        self.tokenizer.truncation_side = "left"
+        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+
+    def initialize(
+        self, config: DictConfig
+    ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
+        """
+        For custom initialization, can be overridden.
+        Must return the tokenizer and pretrained causal language model
+        """
+        tokenizer = AutoTokenizer.from_pretrained(config.causalLM_variant)
+        lm = AutoModelForCausalLM.from_pretrained(config.causalLM_variant)
+        # optionally load a state dict if using fine-tuned model as starting point
+        if config.base_checkpoint is not None:
+            state_dict = torch.load(config.base_checkpoint)
+            lm.load_state_dict(state_dict)
+        return tokenizer, lm
 
     def test_step(
         self,
@@ -156,19 +170,6 @@ class BaseModel(pl.LightningModule):
         (pseudo_batch_size, seq_len, vocab_size)
         """
         raise NotImplementedError
-
-    def load_non_pl_checkpoint(self, checkpoint_path: str):
-        """
-        To be able to load a non-PL checkpoint
-        """
-        if checkpoint_path is not None:
-            state_dict = torch.load(checkpoint_path)
-        else:
-            state_dict = None
-
-        self.lm = AutoModelForCausalLM.from_pretrained(
-            self.hparams.causalLM_variant, state_dict=state_dict
-        )
 
     @staticmethod
     def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
