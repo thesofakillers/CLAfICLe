@@ -31,7 +31,7 @@ class BaseModel(pl.LightningModule):
         self, config: DictConfig
     ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
         """
-        For custom initialization, can be overridden.
+        LM and Tokenizer initialization. Calls custom_init() that can be overriden
         Must return the tokenizer and pretrained causal language model
         """
         tokenizer = AutoTokenizer.from_pretrained(config.causalLM_variant)
@@ -40,6 +40,15 @@ class BaseModel(pl.LightningModule):
         if config.base_checkpoint is not None:
             state_dict = torch.load(config.base_checkpoint)
             lm.load_state_dict(state_dict)
+        # additional custom initialization
+        tokenizer, lm = self.custom_init(tokenizer, lm, config)
+        return tokenizer, lm
+
+    def custom_init(tokenizer, lm, config):
+        """
+        Override this to perform custom initialization.
+        By default we do nothing.
+        """
         return tokenizer, lm
 
     def test_step(
