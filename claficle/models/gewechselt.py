@@ -11,6 +11,12 @@ import torch
 
 from claficle.models.base import BaseModel
 
+langcode_to_lang: Dict[str, str] = {
+    "en": "english",
+    "de": "german",
+    "fr": "french",
+}
+
 
 class Gewechselt(BaseModel):
     """
@@ -25,11 +31,14 @@ class Gewechselt(BaseModel):
     ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
         """Applies WECHSEL initialization"""
         target_tokenizer = tokenizer.train_new_from_iterator(
+            # TODO: datamodule for 4GB of OSCAR
             load_dataset("oscar", "unshuffled_deduplicated_sw", split="train")["text"],
             vocab_size=len(tokenizer),
         )
         wechsel = WECHSEL(
-            load_embeddings("en"), load_embeddings("sw"), bilingual_dictionary="swahili"
+            load_embeddings(config.source_lang),
+            load_embeddings(config.target_lang),
+            bilingual_dictionary=langcode_to_lang[config.target_lang],
         )
         target_embeddings, info = wechsel.apply(
             tokenizer,

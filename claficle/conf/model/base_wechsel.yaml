@@ -1,2 +1,5 @@
 defaults:
   - base_model
+
+source_lang: "en"
+target_lang: ???
