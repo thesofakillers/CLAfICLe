@@ -32,6 +32,7 @@ class Gewechselt(BaseModel):
         """Applies WECHSEL initialization"""
         target_tokenizer = tokenizer.train_new_from_iterator(
             # TODO: datamodule for 4GB of OSCAR
+            # NOTE: we may need a bit more than 4GB since we're using gpt2-large
             load_dataset("oscar", "unshuffled_deduplicated_sw", split="train")["text"],
             vocab_size=len(tokenizer),
         )
