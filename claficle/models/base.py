@@ -14,7 +14,7 @@ class BaseModel(pl.LightningModule):
     Abstract class from which to inherit from
     """
 
-    def __init__(self, config: DictConfig):
+    def __init__(self, config: DictConfig, **kwargs):
         super().__init__()
         self.save_hyperparameters(config)
         self.curr_dataloader_name: Optional[str] = None
@@ -22,13 +22,13 @@ class BaseModel(pl.LightningModule):
             "f1": TF.f1_score,
             "accuracy": TF.accuracy,
         }
-        self.tokenizer, self.lm = self.initialize(config)
+        self.tokenizer, self.lm = self.initialize(config, **kwargs)
         self.tokenizer.truncation_side = "left"
         # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
         self.tokenizer.pad_token = self.tokenizer.eos_token
 
     def initialize(
-        self, config: DictConfig
+        self, config: DictConfig, **kwargs
     ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
         """
         LM and Tokenizer initialization. Calls custom_init() that can be overriden
@@ -41,7 +41,7 @@ class BaseModel(pl.LightningModule):
             state_dict = torch.load(config.base_checkpoint)
             lm.load_state_dict(state_dict)
         # additional custom initialization
-        tokenizer, lm = self.custom_init(tokenizer, lm, config)
+        tokenizer, lm = self.custom_init(tokenizer, lm, config, **kwargs)
         return tokenizer, lm
 
     def custom_init(tokenizer, lm, config):
