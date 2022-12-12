@@ -17,6 +17,7 @@ termcolor = "^2.1.0"
 tensorboard = "^2.11.0"
 pybind11 = "^2.10.1"
 wechsel = "^0.0.3"
+pyparsing = "^3.0.9"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.4.3"
