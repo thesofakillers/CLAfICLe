@@ -214,7 +214,7 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.pad_token_id = tokenizer.convert_tokens_to_ids(
             tokenizer.special_tokens_map["pad_token"]
         )
-        self.max_seq_length = tokenizer.model_max_length
+        self.max_seq_length = min(1024, tokenizer.model_max_length)
 
 
 @hydra.main(version_base=None, config_path="../conf/benchmark", config_name="eval")
