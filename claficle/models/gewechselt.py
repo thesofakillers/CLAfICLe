@@ -65,7 +65,7 @@ class Gewechselt(BaseModel):
 
 @hydra.main(version_base=None, config_path="../conf/model/", config_name="base_wechsel")
 def main(cfg: DictConfig):
-    """downloads and processes the data for benchmark for each of the available languages"""
+    """used for testing: initializes model"""
     from claficle.data.oscar import OSCARDataModule
     import yaml
     from yaml.loader import SafeLoader
