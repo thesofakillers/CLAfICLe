@@ -62,6 +62,10 @@ class Gewechselt(BaseModel):
         # TODO
         raise NotImplementedError
 
+    def training_step(self, batch: Dict[str, Tensor], batch_idx: int):
+        # TODO
+        raise NotImplementedError
+
 
 @hydra.main(version_base=None, config_path="../conf/model/", config_name="base_wechsel")
 def main(cfg: DictConfig):
