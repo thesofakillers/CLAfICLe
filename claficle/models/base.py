@@ -70,7 +70,7 @@ class BaseModel(pl.LightningModule):
         # parse batch
         concats, tok_type_ids, labels = batch
 
-        preds, losses = self.do_inference(concats, tok_type_ids)
+        preds, losses = self.do_metaicl_inference(concats, tok_type_ids)
 
         dataloader_config = self.benchmark_metadata["datasets"][dataloader_idx]
         for metric in dataloader_config["metrics"]:
@@ -125,9 +125,9 @@ class BaseModel(pl.LightningModule):
 
         return loss
 
-    def do_inference(self, concats, tok_type_ids):
+    def do_metaicl_inference(self, concats, tok_type_ids):
         """
-        Runs the model on the input and returns the predictions and losses.
+        Runs the model on MetaICL-like input and returns the predictions and losses.
 
         concats: tensor of shape (batch_size, num_options, seq_len)
             consisting in the encoding of the concatenation of the context with each
@@ -147,9 +147,9 @@ class BaseModel(pl.LightningModule):
         reshaped_attention_mask = attention_mask.view(-1, attention_mask.size(-1))
 
         # (batch_size * num_options, seq_len, vocab_size)
-        output_logits: Tensor = self.run_causal_model(
+        output_logits: Tensor = self.run_causal_model_for_metaicl(
             input_ids=reshaped_concats, attention_mask=reshaped_attention_mask
-        ).logits
+        )
 
         # preds where conditioned NLL is lowest
         losses = self.compute_loss(output_logits, reshaped_concats, target_mask)
@@ -164,9 +164,9 @@ class BaseModel(pl.LightningModule):
         """
         self.benchmark_metadata = metadata
 
-    def run_causal_model(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
+    def run_causal_model_for_metaicl(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
         """
-        Runs the causal model on the input.
+        Runs the causal model on MetaICL-like input.
         To be implemented in inheriting classes.
 
         input_ids is of shape (pseudo_batch_size, seq_len)
@@ -178,7 +178,7 @@ class BaseModel(pl.LightningModule):
         Returns `batch_logits`, a tensor of shape
         (pseudo_batch_size, seq_len, vocab_size)
         """
-        raise NotImplementedError
+        return self.lm(input_ids=input_ids, attention_mask=attention_mask).logits
 
     @staticmethod
     def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:

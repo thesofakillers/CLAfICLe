@@ -58,10 +58,6 @@ class Gewechselt(BaseModel):
 
         return target_tokenizer, lm
 
-    def run_causal_model(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
-        # TODO
-        raise NotImplementedError
-
     def training_step(self, batch: Dict[str, Tensor], batch_idx: int):
         # TODO
         raise NotImplementedError

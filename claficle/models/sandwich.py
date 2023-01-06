@@ -18,9 +18,6 @@ class Sandwich(BaseModel):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def run_causal_model(self, input_ids, attention_mask):
-        return self.lm(input_ids=input_ids, attention_mask=attention_mask)
-
     @staticmethod
     def pre_collate(batch: List[Dict], **kwargs) -> List[Dict]:
         """Translates text from `src_lang` to `dest_lang` language"""
