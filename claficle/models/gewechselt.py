@@ -6,12 +6,11 @@ from typing import Tuple, Dict
 from omegaconf import DictConfig
 from wechsel import WECHSEL, load_embeddings
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from torch import Tensor
 import torch
 import hydra
 import datasets
 
-from claficle.models.base import BaseModel
+from claficle.models.base import PlainGPT2
 
 langcode_to_lang: Dict[str, str] = {
     "en": "english",
@@ -20,9 +19,9 @@ langcode_to_lang: Dict[str, str] = {
 }
 
 
-class Gewechselt(BaseModel):
+class Gewechselt(PlainGPT2):
     """
-    Model initialized using WECHSEL (Minixhofer et al. 2022)
+    GPT2 Model initialized using WECHSEL (Minixhofer et al. 2022)
     """
 
     def __init__(self, config: DictConfig, target_data: datasets.arrow_dataset.Dataset):
@@ -57,48 +56,6 @@ class Gewechselt(BaseModel):
         print("Done.")
 
         return target_tokenizer, lm
-
-    def training_step(self, batch: Dict[str, Tensor], batch_idx: int) -> Tensor:
-        shared_step_output = self._shared_step(batch, batch_idx)
-        return shared_step_output["loss"]
-
-    def validation_step(self, batch: Dict[str, Tensor], batch_idx: int):
-        shared_step_output = self._shared_step(batch, batch_idx)
-        # perplexity is just the exponentiation of cross entropy
-        perplexity = torch.exp(shared_step_output["loss"].detach().cpu())
-        self.log("val_perplexity", perplexity)
-
-    def _shared_step(
-        self, batch: Dict[str, Tensor], batch_idx: int
-    ) -> Dict[str, Tensor]:
-        """
-        batch is a dict with keys "input_ids", "attention_mask" and optionally "labels"
-        where each key is a tensor of shape (batch_size, seq_len)
-        seq_len can vary between batches
-
-        training mode can either be:
-        - causal language modelling (clm)
-        - MetaICL (meta-icl)
-        - vessel (vessel)
-
-        outputs a dict (or equivalent) with keys "loss" and "logits"
-        """
-        if self.train_mode == "clm":
-            return self._clm_step(batch, batch_idx)
-        else:
-            raise NotImplementedError
-
-    def _clm_step(self, batch: Dict[str, Tensor], batch_idx: int):
-        """
-        Causal language modelling step
-        """
-        output = self.lm(
-            input_ids=batch["input_ids"],
-            attention_mask=batch["attention_mask"],
-            labels=batch["input_ids"],
-        )
-        loss = output.loss
-        return loss
 
 
 @hydra.main(
