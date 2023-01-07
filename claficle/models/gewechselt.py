@@ -101,7 +101,9 @@ class Gewechselt(BaseModel):
         return loss
 
 
-@hydra.main(version_base=None, config_path="../conf/model/", config_name="base_wechsel")
+@hydra.main(
+    version_base=None, config_path="../conf/model/", config_name="base_gewechselt"
+)
 def main(cfg: DictConfig):
     """used for testing: initializes model"""
     from claficle.data.oscar import OSCARDataModule
