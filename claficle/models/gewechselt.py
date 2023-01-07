@@ -124,7 +124,7 @@ def main(cfg: DictConfig):
     oscar_fr.prepare_data()
     oscar_fr.setup()
 
-    model = Gewechselt(cfg, oscar_fr.train_dataset)
+    model = Gewechselt(cfg, oscar_fr.train_dataset)  # noqa: F841
 
 
 if __name__ == "__main__":
