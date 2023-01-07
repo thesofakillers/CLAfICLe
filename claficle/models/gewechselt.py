@@ -66,8 +66,7 @@ class Gewechselt(BaseModel):
         shared_step_output = self._shared_step(batch, batch_idx)
         # perplexity is just the exponentiation of cross entropy
         perplexity = torch.exp(shared_step_output["loss"].detach().cpu())
-        # TODO log
-        pass
+        self.log("val_perplexity", perplexity)
 
     def _shared_step(
         self, batch: Dict[str, Tensor], batch_idx: int
