@@ -87,9 +87,11 @@ class OSCARDataModule(pl.LightningDataModule):
             self.profile_mem_dset_tokens = datasets.Dataset.from_dict(
                 {
                     "input_ids": torch.randint(
-                        0, len(self.tokenizer), size=(1e5, self.max_seq_length)
+                        0, len(self.tokenizer), size=(int(1e5), self.max_seq_length)
                     ),
-                    "attention_mask": torch.ones((1e5, self.max_seq_length), dtype=int),
+                    "attention_mask": torch.ones(
+                        (int(1e5), self.max_seq_length), dtype=int
+                    ),
                 }
             )
             # all the same length so no need for sorting :)
