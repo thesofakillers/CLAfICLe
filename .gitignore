@@ -1,4 +1,5 @@
 # user-defined
+/slurm/.secrets
 notebooks/*sandbox.ipynb
 .hydra
 /data/
