@@ -44,7 +44,7 @@ class BaseModel(pl.LightningModule):
         tokenizer, lm = self.custom_init(tokenizer, lm, config, **kwargs)
         return tokenizer, lm
 
-    def custom_init(tokenizer, lm, config):
+    def custom_init(self, tokenizer, lm, config, **kwargs):
         """
         Override this to perform custom initialization.
         By default we do nothing.
