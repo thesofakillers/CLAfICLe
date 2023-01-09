@@ -83,54 +83,7 @@ class OSCARDataModule(pl.LightningDataModule):
             self.val_dataset = datasets.load_dataset(
                 self.save_dir, split="validation", cache_dir=self.save_dir
             )
-        if stage == "profile_memory":
-            # 100k sequences of max length of random tokens
-            self.profile_mem_dset_tokens = datasets.Dataset.from_dict(
-                {
-                    "input_ids": torch.randint(
-                        0, len(self.tokenizer), size=(int(1e5), self.max_seq_length)
-                    ),
-                    "attention_mask": torch.ones(
-                        (int(1e5), self.max_seq_length), dtype=int
-                    ),
-                }
-            )
-            # all the same length so no need for sorting :)
-        if stage == "profile_time":
-            # TODO subset of train set
-            pass
-
         self.is_setup = True
-
-    @staticmethod
-    def debug_dataloader(
-        dataset,
-        mode: str,
-        batch_size: int,
-        collate_fn: Callable,
-        num_workers: int,
-        pin_memory: bool,
-        val_percent: Optional[float] = None,
-    ) -> torch.utils.data.DataLoader:
-        """
-        Handy dataloader function for debugging
-
-        Needs to be a staticmethod so that it can be set as attribute/func
-        of existing instance of a model when calling trainer.tune
-        """
-        # which indices to select, based on whether train or val
-        dataset_len = len(dataset)
-        if mode == "train":  # select all
-            select_idxs = range(dataset_len)
-        elif mode == "val":
-            select_idxs = range(int(dataset_len * val_percent))
-        return torch.utils.data.DataLoader(
-            dataset.select(select_idxs),
-            batch_size=batch_size,
-            collate_fn=collate_fn,
-            num_workers=num_workers,
-            pin_memory=True,
-        )
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
