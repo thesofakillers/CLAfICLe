@@ -1,3 +1,9 @@
 data_dir: ./data/raw
 sample_size_mb: 4096
 val_percent: 0.05
+
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
+  output_subdir: null
