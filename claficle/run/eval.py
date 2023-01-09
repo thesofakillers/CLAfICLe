@@ -42,9 +42,12 @@ def main(cfg: DictConfig):
         log_save_dir = os.path.join(
             cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", lang
         )
-        logger = pl.loggers.TensorBoardLogger(
+        os.makedirs(log_save_dir, exist_ok=True)
+        logger = pl.loggers.WandbLogger(
             save_dir=log_save_dir,
-            name="eval",
+            job_type="eval",
+            project="claficle",
+            entity="giulio-uva",
         )
         trainer = pl.Trainer(
             logger=logger,
