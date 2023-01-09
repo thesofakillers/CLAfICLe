@@ -1,5 +1,5 @@
 # user-defined
-notebooks/sandbox.ipynb
+notebooks/*sandbox.ipynb
 .hydra
 /data/
 /checkpoints/
