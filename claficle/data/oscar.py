@@ -109,7 +109,7 @@ class OSCARDataModule(pl.LightningDataModule):
         if mode == "train":  # select all
             select_idxs = range(dataset_len)
         elif mode == "val":
-            select_idxs = range(int(dataset_len * self.val_percent))
+            select_idxs = range(int(dataset_len * self.cfg.val_percent))
         return torch.utils.data.DataLoader(
             self.profile_mem_dset_tokens.select(select_idxs),
             batch_size=self.cfg.batch_size,
