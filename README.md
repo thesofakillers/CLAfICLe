@@ -71,7 +71,7 @@ their `metaicl` model in the `hr_to_lr` setting. Once downloaded, rename this to
         ├── models/        <- Model definitions
         ├── run/           <- scripts to train, evaluate and use models
         ├── conf/          <- config files
-        ├── utils.py       <- miscellaneous utils
+        ├── utils/         <- miscellaneous utils
         └── visualization/ <- Scripts for visualization
 ```
 
