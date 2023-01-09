@@ -25,4 +25,4 @@ mkdir -p $datadir
 cp -r $HOME/repos/claficle/data/* $datadir/
 
 srun python -u claficle/run/eval.py --config-name=debug_eval \
-  benchmark.data_dir=$datadir
+  data.data_dir=$datadir

@@ -1,9 +1,9 @@
 # Config for running evaluation
 defaults:
   - _self_
-  - benchmark: debug
+  - data: debug_benchmark
   - trainer: debug
-  - model: debug
+  - model: debug_sandwich
   # https://stackoverflow.com/a/70777327/9889508
   - override hydra/hydra_logging: none
   - override hydra/job_logging: none

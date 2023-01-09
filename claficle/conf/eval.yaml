@@ -1,7 +1,7 @@
 # Config for running evaluation
 defaults:
   - _self_
-  - benchmark: eval
+  - data: benchmark
   - trainer: eval
   - model: sandwich
   # https://stackoverflow.com/a/70777327/9889508

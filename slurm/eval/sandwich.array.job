@@ -28,5 +28,5 @@ cp -r $HOME/repos/claficle/data/* $datadir/
 HPARAMS_FILE=slurm/eval/sandwich.array.txt
 
 srun python -u claficle/run/eval.py model=sandwich \
-  benchmark.data_dir=$datadir \
+  data.data_dir=$datadir \
   $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)

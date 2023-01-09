@@ -21,9 +21,9 @@ def main(cfg: DictConfig):
     else:
         model = ModelClass(cfg.model)
     # get possible additional preprocessing from model and set in benchmark cfg
-    cfg.benchmark.extra_proc_fn = cfg.model.extra_proc_fn
-    # overwrite benchmark cfg seed with eval cfg seed
-    cfg.benchmark.seed = cfg.seed
+    cfg.data.extra_proc_fn = cfg.model.extra_proc_fn
+    # overwrite data cfg seed with eval cfg seed
+    cfg.data.seed = cfg.seed
 
     # separate benchmarks by language
     bmark_by_lang = {}
@@ -33,7 +33,7 @@ def main(cfg: DictConfig):
     for lang, flag in lang_flags.items():
         if flag is True:
             print(f"Setting up data for evaluation in {lang}...")
-            bmark_by_lang[lang] = BenchmarkDataModule(config=cfg.benchmark, lang=lang)
+            bmark_by_lang[lang] = BenchmarkDataModule(config=cfg.data, lang=lang)
             bmark_by_lang[lang].prepare_data()
             bmark_by_lang[lang].setup()
     for lang in langs:
@@ -44,7 +44,7 @@ def main(cfg: DictConfig):
         # so that the model knows names and metrics of dataloaders before testing
         model.set_benchmark_metadata(benchmark.get_metadata())
         benchmark.set_tokenizer(model.tokenizer)
-        if cfg.benchmark.extra_proc_fn is None:
+        if cfg.data.extra_proc_fn is None:
             benchmark.set_pre_collate_fn(ModelClass.pre_collate)
 
         # set up pl trainer (tester)
