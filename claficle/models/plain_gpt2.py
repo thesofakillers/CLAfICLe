@@ -57,8 +57,7 @@ class PlainGPT2(BaseModel):
             attention_mask=batch["attention_mask"],
             labels=batch["input_ids"],
         )
-        loss = output.loss
-        return loss
+        return output
 
     def configure_optimizers(self):
         """placeholder optimizer"""
