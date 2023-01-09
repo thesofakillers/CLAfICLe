@@ -9,6 +9,8 @@
 #SBATCH --mem=32000M
 #SBATCH --output=slurm/outputs/eval/sandwich/sandwich_%A.out
 
+source "./slurm/.secrets"
+
 module purge
 module load 2022
 module load Miniconda3/4.12.0
