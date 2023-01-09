@@ -57,6 +57,10 @@ class Gewechselt(PlainGPT2):
 
         return target_tokenizer, lm
 
+    def configure_optimizers(self):
+        # TODO
+        raise NotImplementedError
+
 
 @hydra.main(
     version_base=None, config_path="../conf/model/", config_name="base_gewechselt"
