@@ -3,27 +3,16 @@ import os
 
 import pytorch_lightning as pl
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 from claficle.data.benchmark import BenchmarkDataModule
-from claficle.models.utils import NAME_TO_CLASS
-from claficle.models.base import BaseModel
+from claficle.utils.general import run_script_preamble
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="eval")
 def main(cfg: DictConfig):
-    pl.seed_everything(cfg.seed, workers=True)
-    print(OmegaConf.to_yaml(cfg))
-    ModelClass: BaseModel = NAME_TO_CLASS[cfg.model.name]
-    print("Loading model from checkpoint...")
-    if cfg.model.pl_checkpoint:
-        model = ModelClass.load_from_checkpoint(cfg.model.pl_checkpoint)
-    else:
-        model = ModelClass(cfg.model)
-    # get possible additional preprocessing from model and set in benchmark cfg
-    cfg.data.extra_proc_fn = cfg.model.extra_proc_fn
-    # overwrite data cfg seed with eval cfg seed
-    cfg.data.seed = cfg.seed
+    # sets seed, parses model name
+    model, cfg = run_script_preamble(cfg)
 
     # separate benchmarks by language
     bmark_by_lang = {}
@@ -45,7 +34,7 @@ def main(cfg: DictConfig):
         model.set_benchmark_metadata(benchmark.get_metadata())
         benchmark.set_tokenizer(model.tokenizer)
         if cfg.data.extra_proc_fn is None:
-            benchmark.set_pre_collate_fn(ModelClass.pre_collate)
+            benchmark.set_pre_collate_fn(model.pre_collate)
 
         # set up pl trainer (tester)
         log_save_dir = os.path.join(
