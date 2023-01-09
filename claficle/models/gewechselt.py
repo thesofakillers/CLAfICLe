@@ -72,8 +72,8 @@ def main(cfg: DictConfig):
     cfg.causalLM_variant = "distilgpt2"
     cfg.target_lang = "fr"
 
-    # load separate data config from ../conf/data/oscar_base.yaml
-    with open("claficle/conf/data/oscar_base.yaml", "r") as f:
+    # load separate data config from ../conf/data/oscar.yaml
+    with open("claficle/conf/data/oscar.yaml", "r") as f:
         data_cfg = yaml.load(f, Loader=SafeLoader)
     data_cfg = DictConfig(data_cfg)
 

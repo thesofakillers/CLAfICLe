@@ -164,7 +164,7 @@ def datastream_to_file(
             f.write(f"{json.dumps(entry)}\n")
 
 
-@hydra.main(version_base=None, config_path="../conf/data/", config_name="oscar_base")
+@hydra.main(version_base=None, config_path="../conf/data/", config_name="oscar")
 def main(cfg: DictConfig):
     """downloads and processes the data for benchmark for each of the available languages"""
     print(cfg)
