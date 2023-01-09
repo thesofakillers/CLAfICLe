@@ -6,12 +6,14 @@ import hydra
 from omegaconf import DictConfig
 
 from claficle.data.benchmark import BenchmarkDataModule
+from claficle.models.base import BaseModel
 from claficle.utils.general import run_script_preamble
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="eval")
 def main(cfg: DictConfig):
     # sets seed, parses model name
+    model: BaseModel
     model, cfg = run_script_preamble(cfg)
 
     # separate benchmarks by language
