@@ -2,4 +2,5 @@
 progress_bar: True
 log_dir: "./logs/"
 devices: 1
-accelerator: 'auto'
+accelerator: "auto"
+train_mode: "clm"
