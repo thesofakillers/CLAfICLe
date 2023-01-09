@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=MEM
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=18
 #SBATCH --time=24:00:00
 #SBATCH --mem=491520M
 #SBATCH --output=slurm/outputs/tune/memory_%A.out
