@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import os
 from pathlib import Path
 import json
@@ -101,28 +102,35 @@ class OSCARDataModule(pl.LightningDataModule):
 
         self.is_setup = True
 
-    def memory_profile_dataloader(
-        self, mode: str = "train"
+    @staticmethod
+    def debug_dataloader(
+        dataset,
+        mode: str,
+        batch_size: int,
+        collate_fn: Callable,
+        num_workers: int,
+        pin_memory: bool,
+        val_percent: Optional[float] = None,
     ) -> torch.utils.data.DataLoader:
+        """
+        Handy dataloader function for debugging
+
+        Needs to be a staticmethod so that it can be set as attribute/func
+        of existing instance of a model when calling trainer.tune
+        """
         # which indices to select, based on whether train or val
-        dataset_len = len(self.profile_mem_dset_tokens)
+        dataset_len = len(dataset)
         if mode == "train":  # select all
             select_idxs = range(dataset_len)
         elif mode == "val":
-            select_idxs = range(int(dataset_len * self.cfg.val_percent))
+            select_idxs = range(int(dataset_len * val_percent))
         return torch.utils.data.DataLoader(
-            self.profile_mem_dset_tokens.select(select_idxs),
-            batch_size=self.cfg.batch_size,
-            collate_fn=self.collate_fn,
-            num_workers=self.cfg.num_workers,
+            dataset.select(select_idxs),
+            batch_size=batch_size,
+            collate_fn=collate_fn,
+            num_workers=num_workers,
             pin_memory=True,
         )
-
-    def time_profile_dataloader(
-        self, mode: str = "train"
-    ) -> torch.utils.data.DataLoader:
-        # TODO
-        pass
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
@@ -133,9 +141,8 @@ class OSCARDataModule(pl.LightningDataModule):
         self.max_seq_length = min(1024, tokenizer.model_max_length)
         self.vocab_size = len(self.tokenizer)
 
-    def collate_fn(
-        self, features: List[Dict[str, torch.Tensor]]
-    ) -> Dict[str, torch.Tensor]:
+    @staticmethod
+    def collate_fn(features: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
         """
         Converts a list of dictionaries of tensors into a dictionary of tensors
         Padding has already been applied to batches of different sizes by the tokenizer
