@@ -1,0 +1,5 @@
+# trainer configuration for tune run
+progress_bar: True
+log_dir: "./logs/"
+devices: 1
+accelerator: 'auto'
