@@ -1,4 +1,5 @@
 """Helper script for determining the best hyperparameters for a model."""
+from functools import partial
 import os
 
 import pytorch_lightning as pl
@@ -24,10 +25,6 @@ def main(cfg: DictConfig):
     oscar.set_tokenizer(model.tokenizer)
     oscar.prepare_data()
     oscar.setup(stage=cfg.tune_mode)
-    dataloader_func = {
-        "profile_memory": oscar.memory_profile_dataloader,
-        "profile_time": oscar.time_profile_dataloader,
-    }[cfg.tune_mode]
 
     # set up pl trainer (tuner)
     log_save_dir = os.path.join(
@@ -47,13 +44,31 @@ def main(cfg: DictConfig):
         devices=cfg.trainer.devices,
         auto_scale_batch_size="power" if cfg.tune_mode == "profile_memory" else None,
     )
+    model.train_mode = cfg.trainer.train_mode
 
-    print(f"Tuning {cfg.tune_mode}...")
-    trainer.tune(
-        model,
-        train_dataloaders=dataloader_func("train"),
-        val_dataloaders=dataloader_func("val"),
+    # necessary hacks for profiling memory and batch size
+    model.batch_size = oscar.cfg.batch_size
+    model.train_dataloader = partial(
+        oscar.debug_dataloader,
+        dataset=oscar.profile_mem_dset_tokens,
+        mode="train",
+        batch_size=model.batch_size,
+        collate_fn=oscar.collate_fn,
+        num_workers=oscar.cfg.num_workers,
+        pin_memory=True,
     )
+    model.val_dataloader = partial(
+        oscar.debug_dataloader,
+        dataset=oscar.profile_mem_dset_tokens,
+        mode="val",
+        batch_size=model.batch_size,
+        collate_fn=oscar.collate_fn,
+        num_workers=oscar.cfg.num_workers,
+        pin_memory=True,
+        val_percent=oscar.cfg.val_percent,
+    )
+    print(f"Tuning {cfg.tune_mode}...")
+    trainer.tune(model)
 
 
 if __name__ == "__main__":
