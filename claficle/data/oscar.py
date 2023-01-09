@@ -118,6 +118,12 @@ class OSCARDataModule(pl.LightningDataModule):
             pin_memory=True,
         )
 
+    def time_profile_dataloader(
+        self, mode: str = "train"
+    ) -> torch.utils.data.DataLoader:
+        # TODO
+        pass
+
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
         self.tokenizer.truncation_side = "left"
