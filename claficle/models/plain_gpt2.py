@@ -59,3 +59,7 @@ class PlainGPT2(BaseModel):
         )
         loss = output.loss
         return loss
+
+    def configure_optimizers(self):
+        """placeholder optimizer"""
+        return torch.optim.Adam(self.lm.parameters())
