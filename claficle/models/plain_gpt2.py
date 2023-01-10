@@ -67,25 +67,38 @@ class PlainGPT2(BaseModel):
 
     def train_dataloader(self):
         """
-        dummy dataloader only used by trainer.tune in tune.py
-        When used with a DataModule with its own definition of train_dataloader,
-        this method will be ignored
+        dummy dataloader only used in tune.py
+        When used in a trainer with a DataModule
+        with its own definition of train_dataloader, this method will be ignored
         """
-        # first, define dummy dataset of random ints
+        # dummy dataset of random ints
+        n_datapoints = int(512 * 4)  # 4 batches worth of data
+        return self._dummy_dataloader(n_datapoints, shuffle=True)
+
+    def val_dataloader(self):
+        """
+        Same as train_dataloader but with 0.05 of the data
+        """
+        n_datapoints = int(512 * 4 * 0.005)  # 0.5 percent of 4 batches worth of data
+        return self._dummy_dataloader(n_datapoints, shuffle=False)
+
+    def _dummy_dataloader(self, n_datapoints, shuffle: bool):
+        """ """
         dataset = datasets.Dataset.from_dict(
             {
                 "input_ids": torch.randint(
                     0,
                     len(self.tokenizer),
-                    size=(int(1e5), self.tokenizer.model_max_length),
+                    size=(n_datapoints, self.tokenizer.model_max_length),
                 ),
                 "attention_mask": torch.ones(
-                    (int(1e5), self.tokenizer.model_max_length), dtype=int
+                    (n_datapoints, self.tokenizer.model_max_length), dtype=int
                 ),
             }
         )
         return DataLoader(
             dataset,
+            shuffle=shuffle,
             pin_memory=True,
             # the following attributes are set after init, specifically for this
             batch_size=self.batch_size,
