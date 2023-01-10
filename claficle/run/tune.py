@@ -2,6 +2,8 @@
 import os
 
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import Timer
+import wandb
 import hydra
 from omegaconf import DictConfig
 
@@ -35,22 +37,44 @@ def main(cfg: DictConfig):
         job_type=f"tune-{cfg.tune_mode}",
         project="claficle",
         entity="giulio-uva",
+        mode="disabled" if cfg.trainer.disable_wandb else "online",
     )
+    timer = Timer(interval="epoch")
     trainer = pl.Trainer(
+        max_epochs=1,
         logger=logger,
         enable_progress_bar=cfg.trainer.progress_bar,
         accelerator=cfg.trainer.accelerator,
         devices=cfg.trainer.devices,
-        auto_scale_batch_size="binsearch" if cfg.tune_mode == "profile_memory" else None,
+        val_check_interval=cfg.trainer.val_check_interval,
+        log_every_n_steps=cfg.trainer.val_check_interval,
+        accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
+        callbacks=[timer] if cfg.tune_mode == "profile_time" else None,
+        auto_scale_batch_size="binsearch"
+        if cfg.tune_mode == "profile_memory"
+        else None,
     )
     model.train_mode = cfg.trainer.train_mode
 
-    # necessary hacks for profiling memory and batch size
+    # necessary hacks for train and val loaders in model
     model.batch_size = oscar.cfg.batch_size
     model.collate_fn = oscar.collate_fn
     model.num_workers = oscar.cfg.num_workers
-    print(f"Tuning {cfg.tune_mode}...")
-    trainer.tune(model)
+    if cfg.tune_mode == "profile_memory":
+        print(f"Running {cfg.tune_mode}...")
+        trainer.tune(model)
+    elif cfg.tune_mode == "profile_time":
+        print(f"Running {cfg.tune_mode}...")
+        trainer.fit(model)
+
+        wandb.log({"train_starttime_secs": timer.start_time("train")})
+        wandb.log({"train_endtime_secs": timer.end_time("train")})
+
+        wandb.log({"val_starttime_secs": timer.start_time("validation")})
+        wandb.log({"val_endtime_secs": timer.end_time("validation")})
+
+        wandb.log({"train_elapsed_secs": timer.time_elapsed("train")})
+        wandb.log({"val_elapsed_secs": timer.time_elapsed("validate")})
 
 
 if __name__ == "__main__":

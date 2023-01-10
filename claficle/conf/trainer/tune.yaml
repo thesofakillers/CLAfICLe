@@ -4,3 +4,6 @@ log_dir: "./logs/"
 devices: 1
 accelerator: "auto"
 train_mode: "clm"
+accumulate_grad_batches: 256
+val_check_interval: 2500
+disable_wandb: False
