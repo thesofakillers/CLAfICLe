@@ -73,14 +73,14 @@ class PlainGPT2(BaseModel):
         with its own definition of train_dataloader, this method will be ignored
         """
         # dummy dataset of random ints
-        n_datapoints = int(512 * 4)  # 4 batches worth of data
+        n_datapoints = int(512 * 10)  # 10 batches worth of data (2560 micro batches)
         return self._dummy_dataloader(n_datapoints, shuffle=True)
 
     def val_dataloader(self):
         """
         Same as train_dataloader but with 0.05 of the data
         """
-        n_datapoints = int(512 * 4 * 0.005)  # 0.5 percent of 4 batches worth of data
+        n_datapoints = int(512 * 10 * 0.005)  # 0.5 percent of 4 batches worth of data
         return self._dummy_dataloader(n_datapoints, shuffle=False)
 
     def _dummy_dataloader(self, n_datapoints, shuffle: bool):
