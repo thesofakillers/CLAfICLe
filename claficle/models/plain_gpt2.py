@@ -8,6 +8,7 @@ from torch import Tensor
 import torch
 from torch.utils.data import DataLoader
 import datasets
+import wandb
 
 from claficle.models.base import BaseModel
 
@@ -83,7 +84,13 @@ class PlainGPT2(BaseModel):
         return self._dummy_dataloader(n_datapoints, shuffle=False)
 
     def _dummy_dataloader(self, n_datapoints, shuffle: bool):
-        """ """
+        """helper method for train_dataloader and val_dataloader"""
+        wandb.alert(
+            title="Using dummy dataloader",
+            text="This should only happen when running tune.py."
+            "If this is not the case, something is wrong.",
+            level=wandb.AlertLevel.WARN,
+        )
         dataset = datasets.Dataset.from_dict(
             {
                 "input_ids": torch.randint(
