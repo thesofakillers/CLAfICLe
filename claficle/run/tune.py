@@ -40,19 +40,24 @@ def main(cfg: DictConfig):
         mode="disabled" if cfg.trainer.disable_wandb else "online",
     )
     timer = Timer(interval="epoch")
+    if cfg.tune_mode == "profile_memory":
+        trainer_kwargs = {
+            "auto_scale_batch_size": "binsearch",
+        }
+    elif cfg.tuune_mode == "profile_time":
+        trainer_kwargs = {
+            "accumulate_grad_batches": cfg.trainer.accumulate_grad_batches,
+            "val_check_interval": cfg.trainer.val_check_interval,
+            "log_every_n_steps": cfg.trainer.val_check_interval,
+            "callbacks": [timer],
+        }
     trainer = pl.Trainer(
         max_epochs=1,
         logger=logger,
         enable_progress_bar=cfg.trainer.progress_bar,
         accelerator=cfg.trainer.accelerator,
         devices=cfg.trainer.devices,
-        val_check_interval=cfg.trainer.val_check_interval,
-        log_every_n_steps=cfg.trainer.val_check_interval,
-        accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
-        callbacks=[timer] if cfg.tune_mode == "profile_time" else None,
-        auto_scale_batch_size="binsearch"
-        if cfg.tune_mode == "profile_memory"
-        else None,
+        **trainer_kwargs,
     )
     model.train_mode = cfg.trainer.train_mode
 
