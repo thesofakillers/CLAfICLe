@@ -98,17 +98,9 @@ class OSCARDataModule(pl.LightningDataModule):
     def collate_fn(features: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
         """
         Converts a list of dictionaries of tensors into a dictionary of tensors
-        Padding has already been applied to batches of different sizes by the tokenizer
-        Here we remove redundant padding
         """
         # converting to dict of tensors
-        features = transformers.default_data_collator(features)
-        # determining last relevant token
-        final_idx = features["attention_mask"].any(dim=0).nonzero()[-1]
-        # removing anything after this token
-        features["input_ids"] = features["input_ids"][:, : final_idx + 1]
-        features["attention_mask"] = features["attention_mask"][:, : final_idx + 1]
-        return features
+        return transformers.default_data_collator(features)
 
 
 def datastream_to_file(
