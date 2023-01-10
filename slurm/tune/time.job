@@ -5,7 +5,7 @@
 #SBATCH --job-name=TIME
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=04:00:00
+#SBATCH --time=01:00:00
 #SBATCH --mem-per-gpu=48G
 #SBATCH --output=slurm/outputs/tune/time_%A.out
 
