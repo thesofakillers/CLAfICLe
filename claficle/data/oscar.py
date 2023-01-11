@@ -25,8 +25,11 @@ class OSCARDataModule(pl.LightningDataModule):
         super().__init__()
         self.cfg = config
         self.is_setup = False
-        self.save_dir = os.path.join(
-            self.cfg.data_dir, "oscar", lang, str(self.cfg.sample_size_mb)
+        self.raw_save_dir = os.path.join(
+            self.cfg.data_dir, "raw", "oscar", lang, str(self.cfg.sample_size_mb)
+        )
+        self.processed_save_dir = os.path.join(
+            self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.sample_size_mb)
         )
         self.lang = lang
         pl.seed_everything(seed)
@@ -36,11 +39,11 @@ class OSCARDataModule(pl.LightningDataModule):
         if self.is_setup:
             return
         # if already saved, don't need to download
-        if os.path.exists(self.save_dir):
+        if os.path.exists(self.raw_save_dir):
             return
         # otherwise, download and save
         else:
-            Path(self.save_dir).mkdir(parents=True, exist_ok=True)
+            Path(self.raw_save_dir).mkdir(parents=True, exist_ok=True)
             if self.cfg.sample_size_mb is None:
                 dataset: datasets.arrow_dataset.Dataset = datasets.load_dataset(
                     "oscar-corpus/OSCAR-2201",
@@ -49,7 +52,7 @@ class OSCARDataModule(pl.LightningDataModule):
                 )
                 # manually split into train and test and save to disk
                 dataset = dataset.train_test_split(test_size=self.cfg.val_percent)
-                dataset.save_to_disk(self.save_dir)
+                dataset.save_to_disk(self.raw_save_dir)
             else:
                 subsample_size = self.cfg.sample_size_mb * 1024 * 1024
                 dataset: datasets.iterable_dataset.IterableDataset = (
@@ -64,7 +67,7 @@ class OSCARDataModule(pl.LightningDataModule):
                 # save subsample_size bytes of data as train
                 print(f"Downloading {self.cfg.sample_size_mb}MB of train data")
                 datastream_to_file(
-                    dataset_iter, self.save_dir, "train.json", subsample_size
+                    dataset_iter, self.raw_save_dir, "train.json", subsample_size
                 )
                 # save remaining subsample_size * val_percent bytes of data as val
                 print(
@@ -73,7 +76,7 @@ class OSCARDataModule(pl.LightningDataModule):
                 )
                 datastream_to_file(
                     dataset_iter,
-                    self.save_dir,
+                    self.raw_save_dir,
                     "validation.json",
                     subsample_size * self.cfg.val_percent,
                 )
@@ -82,24 +85,30 @@ class OSCARDataModule(pl.LightningDataModule):
         if self.is_setup:
             return
         if stage == "fit" or stage is None:
-            self.train_dataset = datasets.load_dataset(
-                self.save_dir, split="train", cache_dir=self.save_dir
-            )
-            self.train_dataset_tokens = self.train_dataset.map(
+            self.train_dataset, self.train_dataset_tokens = self.setup_split("train")
+        if stage == "validate" or stage is None:
+            self.val_dataset, self.val_dataset_tokens = self.setup_split("val")
+        self.is_setup = True
+
+    def setup_split(self, split: str):
+        dataset = datasets.load_dataset(
+            self.raw_save_dir, split=split, cache_dir=self.processed_save_dir
+        )
+        # load from disk if we already tokenized:
+        processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
+        if os.path.exists(processed_path):
+            print("Dataset already tokenized. Loading from disk")
+            dataset_tokens = datasets.load_from_disk(processed_path)
+        else:
+            dataset_tokens = dataset.map(
                 self.tokenize_fn,
                 batched=True,
                 remove_columns=self.train_dataset.column_names,
             )
-        if stage == "validate" or stage is None:
-            self.val_dataset = datasets.load_dataset(
-                self.save_dir, split="validation", cache_dir=self.save_dir
-            )
-            self.val_dataset_tokens = self.val_dataset.map(
-                self.tokenize_fn,
-                batched=True,
-                remove_columns=self.val_dataset.column_names,
-            )
-        self.is_setup = True
+            # save to disk for next time
+            os.makedirs(processed_path, exist_ok=True)
+            dataset_tokens.save_to_disk(processed_path)
+        return dataset, dataset_tokens
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
