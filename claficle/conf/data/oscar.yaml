@@ -1,7 +1,7 @@
 # configuration for OSCAR dataset
 seed: 42 # will be overwritten by parent seed if run from parent script
 batch_size: 2 # desired effective batch size
-data_dir: ./data/raw "data/" # where to store the data
+data_dir: ./data/raw # where to store the data
 num_workers: 4 # num_workers for dataloaders
 extra_proc_fn: null # additional processing func, such as `translate`; override
 
