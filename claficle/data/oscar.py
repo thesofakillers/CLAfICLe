@@ -89,6 +89,8 @@ class OSCARDataModule(pl.LightningDataModule):
             self.train_dataset, self.train_dataset_tokens = self.setup_split("train")
         if stage == "validate" or stage is None:
             self.val_dataset, self.val_dataset_tokens = self.setup_split("validation")
+        else:
+            raise ValueError(f"Invalid stage: {stage}")
         self.is_setup = True
 
     def setup_split(self, split: str):
@@ -193,7 +195,7 @@ def main(cfg: DictConfig):
         job_type="oscar",
         config=cfg,
         mode="disabled" if cfg.disable_wandb else "online",
-        group=script_host
+        group=script_host,
     )
     tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
     tokenizer.pad_token = tokenizer.eos_token
