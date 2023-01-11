@@ -104,7 +104,7 @@ class OSCARDataModule(pl.LightningDataModule):
             dataset_tokens = dataset.map(
                 self.tokenize_fn,
                 batched=True,
-                remove_columns=self.train_dataset.column_names,
+                remove_columns=dataset.column_names,
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
@@ -193,8 +193,11 @@ def main(cfg: DictConfig):
         config=cfg,
         mode="disabled" if cfg.disable_wandb else "online",
     )
+    tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
+    tokenizer.pad_token = tokenizer.eos_token
     # use lang={en/fr/de} in the cli to set cfg.lang
     oscar = OSCARDataModule(cfg, cfg.lang, 1)
+    oscar.set_tokenizer(tokenizer)
     oscar.prepare_data()
     oscar.setup()
 
