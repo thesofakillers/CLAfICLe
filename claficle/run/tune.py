@@ -24,8 +24,6 @@ def main(cfg: DictConfig):
     # data
     oscar = OSCARDataModule(config=cfg.data, lang=lang, seed=cfg.seed)
     oscar.set_tokenizer(model.tokenizer)
-    oscar.prepare_data()
-    oscar.setup(stage=cfg.tune_mode)
 
     # set up pl trainer (tuner)
     log_save_dir = os.path.join(
