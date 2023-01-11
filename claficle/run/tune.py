@@ -32,12 +32,14 @@ def main(cfg: DictConfig):
         cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", lang
     )
     os.makedirs(log_save_dir, exist_ok=True)
+    script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
     logger = pl.loggers.WandbLogger(
         save_dir=log_save_dir,
         job_type=f"tune-{cfg.tune_mode}",
         project="claficle",
         entity="giulio-uva",
         mode="disabled" if cfg.trainer.disable_wandb else "online",
+        tags=[script_host],
     )
     timer = Timer(interval="epoch")
     if cfg.tune_mode == "profile_memory":
