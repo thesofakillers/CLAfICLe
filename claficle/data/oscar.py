@@ -186,12 +186,14 @@ def main(cfg: DictConfig):
     """
     downloads and processes OSCAR for each of the available languages
     """
+    script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
     wandb.init(
         project="claficle",
         entity="giulio-uva",
         job_type="oscar",
         config=cfg,
         mode="disabled" if cfg.disable_wandb else "online",
+        group=script_host
     )
     tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
     tokenizer.pad_token = tokenizer.eos_token
