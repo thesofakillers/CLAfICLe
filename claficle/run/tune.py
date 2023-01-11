@@ -74,11 +74,10 @@ def main(cfg: DictConfig):
 
         wandb.log({"train_starttime_secs": timer.start_time("train")})
         wandb.log({"train_endtime_secs": timer.end_time("train")})
-
-        wandb.log({"val_starttime_secs": timer.start_time("validation")})
-        wandb.log({"val_endtime_secs": timer.end_time("validation")})
-
         wandb.log({"train_elapsed_secs": timer.time_elapsed("train")})
+
+        wandb.log({"val_starttime_secs": timer.start_time("validate")})
+        wandb.log({"val_endtime_secs": timer.end_time("validate")})
         wandb.log({"val_elapsed_secs": timer.time_elapsed("validate")})
 
 
