@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:0
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=OSCAR
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=4:00:00
+#SBATCH --time=2:00:00
 #SBATCH --mem=48G
 #SBATCH --array=1-2%2
 #SBATCH --output=slurm/outputs/data/arrays/oscar_%A_%a.out
@@ -20,5 +20,5 @@ source activate claficle
 
 HPARAMS_FILE=slurm/data/oscar/setup.array.txt
 
-srun python -u claficle/data/benchmark.py \
+srun python -u claficle/data/oscar.py \
   $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)
