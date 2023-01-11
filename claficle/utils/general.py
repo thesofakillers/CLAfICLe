@@ -32,7 +32,7 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
 
 
 # used below
-T = TypeVar["T"]
+T = TypeVar("T")
 
 
 def flatten_list_with_separator(
