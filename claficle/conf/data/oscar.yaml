@@ -3,7 +3,7 @@ defaults:
   - _self_
   - defaults # see claficle/conf/data/defaults.yaml
 
-sample_size_mb: 4096
+sample_size_mb: 6144
 val_frac: 0.005 # 0.5 percent, similar to Izsak et al. 2021
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
