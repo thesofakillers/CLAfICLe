@@ -1,5 +1,6 @@
 """General utils"""
-from typing import Tuple
+from typing import Tuple, List, Any
+import itertools
 
 import pytorch_lightning as pl
 from omegaconf import DictConfig, OmegaConf
@@ -28,3 +29,16 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     cfg.data.seed = cfg.seed
 
     return model, cfg
+
+
+def flatten_list_with_separator(
+    unflattened_list: List[List[int]], separator: int
+) -> List[int]:
+    """
+    Flattens a list of lists, inserting a separator between each list
+    """
+    return list(
+        itertools.chain.from_iterable(
+            (sublist + [separator]) for sublist in unflattened_list
+        )
+    )[:-1]

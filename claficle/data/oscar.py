@@ -11,6 +11,8 @@ import transformers
 from tqdm import tqdm
 import torch
 
+from claficle.utils.general import flatten_list_with_separator
+
 
 class OSCARDataModule(pl.LightningDataModule):
     """
@@ -83,9 +85,19 @@ class OSCARDataModule(pl.LightningDataModule):
             self.train_dataset = datasets.load_dataset(
                 self.save_dir, split="train", cache_dir=self.save_dir
             )
+            self.train_dataset_tokens = self.train_dataset.map(
+                self.tokenize_fn,
+                batched=True,
+                remove_columns=self.train_dataset.column_names,
+            )
         if stage == "validate" or stage is None:
             self.val_dataset = datasets.load_dataset(
                 self.save_dir, split="validation", cache_dir=self.save_dir
+            )
+            self.val_dataset_tokens = self.val_dataset.map(
+                self.tokenize_fn,
+                batched=True,
+                remove_columns=self.val_dataset.column_names,
             )
         self.is_setup = True
 
@@ -97,6 +109,37 @@ class OSCARDataModule(pl.LightningDataModule):
         )
         self.max_seq_length = min(1024, tokenizer.model_max_length)
         self.vocab_size = len(self.tokenizer)
+
+    def tokenize_fn(self, batch):
+        output = self.tokenizer(
+            batch["text"],
+            truncation=False,
+        )
+
+        # concatenate every sample into one single list, separating throughout
+        concat_input_ids = flatten_list_with_separator(
+            output["token_ids"], self.tokenizer.eos_token_id
+        )
+        concat_attention_mask = flatten_list_with_separator(output["attention_mask"], 0)
+
+        # determine how much to pad to make divisible by max_seq_length
+        num_pad = (
+            self.max_seq_length - (len(concat_input_ids) % self.max_seq_length)
+        ) % self.max_seq_length
+
+        # pad to make divisible by max_seq_length if necessary
+        if num_pad != 0:
+            concat_input_ids += [self.pad_token_id] * num_pad
+            concat_attention_mask += [0] * num_pad
+
+        # convert to LongTensors and shape them into (batch_size, max_seq_length)
+        input_ids = torch.LongTensor(concat_input_ids).view(-1, self.max_seq_length)
+        attention_mask = torch.LongTensor(concat_attention_mask).view(
+            -1, self.max_seq_length
+        )
+        # note that the batch size here could be different from specified batch size
+
+        return {"input_ids": input_ids, "attention_mask": attention_mask}
 
     @staticmethod
     def collate_fn(features: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
