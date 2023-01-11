@@ -1,5 +1,5 @@
 """General utils"""
-from typing import Tuple, List, Any
+from typing import Tuple, List, TypeVar
 import itertools
 
 import pytorch_lightning as pl
@@ -31,9 +31,13 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     return model, cfg
 
 
+# used below
+T = TypeVar["T"]
+
+
 def flatten_list_with_separator(
-    unflattened_list: List[List[int]], separator: int
-) -> List[int]:
+    unflattened_list: List[List[T]], separator: T
+) -> List[T]:
     """
     Flattens a list of lists, inserting a separator between each list
     """
