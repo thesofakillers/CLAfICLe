@@ -22,7 +22,7 @@ class OSCARDataModule(pl.LightningDataModule):
     Note: run `set_tokenizer(tokenizer)` before running self.setup()
     """
 
-    def __init__(self, config: DictConfig, lang, seed):
+    def __init__(self, config: DictConfig, lang: str, seed: str):
         super().__init__()
         self.cfg = config
         self.is_setup = False
