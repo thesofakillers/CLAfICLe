@@ -39,7 +39,7 @@ def main(cfg: DictConfig):
         project="claficle",
         entity="giulio-uva",
         mode="disabled" if cfg.trainer.disable_wandb else "online",
-        tags=[script_host],
+        group=script_host,
     )
     timer = Timer(interval="epoch")
     if cfg.tune_mode == "profile_memory":
