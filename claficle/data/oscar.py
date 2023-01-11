@@ -128,7 +128,7 @@ class OSCARDataModule(pl.LightningDataModule):
 
         # concatenate every sample into one single list, separating throughout
         concat_input_ids = flatten_list_with_separator(
-            output["token_ids"], self.tokenizer.eos_token_id
+            output["input_ids"], self.tokenizer.eos_token_id
         )
         concat_attention_mask = flatten_list_with_separator(output["attention_mask"], 0)
 
