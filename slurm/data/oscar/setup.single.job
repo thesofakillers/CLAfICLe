@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=OSCAR
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=2:00:00
+#SBATCH --mem=48G
+#SBATCH --output=slurm/outputs/data/oscar_%A.out
+
+source "./slurm/.secrets"
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+srun python -u claficle/data/oscar.py lang=en
