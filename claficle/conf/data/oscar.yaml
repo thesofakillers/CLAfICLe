@@ -1,12 +1,10 @@
-# configuration for OSCAR dataset
-seed: 42 # will be overwritten by parent seed if run from parent script
-batch_size: 2 # desired effective batch size
-data_dir: "data/" # where to store the data
-num_workers: 4 # num_workers for dataloaders
-extra_proc_fn: null # additional processing func, such as `translate`; override
+# configuration for the OSCAR dataset
+defaults:
+  - _self_
+  - defaults # see claficle/conf/data/defaults.yaml
 
 sample_size_mb: 4096
-val_percent: 0.05
+val_percent: 0.005
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
 hydra:
