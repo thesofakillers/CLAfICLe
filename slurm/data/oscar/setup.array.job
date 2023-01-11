@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=18
 #SBATCH --time=2:00:00
 #SBATCH --mem=48G
-#SBATCH --array=1-2%2
+#SBATCH --array=1-3%3
 #SBATCH --output=slurm/outputs/data/arrays/oscar_%A_%a.out
 
 source "./slurm/.secrets"
