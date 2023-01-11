@@ -1,4 +1,3 @@
-from collections.abc import Callable
 import os
 from pathlib import Path
 import json
@@ -61,10 +60,15 @@ class OSCARDataModule(pl.LightningDataModule):
                 )
                 dataset_iter = iter(dataset)
                 # save subsample_size bytes of data as train
+                print(f"Downloading {self.cfg.sample_size_mb}MB of train data")
                 datastream_to_file(
                     dataset_iter, self.save_dir, "train.json", subsample_size
                 )
                 # save remaining subsample_size * val_percent bytes of data as val
+                print(
+                    f"Downloading {self.cfg.sample_size_mb * self.cfg.val_percent}MB"
+                    " of val data"
+                )
                 datastream_to_file(
                     dataset_iter,
                     self.save_dir,
@@ -128,7 +132,8 @@ def datastream_to_file(
 def main(cfg: DictConfig):
     """downloads and processes the data for benchmark for each of the available languages"""
     print(cfg)
-    oscar = OSCARDataModule(cfg, "fr", 1)
+    # use +lang={en/fr/de} in the cli to get cfg.lang
+    oscar = OSCARDataModule(cfg, cfg.lang, 1)
     oscar.prepare_data()
     oscar.setup()
 
