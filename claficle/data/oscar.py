@@ -88,7 +88,7 @@ class OSCARDataModule(pl.LightningDataModule):
         if stage == "fit" or stage is None:
             self.train_dataset, self.train_dataset_tokens = self.setup_split("train")
         if stage == "validate" or stage is None:
-            self.val_dataset, self.val_dataset_tokens = self.setup_split("val")
+            self.val_dataset, self.val_dataset_tokens = self.setup_split("validation")
         self.is_setup = True
 
     def setup_split(self, split: str):
