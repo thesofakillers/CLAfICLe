@@ -46,7 +46,7 @@ def main(cfg: DictConfig):
         trainer_kwargs = {
             "auto_scale_batch_size": "binsearch",
         }
-    elif cfg.tuune_mode == "profile_time":
+    elif cfg.tune_mode == "profile_time":
         trainer_kwargs = {
             "accumulate_grad_batches": cfg.trainer.accumulate_grad_batches,
             "val_check_interval": cfg.trainer.val_check_interval,
