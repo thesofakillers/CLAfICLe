@@ -51,7 +51,7 @@ class OSCARDataModule(pl.LightningDataModule):
                     split="train",
                 )
                 # manually split into train and test and save to disk
-                dataset = dataset.train_test_split(test_size=self.cfg.val_percent)
+                dataset = dataset.train_test_split(test_size=self.cfg.val_frac)
                 dataset.save_to_disk(self.raw_save_dir)
             else:
                 subsample_size = self.cfg.sample_size_mb * 1024 * 1024
@@ -69,16 +69,16 @@ class OSCARDataModule(pl.LightningDataModule):
                 datastream_to_file(
                     dataset_iter, self.raw_save_dir, "train.json", subsample_size
                 )
-                # save remaining subsample_size * val_percent bytes of data as val
+                # save remaining subsample_size * val_frac bytes of data as val
                 print(
-                    f"Downloading {self.cfg.sample_size_mb * self.cfg.val_percent}MB"
+                    f"Downloading {self.cfg.sample_size_mb * self.cfg.val_frac}MB"
                     " of val data"
                 )
                 datastream_to_file(
                     dataset_iter,
                     self.raw_save_dir,
                     "validation.json",
-                    subsample_size * self.cfg.val_percent,
+                    subsample_size * self.cfg.val_frac,
                 )
 
     def setup(self, stage: Optional[str] = None):
