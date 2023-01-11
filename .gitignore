@@ -1,4 +1,5 @@
 # user-defined
+/wandb/
 /slurm/.secrets
 notebooks/*sandbox.ipynb
 .hydra
