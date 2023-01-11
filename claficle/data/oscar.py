@@ -10,6 +10,7 @@ import datasets
 import transformers
 from tqdm import tqdm
 import torch
+import wandb
 
 from claficle.utils.general import flatten_list_with_separator
 
@@ -182,9 +183,17 @@ def datastream_to_file(
 
 @hydra.main(version_base=None, config_path="../conf/data/", config_name="oscar")
 def main(cfg: DictConfig):
-    """downloads and processes the data for benchmark for each of the available languages"""
-    print(cfg)
-    # use +lang={en/fr/de} in the cli to get cfg.lang
+    """
+    downloads and processes OSCAR for each of the available languages
+    """
+    wandb.init(
+        project="claficle",
+        entity="giulio-uva",
+        job_type="oscar",
+        config=cfg,
+        mode="disabled" if cfg.disable_wandb else "online",
+    )
+    # use lang={en/fr/de} in the cli to set cfg.lang
     oscar = OSCARDataModule(cfg, cfg.lang, 1)
     oscar.prepare_data()
     oscar.setup()
