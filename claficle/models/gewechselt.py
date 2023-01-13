@@ -9,8 +9,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import hydra
 import datasets
+import transformers
 
-from claficle.models.base import PlainGPT2
+from claficle.models.plain_gpt2 import PlainGPT2
 
 langcode_to_lang: Dict[str, str] = {
     "en": "english",
@@ -58,8 +59,24 @@ class Gewechselt(PlainGPT2):
         return target_tokenizer, lm
 
     def configure_optimizers(self):
-        # TODO
-        raise NotImplementedError
+        """
+        Adam with Cosine annealing to 0 by end of training with warmup
+        peak learning rate of 5e-4
+        """
+        total_steps = self.trainer.estimated_stepping_batches
+        optimizer = torch.optim.Adam(self.lm.parameters(), self.hparams.peak_lr)
+        scheduler = transformers.get_cosine_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=int(0.1 * total_steps),
+            num_training_steps=total_steps,
+        )
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": "step",  # scheduler is called after each step
+            },
+        }
 
 
 @hydra.main(
