@@ -1,0 +1,5 @@
+progress_bar: False
+log_dir: "./logs/"
+devices: 1 # how many devices to use
+accelerator: 'auto'  # one of `gpu`, `cpu`, `tpu`, `auto`
+disable_wandb: False
