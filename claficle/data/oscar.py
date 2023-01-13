@@ -95,10 +95,9 @@ class OSCARDataModule(pl.LightningDataModule):
         self.is_setup = True
 
     def setup_split(self, split: str):
+        # dict key is 'train' regardless of split loaded
         dataset = datasets.load_dataset(
-            "json",
-            os.path.join(self.raw_save_dir, f"{split}.json")
-            # dict key is 'train' regardless of split loaded
+            "json", data_files=os.path.join(self.raw_save_dir, f"{split}.json")
         )["train"]
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
