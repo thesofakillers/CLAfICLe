@@ -56,7 +56,7 @@ def main(cfg: DictConfig):
     trainer.predict(
         model,
         dataloaders=torch.utils.data.DataLoader(
-            oscar.train_dataset.select([1]), batch_size=1
+            oscar.train_dataset.select([1]), batch_size=1, collate_fn=oscar.collate_fn
         ),
         return_predictions=False,
     )
