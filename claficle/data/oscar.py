@@ -154,7 +154,7 @@ class OSCARDataModule(pl.LightningDataModule):
         return {"input_ids": input_ids, "attention_mask": attention_mask}
 
     @staticmethod
-    def collate_fn(features: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+    def collate_fn(features: List[Dict[str, List[int]]]) -> Dict[str, torch.Tensor]:
         """
         Converts a list of dictionaries of tensors into a dictionary of tensors
         """
