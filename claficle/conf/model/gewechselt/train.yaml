@@ -1,0 +1,4 @@
+defaults:
+  - base_gewechselt
+
+peak_lr: 0.0005
