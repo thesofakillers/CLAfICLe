@@ -27,6 +27,9 @@ class BaseModel(pl.LightningModule):
         # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
         self.tokenizer.pad_token = self.tokenizer.eos_token
 
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
+        return self.lm(**batch)
+
     def initialize(
         self, config: DictConfig, **kwargs
     ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
@@ -164,7 +167,9 @@ class BaseModel(pl.LightningModule):
         """
         self.benchmark_metadata = metadata
 
-    def run_causal_model_for_metaicl(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
+    def run_causal_model_for_metaicl(
+        self, input_ids: Tensor, attention_mask: Tensor
+    ) -> Tensor:
         """
         Runs the causal model on MetaICL-like input.
         To be implemented in inheriting classes.
