@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import Timer
 import wandb
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
 from claficle.models.base import BaseModel
 from claficle.utils.general import run_script_preamble
@@ -38,6 +38,9 @@ def main(cfg: DictConfig):
         entity="giulio-uva",
         mode="disabled" if cfg.trainer.disable_wandb else "online",
         group=script_host,
+        config=OmegaConf.to_container(
+            cfg, resolve=True, throw_on_missing=True
+        ),
     )
     timer = Timer(interval="epoch")
     if cfg.tune_mode == "profile_memory":

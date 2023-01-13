@@ -4,7 +4,7 @@ import json
 from typing import Any, Dict, Generator, Optional, List
 
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 import datasets
 import transformers
@@ -193,7 +193,7 @@ def main(cfg: DictConfig):
         project="claficle",
         entity="giulio-uva",
         job_type="oscar",
-        config=cfg,
+        config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
         mode="disabled" if cfg.disable_wandb else "online",
         group=script_host,
     )
