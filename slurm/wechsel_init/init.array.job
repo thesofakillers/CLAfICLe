@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=INITW
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=4:00:00
+#SBATCH --mem=48G
+#SBATCH --array=1-4%4
+#SBATCH --output=slurm/outputs/wechsel_init/arrays/wechsel_init_%A_%a.out
+
+source "./slurm/.secrets"
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+HPARAMS_FILE=slurm/wechsel_init/init.array.txt
+
+srun python -u claficle/wechsel_init.py \
+  $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)

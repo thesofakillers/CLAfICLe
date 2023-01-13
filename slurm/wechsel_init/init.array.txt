@@ -1,0 +1,4 @@
+model.target_lang="fr" model.name="Gewechselt"
+model.target_lang="de" model.name="Gewechselt"
+model.target_lang="fr" model.name="Gewechselt" model.base_checkpoint="checkpoints/metaicl.pt"
+model.target_lang="de" model.name="Gewechselt" model.base_checkpoint="checkpoints/metaicl.pt"
