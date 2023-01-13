@@ -10,6 +10,7 @@ import torch
 import hydra
 import datasets
 import transformers
+import numpy as np
 
 from claficle.models.plain_gpt2 import PlainGPT2
 
@@ -53,6 +54,7 @@ class Gewechselt(PlainGPT2):
             lm.get_input_embeddings().weight.detach().numpy(),
         )
         print("Replacing source embeddings with target embeddings...")
+        target_embeddings=np.float32(target_embeddings)
         lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
         print("Done.")
 
