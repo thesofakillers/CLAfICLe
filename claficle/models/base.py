@@ -28,7 +28,11 @@ class BaseModel(pl.LightningModule):
         self.tokenizer.pad_token = self.tokenizer.eos_token
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
-        return self.lm(**batch)
+        return self.lm(
+            input_ids=batch["input_ids"],
+            attention_mask=batch["attention_mask"],
+            labels=batch["input_ids"],
+        )
 
     def initialize(
         self, config: DictConfig, **kwargs
@@ -47,7 +51,9 @@ class BaseModel(pl.LightningModule):
         tokenizer, lm = self.custom_init(tokenizer, lm, config, **kwargs)
         return tokenizer, lm
 
-    def custom_init(self, tokenizer, lm, config, **kwargs):
+    def custom_init(
+        self, tokenizer, lm, config, **kwargs
+    ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
         """
         Override this to perform custom initialization.
         By default we do nothing.
