@@ -11,6 +11,7 @@ import transformers
 from tqdm import tqdm
 import torch
 import wandb
+import numpy as np
 
 from claficle.utils.general import flatten_list_with_separator
 
@@ -144,12 +145,11 @@ class OSCARDataModule(pl.LightningDataModule):
             concat_input_ids += [self.pad_token_id] * num_pad
             concat_attention_mask += [0] * num_pad
 
-        # convert to LongTensors and shape them into (batch_size, max_seq_length)
-        input_ids = torch.LongTensor(concat_input_ids).view(-1, self.max_seq_length)
-        attention_mask = torch.LongTensor(concat_attention_mask).view(
-            -1, self.max_seq_length
+        # convert to np, reshape (batch_size, max_seq_length), back to list of lists
+        input_ids = np.array(concat_input_ids).reshape(-1, self.max_seq_length).tolist()
+        attention_mask = (
+            np.array(concat_attention_mask).reshape(-1, self.max_seq_length).tolist()
         )
-        # note that the batch size here could be different from specified batch size
 
         return {"input_ids": input_ids, "attention_mask": attention_mask}
 
