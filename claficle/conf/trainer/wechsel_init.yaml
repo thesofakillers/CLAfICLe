@@ -1,0 +1,3 @@
+defaults:
+  - defaults # see claficle/conf/trainer/defaults.yaml
+  - _self_
