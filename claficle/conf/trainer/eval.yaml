@@ -1,4 +1,4 @@
 # trainer configuration for eval run
 defaults:  
-  - default
+  - defaults # see claficle/conf/trainer/defaults.yaml
   - _self_

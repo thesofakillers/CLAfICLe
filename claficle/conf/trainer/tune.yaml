@@ -1,6 +1,6 @@
 # trainer configuration for tune run
 defaults:
-  - default
+  - defaults # see claficle/conf/trainer/defaults.yaml
   - _self_
 train_mode: "clm"
 accumulate_grad_batches: 256
