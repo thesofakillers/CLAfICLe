@@ -18,8 +18,8 @@ class PlainGPT2(BaseModel):
     PL wrapper around huggingface transformers gpt2
     """
 
-    def __init__(self, config: DictConfig):
-        super().__init__(config)
+    def __init__(self, config: DictConfig, **kwargs):
+        super().__init__(config, **kwargs)
 
     def training_step(self, batch: Dict[str, Tensor], batch_idx: int) -> Tensor:
         shared_step_output = self._shared_step(batch, batch_idx)
