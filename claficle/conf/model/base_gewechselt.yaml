@@ -1,5 +1,6 @@
 defaults:
   - base_model
+  - _self_
 
 source_lang: "en"
 target_lang: ???
