@@ -65,12 +65,12 @@ def main(cfg: DictConfig):
 
     # save the checkpoint
     prefix = (
-        model.base_checkpoint
-        if model.base_checkpoint is not None
-        else model.causalLM_variant
+        cfg.model.base_checkpoint
+        if cfg.model.base_checkpoint is not None
+        else cfg.model.causalLM_variant
     )
     trainer.save_checkpoint(
-        "checkpoints/" f"{prefix}_{model.name}_{model.target_lang}_init.ckpt"
+        "checkpoints/" f"{prefix}_{cfg.model.name}_{cfg.model.target_lang}_init.ckpt"
     )
 
 
