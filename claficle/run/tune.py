@@ -38,9 +38,7 @@ def main(cfg: DictConfig):
         entity="giulio-uva",
         mode="disabled" if cfg.trainer.disable_wandb else "online",
         group=script_host,
-        config=OmegaConf.to_container(
-            cfg, resolve=True, throw_on_missing=True
-        ),
+        config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
     )
     timer = Timer(interval="epoch")
     if cfg.tune_mode == "profile_memory":
