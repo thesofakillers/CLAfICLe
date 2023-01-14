@@ -50,7 +50,7 @@ class OSCARDataModule(pl.LightningDataModule):
             data_stream: datasets.iterable_dataset.IterableDataset = (
                 datasets.load_dataset(
                     "oscar-corpus/OSCAR-2201",
-                    f"unshuffled_deduplicated_{self.lang}",
+                    self.lang,
                     split="train",
                     streaming=True,
                 )
@@ -87,7 +87,7 @@ class OSCARDataModule(pl.LightningDataModule):
                         },
                     ),
                 }
-            ).save_to_disk(self.raw_save_dir)
+            ).save_to_disk(self.raw_save_dir, fs="deprecated")
 
     def setup(self, stage: Optional[str] = None):
         if self.is_setup:
@@ -116,7 +116,7 @@ class OSCARDataModule(pl.LightningDataModule):
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
-            dataset_tokens.save_to_disk(processed_path)
+            dataset_tokens.save_to_disk(processed_path, fs="deprecated")
         return dataset, dataset_tokens
 
     def set_tokenizer(self, tokenizer):
