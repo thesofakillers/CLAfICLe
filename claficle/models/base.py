@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Tuple, Optional
 
 import pytorch_lightning as pl
@@ -45,7 +46,9 @@ class BaseModel(pl.LightningModule):
         lm = AutoModelForCausalLM.from_pretrained(config.causalLM_variant)
         # optionally load a state dict if using fine-tuned model as starting point
         if config.base_checkpoint is not None:
-            state_dict = torch.load(config.base_checkpoint)
+            state_dict = torch.load(
+                os.path.join("checkpoints/", config.base_checkpoint)
+            )
             lm.load_state_dict(state_dict)
         # additional custom initialization
         tokenizer, lm = self.custom_init(tokenizer, lm, config, **kwargs)

@@ -65,7 +65,7 @@ def main(cfg: DictConfig):
 
     # save the checkpoint
     prefix = (
-        cfg.model.base_checkpoint
+        cfg.model.base_checkpoint.split(".")[0]
         if cfg.model.base_checkpoint is not None
         else cfg.model.causalLM_variant
     )
