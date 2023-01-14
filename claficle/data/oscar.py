@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
-import json
-from typing import Any, Dict, Generator, Optional, List
+from typing import Any, Dict, Optional, List
+import itertools
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 import datasets
+from datasets import Dataset, DatasetDict
 import transformers
 from tqdm import tqdm
 import torch
@@ -28,10 +29,10 @@ class OSCARDataModule(pl.LightningDataModule):
         self.cfg = config
         self.is_setup = False
         self.raw_save_dir = os.path.join(
-            self.cfg.data_dir, "raw", "oscar", lang, str(self.cfg.sample_size_mb)
+            self.cfg.data_dir, "raw", "oscar", lang, str(self.cfg.num_samples)
         )
         self.processed_save_dir = os.path.join(
-            self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.sample_size_mb)
+            self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.num_samples)
         )
         self.lang = lang
         pl.seed_everything(seed)
@@ -46,42 +47,47 @@ class OSCARDataModule(pl.LightningDataModule):
         # otherwise, download and save
         else:
             Path(self.raw_save_dir).mkdir(parents=True, exist_ok=True)
-            if self.cfg.sample_size_mb is None:
-                dataset: datasets.arrow_dataset.Dataset = datasets.load_dataset(
+            data_stream: datasets.iterable_dataset.IterableDataset = (
+                datasets.load_dataset(
                     "oscar-corpus/OSCAR-2201",
                     f"unshuffled_deduplicated_{self.lang}",
                     split="train",
+                    streaming=True,
                 )
-                # manually split into train and test and save to disk
-                dataset = dataset.train_test_split(test_size=self.cfg.val_frac)
-                dataset.save_to_disk(self.raw_save_dir)
-            else:
-                subsample_size = self.cfg.sample_size_mb * 1024 * 1024
-                dataset: datasets.iterable_dataset.IterableDataset = (
-                    datasets.load_dataset(
-                        "oscar",
-                        f"unshuffled_deduplicated_{self.lang}",
-                        split="train",
-                        streaming=True,
-                    )
-                )
-                dataset_iter = iter(dataset)
-                # save subsample_size bytes of data as train
-                print(f"Downloading {self.cfg.sample_size_mb}MB of train data")
-                datastream_to_file(
-                    dataset_iter, self.raw_save_dir, "train.json", subsample_size
-                )
-                # save remaining subsample_size * val_frac bytes of data as val
-                print(
-                    f"Downloading {self.cfg.sample_size_mb * self.cfg.val_frac}MB"
-                    " of val data"
-                )
-                datastream_to_file(
-                    dataset_iter,
-                    self.raw_save_dir,
-                    "validation.json",
-                    subsample_size * self.cfg.val_frac,
-                )
+            )
+
+            num_val_samples = int(self.cfg.num_samples * self.cfg.val_frac)
+
+            # generator necessary for Dataset.from_generator below
+            def gen(start, stop, total, desc):
+                for i in itertools.islice(
+                    tqdm(iter(data_stream), total=total, desc=desc), start, stop
+                ):
+                    yield i
+
+            # make a dataset dict and save it directly to disk
+            DatasetDict(
+                {
+                    "train": Dataset.from_generator(
+                        gen,
+                        gen_kwargs={
+                            "start": 0,
+                            "stop": self.cfg.num_samples + 1,
+                            "total": self.cfg.num_samples,
+                            "desc": "Train stream",
+                        },
+                    ),
+                    "validation": Dataset.from_generator(
+                        gen,
+                        gen_kwargs={
+                            "start": self.cfg.num_samples,
+                            "stop": self.cfg.num_samples + num_val_samples + 1,
+                            "total": self.cfg.num_samples + num_val_samples,
+                            "desc": "Validation stream",
+                        },
+                    ),
+                }
+            ).save_to_disk(self.raw_save_dir)
 
     def setup(self, stage: Optional[str] = None):
         if self.is_setup:
@@ -95,10 +101,8 @@ class OSCARDataModule(pl.LightningDataModule):
         self.is_setup = True
 
     def setup_split(self, split: str):
-        # dict key is 'train' regardless of split loaded
-        dataset = datasets.load_dataset(
-            "json", data_files=os.path.join(self.raw_save_dir, f"{split}.json")
-        )["train"]
+        # just the raw dataset for this split
+        dataset = datasets.load_from_disk(os.path.join(self.raw_save_dir))[split]
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
         if os.path.exists(processed_path):
@@ -161,27 +165,6 @@ class OSCARDataModule(pl.LightningDataModule):
         """
         # converting to dict of tensors
         return transformers.default_data_collator(features)
-
-
-def datastream_to_file(
-    data_stream: Generator[Dict, Any, Any],
-    save_dir: str,
-    file_name: str,
-    total_size_bytes: int,
-):
-    with open(os.path.join(save_dir, file_name), "w") as f:
-        size = 0
-        bar = tqdm(total=total_size_bytes)
-
-        while size < total_size_bytes:
-            entry = next(data_stream)
-
-            entry_size = len(entry["text"].encode("utf-8"))
-            size += entry_size
-
-            bar.update(entry_size)
-
-            f.write(f"{json.dumps(entry)}\n")
 
 
 @hydra.main(version_base=None, config_path="../conf/data/", config_name="oscar")

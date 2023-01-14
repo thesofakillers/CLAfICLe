@@ -18,4 +18,4 @@ module load Miniconda3/4.12.0
 source activate claficle
 
 srun python -u claficle/run/tune.py \
-  data.sample_size_mb=1024
+  data.num_samples=400000

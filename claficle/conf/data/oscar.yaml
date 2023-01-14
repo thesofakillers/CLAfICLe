@@ -3,7 +3,7 @@ defaults:
   - _self_
   - defaults # see claficle/conf/data/defaults.yaml
 
-sample_size_mb: 6144
+num_samples: 2400000
 val_frac: 0.005 # 0.5 percent, similar to Izsak et al. 2021
 
 # relevant when running from main()
