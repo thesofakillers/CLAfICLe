@@ -56,8 +56,11 @@ class Gewechselt(PlainGPT2):
         self.lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
 
         print("Saving target tokenizer...")
+        # make sure the directory exists, if not create it
+        tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
+        os.makedirs(tokenizer_save_dir, exist_ok=True)
         target_tokenizer.save_pretrained(
-            os.path.join("checkpoints/", config.tokenizer_path)
+            os.path.join(tokenizer_save_dir, config.tokenizer_path)
         )
         print("Done.")
         return target_tokenizer
