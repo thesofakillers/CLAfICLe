@@ -15,7 +15,7 @@ class BaseModel(pl.LightningModule):
     Abstract class from which to inherit from
     """
 
-    def __init__(self, config: DictConfig, **kwargs):
+    def __init__(self, config: DictConfig):
         super().__init__()
         self.save_hyperparameters(config)
         self.curr_dataloader_name: Optional[str] = None
@@ -23,10 +23,7 @@ class BaseModel(pl.LightningModule):
             "f1": TF.f1_score,
             "accuracy": TF.accuracy,
         }
-        self.tokenizer, self.lm = self.initialize(config, **kwargs)
-        self.tokenizer.truncation_side = "left"
-        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.lm = self.initialize_lm(config)
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
         return self.lm(
@@ -35,14 +32,10 @@ class BaseModel(pl.LightningModule):
             labels=batch["input_ids"],
         )
 
-    def initialize(
-        self, config: DictConfig, **kwargs
-    ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
+    def initialize_lm(self, config: DictConfig) -> AutoModelForCausalLM:
         """
-        LM and Tokenizer initialization. Calls custom_init() that can be overriden
-        Must return the tokenizer and pretrained causal language model
+        LM initialization, allowing for loading weights from fine-tuned checkpoint
         """
-        tokenizer = AutoTokenizer.from_pretrained(config.causalLM_variant)
         lm = AutoModelForCausalLM.from_pretrained(config.causalLM_variant)
         # optionally load a state dict if using fine-tuned model as starting point
         if config.base_checkpoint is not None:
@@ -50,18 +43,15 @@ class BaseModel(pl.LightningModule):
                 os.path.join("checkpoints/", config.base_checkpoint)
             )
             lm.load_state_dict(state_dict)
-        # additional custom initialization
-        tokenizer, lm = self.custom_init(tokenizer, lm, config, **kwargs)
-        return tokenizer, lm
+        return lm
 
-    def custom_init(
-        self, tokenizer, lm, config, **kwargs
-    ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
+    def post_init(self, **kwargs):
         """
-        Override this to perform custom initialization.
-        By default we do nothing.
+        Optional method that can be called after initialization
+        for additional initialization steps. Separate from __init__
+        to avoid being called when loading from checkpoint.
         """
-        return tokenizer, lm
+        raise NotImplementedError
 
     def test_step(
         self,

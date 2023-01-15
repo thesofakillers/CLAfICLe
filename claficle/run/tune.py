@@ -6,6 +6,7 @@ from pytorch_lightning.callbacks import Timer
 import wandb
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import transformers
 
 from claficle.models.base import BaseModel
 from claficle.utils.general import run_script_preamble
@@ -18,12 +19,13 @@ def main(cfg: DictConfig):
     model: BaseModel
     model, cfg = run_script_preamble(cfg)
 
-    # hardcode the language. Memory and time will be the roughly same for any language
-    lang = "fr"
+    # hardcode the language to english. Memory and time will be the roughly same for any language
+    lang = "en"
 
     # data
     oscar = OSCARDataModule(config=cfg.data, lang=lang, seed=cfg.seed)
-    oscar.set_tokenizer(model.tokenizer)
+    tokenizer = transformers.AutoTokenizer.from_pretrained(cfg.model.causalLM_variant)
+    oscar.set_tokenizer(tokenizer) # necessary for collate_fn
 
     # set up pl trainer (tuner)
     log_save_dir = os.path.join(

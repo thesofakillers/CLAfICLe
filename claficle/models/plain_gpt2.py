@@ -9,6 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 import datasets
 import wandb
+from transformers import AutoTokenizer
 
 from claficle.models.base import BaseModel
 
@@ -18,8 +19,8 @@ class PlainGPT2(BaseModel):
     PL wrapper around huggingface transformers gpt2
     """
 
-    def __init__(self, config: DictConfig, **kwargs):
-        super().__init__(config, **kwargs)
+    def __init__(self, config: DictConfig):
+        super().__init__(config)
 
     def training_step(self, batch: Dict[str, Tensor], batch_idx: int) -> Tensor:
         shared_step_output = self._shared_step(batch, batch_idx)
@@ -83,7 +84,7 @@ class PlainGPT2(BaseModel):
         n_datapoints = int(512 * 10 * 0.005)  # 0.5 percent of 4 batches worth of data
         return self._dummy_dataloader(n_datapoints, shuffle=False)
 
-    def _dummy_dataloader(self, n_datapoints, shuffle: bool):
+    def _dummy_dataloader(self, n_datapoints: int, shuffle: bool):
         """helper method for train_dataloader and val_dataloader"""
         wandb.alert(
             title="Using dummy dataloader",
@@ -91,15 +92,16 @@ class PlainGPT2(BaseModel):
             "If this is not the case, something is wrong.",
             level=wandb.AlertLevel.WARN,
         )
+        tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
         dataset = datasets.Dataset.from_dict(
             {
                 "input_ids": torch.randint(
                     0,
-                    len(self.tokenizer),
-                    size=(n_datapoints, self.tokenizer.model_max_length),
+                    len(tokenizer),
+                    size=(n_datapoints, tokenizer.model_max_length),
                 ),
                 "attention_mask": torch.ones(
-                    (n_datapoints, self.tokenizer.model_max_length), dtype=int
+                    (n_datapoints, tokenizer.model_max_length), dtype=int
                 ),
             }
         )

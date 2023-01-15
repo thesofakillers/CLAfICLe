@@ -2,6 +2,7 @@
 A Gewechselt model: A model to which WECHSEL is applied
 """
 from typing import Tuple, Dict
+import os
 
 from omegaconf import DictConfig
 from wechsel import WECHSEL, load_embeddings
@@ -26,18 +27,15 @@ class Gewechselt(PlainGPT2):
     GPT2 Model initialized using WECHSEL (Minixhofer et al. 2022)
     """
 
-    def __init__(self, config: DictConfig, target_data: datasets.arrow_dataset.Dataset):
-        super().__init__(config, target_data=target_data)
+    def __init__(self, config: DictConfig):
+        super().__init__(config)
 
-    def custom_init(
-        self,
-        tokenizer,
-        lm,
-        config: DictConfig,
-        target_data: datasets.arrow_dataset.Dataset,  # this is a kwarg
-    ) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
+    def post_init(
+        self, config: DictConfig, target_data: datasets.arrow_dataset.Dataset
+    ) -> AutoTokenizer:
         """Applies WECHSEL initialization"""
         print("Training target tokenizer...")
+        tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
         target_tokenizer = tokenizer.train_new_from_iterator(
             target_data["text"],
             vocab_size=len(tokenizer),
@@ -51,14 +49,18 @@ class Gewechselt(PlainGPT2):
         target_embeddings, info = wechsel.apply(
             tokenizer,
             target_tokenizer,
-            lm.get_input_embeddings().weight.detach().numpy(),
+            self.lm.get_input_embeddings().weight.detach().numpy(),
         )
         print("Replacing source embeddings with target embeddings...")
-        target_embeddings=np.float32(target_embeddings)
-        lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
-        print("Done.")
+        target_embeddings.dtype = np.float32
+        self.lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
 
-        return target_tokenizer, lm
+        print("Saving target tokenizer...")
+        target_tokenizer.save_pretrained(
+            os.path.join("checkpoints/", config.tokenizer_path)
+        )
+        print("Done.")
+        return target_tokenizer
 
     def configure_optimizers(self):
         """
@@ -100,7 +102,7 @@ def main(cfg: DictConfig):
         data_cfg = yaml.load(f, Loader=SafeLoader)
     data_cfg = DictConfig(data_cfg)
 
-    data_cfg.sample_size_mb = 1024
+    data_cfg.num_samples = 400000
 
     oscar_fr = OSCARDataModule(data_cfg, cfg.target_lang, 1)
     oscar_fr.prepare_data()
