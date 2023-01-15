@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, List
+from typing import Dict, Optional, List
 import itertools
 
 import hydra
@@ -15,6 +15,8 @@ import wandb
 import numpy as np
 
 from claficle.utils.general import flatten_list_with_separator
+
+datasets.disable_caching()
 
 
 class OSCARDataModule(pl.LightningDataModule):
@@ -43,6 +45,9 @@ class OSCARDataModule(pl.LightningDataModule):
             return
         # if already saved, don't need to download
         if os.path.exists(self.raw_save_dir):
+            dataset_dict = datasets.load_from_disk(self.raw_save_dir)
+            self.train_dataset = dataset_dict["train"]
+            self.val_dataset = dataset_dict["validation"]
             return
         # otherwise, download and save
         else:
@@ -65,50 +70,50 @@ class OSCARDataModule(pl.LightningDataModule):
                 ):
                     yield i
 
-            # make a dataset dict and save it directly to disk
-            DatasetDict(
-                {
-                    "train": Dataset.from_generator(
-                        gen,
-                        gen_kwargs={
-                            "start": 0,
-                            "stop": self.cfg.num_samples + 1,
-                            "total": self.cfg.num_samples,
-                            "desc": "Train stream",
-                        },
-                    ),
-                    "validation": Dataset.from_generator(
-                        gen,
-                        gen_kwargs={
-                            "start": self.cfg.num_samples,
-                            "stop": self.cfg.num_samples + num_val_samples + 1,
-                            "total": self.cfg.num_samples + num_val_samples,
-                            "desc": "Validation stream",
-                        },
-                    ),
-                }
-            ).save_to_disk(self.raw_save_dir, fs="deprecated")
+            self.train_dataset = Dataset.from_generator(
+                gen,
+                gen_kwargs={
+                    "start": 0,
+                    "stop": self.cfg.num_samples + 1,
+                    "total": self.cfg.num_samples,
+                    "desc": "Train stream",
+                },
+            )
+            self.val_dataset = Dataset.from_generator(
+                gen,
+                gen_kwargs={
+                    "start": self.cfg.num_samples,
+                    "stop": self.cfg.num_samples + num_val_samples + 1,
+                    "total": self.cfg.num_samples + num_val_samples,
+                    "desc": "Validation stream",
+                },
+            )
+            # collect into a dataset dict and save them to disk
+            dataset_dict = DatasetDict(
+                {"train": self.train_dataset, "validation": self.val_dataset}
+            )
+            dataset_dict.save_to_disk(self.raw_save_dir, fs="deprecated")
+            return
 
     def setup(self, stage: Optional[str] = None):
         if self.is_setup:
             return
         if stage == "fit" or stage is None:
-            self.train_dataset, self.train_dataset_tokens = self.setup_split("train")
+            self.train_dataset_tokens = self.setup_split("train")
         if stage == "validate" or stage is None:
-            self.val_dataset, self.val_dataset_tokens = self.setup_split("validation")
+            self.val_dataset_tokens = self.setup_split("validation")
         else:
             raise ValueError(f"Invalid stage: {stage}")
         self.is_setup = True
 
     def setup_split(self, split: str):
-        # just the raw dataset for this split
-        dataset = datasets.load_from_disk(os.path.join(self.raw_save_dir))[split]
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
         if os.path.exists(processed_path):
             print("Dataset already tokenized. Loading from disk")
             dataset_tokens = datasets.load_from_disk(processed_path)
         else:
+            dataset = self.train_dataset if split == "train" else self.val_dataset
             dataset_tokens = dataset.map(
                 self.tokenize_fn,
                 batched=True,
@@ -117,11 +122,12 @@ class OSCARDataModule(pl.LightningDataModule):
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
             dataset_tokens.save_to_disk(processed_path, fs="deprecated")
-        return dataset, dataset_tokens
+        return dataset_tokens
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
         self.tokenizer.truncation_side = "left"
+        self.tokkenizer.pad_token = self.tokenizer.eos_token
         self.pad_token_id = tokenizer.convert_tokens_to_ids(
             tokenizer.special_tokens_map["pad_token"]
         )
@@ -167,10 +173,18 @@ class OSCARDataModule(pl.LightningDataModule):
         return transformers.default_data_collator(features)
 
 
-@hydra.main(version_base=None, config_path="../conf/data/", config_name="oscar")
+@hydra.main(version_base=None, config_path="../conf/", config_name="setup_data")
 def main(cfg: DictConfig):
     """
-    downloads and processes OSCAR for each of the available languages
+    downloads and/or processes OSCAR for each of the available languages
+
+    NOTE:
+    Downloading and processing may need to happen separately.
+    This is because in French and German, we train the tokenizer using
+    the raw training data. This training occurs in run/wechsel_init.py.
+    Once the tokenizer is trained, we can proceed with dataset tokenization.
+    We can omit processing by not passing the tokenizer path in the cfg.
+    Running the script a second time will not re-download the data.
     """
     script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
     wandb.init(
@@ -181,13 +195,15 @@ def main(cfg: DictConfig):
         mode="disabled" if cfg.disable_wandb else "online",
         group=script_host,
     )
-    tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
-    tokenizer.pad_token = tokenizer.eos_token
-    # use lang={en/fr/de} in the cli to set cfg.lang
-    oscar = OSCARDataModule(cfg, cfg.lang, 1)
-    oscar.set_tokenizer(tokenizer)
+    oscar = OSCARDataModule(cfg.data, cfg.lang, 1)
     oscar.prepare_data()
-    oscar.setup()
+
+    # optionally, load the tokenizer and perform tokenization
+    if cfg.tokenizer is not None:
+        tokenizer = transformers.AutoTokenizer.from_pretrained(cfg.tokenizer_path)
+        oscar.set_tokenizer(tokenizer)
+
+        oscar.setup()
 
 
 if __name__ == "__main__":

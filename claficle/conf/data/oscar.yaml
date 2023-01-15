@@ -5,13 +5,3 @@ defaults:
 
 num_samples: 2400000
 val_frac: 0.005 # 0.5 percent, similar to Izsak et al. 2021
-
-# relevant when running from main()
-disable_wandb: False
-lang: null
-
-# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
-hydra:
-  run:
-    dir: .
-  output_subdir: null
