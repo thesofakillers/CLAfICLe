@@ -49,8 +49,8 @@ class OSCARDataModule(pl.LightningDataModule):
             Path(self.raw_save_dir).mkdir(parents=True, exist_ok=True)
             data_stream: datasets.iterable_dataset.IterableDataset = (
                 datasets.load_dataset(
-                    "oscar-corpus/OSCAR-2201",
-                    self.lang,
+                    "oscar",
+                    f"unshuffled_deduplicated_{self.lang}",
                     split="train",
                     streaming=True,
                 )
