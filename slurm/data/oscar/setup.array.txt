@@ -1,3 +1,2 @@
-lang=fr
-lang=de
-lang=en
+lang=fr tokenizer_path=checkpoints/tokenizer_fr
+lang=de tokenizer_path=checkpoints/tokenizer_de
