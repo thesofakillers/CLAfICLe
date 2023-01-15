@@ -211,6 +211,8 @@ class BenchmarkDataModule(pl.LightningDataModule):
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
         self.tokenizer.truncation_side = "left"
+        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
+        self.tokenizer.pad_token = self.tokenizer.eos_token
         self.pad_token_id = tokenizer.convert_tokens_to_ids(
             tokenizer.special_tokens_map["pad_token"]
         )
