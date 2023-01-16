@@ -11,7 +11,7 @@ import torch
 import hydra
 import datasets
 import transformers
-import numpy as np
+import wandb
 
 from claficle.models.plain_gpt2 import PlainGPT2
 
@@ -30,30 +30,54 @@ class Gewechselt(PlainGPT2):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def post_init(self, target_data: datasets.arrow_dataset.Dataset) -> AutoTokenizer:
-        """Applies WECHSEL initialization. Returns the trained tokenizer"""
-        print("Training target tokenizer...")
-        tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
-        target_tokenizer = tokenizer.train_new_from_iterator(
-            target_data["text"], vocab_size=len(tokenizer), length=len(target_data)
-        )
+    def post_init(
+        self,
+        target_data: datasets.arrow_dataset.Dataset,
+        tokenizer_name: str,
+    ):
+        """
+        Applies WECHSEL initialization.
+        Serializes the trained tokenizer if it is not already present.
+        """
+        tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
+        os.makedirs(tokenizer_save_dir, exist_ok=True)
+        tokenizer_path = os.path.join(tokenizer_save_dir, tokenizer_name)
+
+        if os.path.exists(tokenizer_path):
+            target_tokenizer = AutoTokenizer.from_pretrained(self.tokenizer_path)
+        else:
+            print("Training target tokenizer...")
+            tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
+            target_tokenizer = tokenizer.train_new_from_iterator(
+                target_data["text"], vocab_size=len(tokenizer), length=len(target_data)
+            )
+            # serializing and uploading to wandb
+            target_tokenizer.save_pretrained(tokenizer_path)
+            artifact = wandb.Artifact(
+                name=tokenizer_name,
+                type="tokenizer",
+            )
+            artifact.add_dir(tokenizer_path)
+            wandb.log_artifact(artifact)
+
         print("Initializing WECHSEL...")
         wechsel = WECHSEL(
             load_embeddings(self.hparams.source_lang),
             load_embeddings(self.hparams.target_lang),
             bilingual_dictionary=langcode_to_lang[self.hparams.target_lang],
         )
+
         print("Generating target embeddings...")
         target_embeddings, info = wechsel.apply(
             tokenizer,
             target_tokenizer,
             self.lm.get_input_embeddings().weight.detach().numpy(),
         )
+
         print("Replacing source embeddings with target embeddings...")
         self.lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
 
         print("Done.")
-        return target_tokenizer
 
     def configure_optimizers(self):
         """
@@ -120,21 +144,9 @@ def main(cfg: DictConfig):
     oscar = OSCARDataModule(config=cfg.data, lang=cfg.model.target_lang, seed=cfg.seed)
     oscar.prepare_data()
 
-    # this will take a while
     model: Gewechselt = Gewechselt(cfg.model)
-    target_tokenizer = model.post_init(oscar.train_dataset)
-    # save the tokenizer locally
-    tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
-    os.makedirs(tokenizer_save_dir, exist_ok=True)
-    tokenizer_path = os.path.join(tokenizer_save_dir, cfg.tokenizer_name)
-    target_tokenizer.save_pretrained(tokenizer_path)
-    # and upload it to wandb
-    artifact = wandb.Artifact(
-        name=cfg.tokenizer_name,
-        type="tokenizer",
-    )
-    artifact.add_dir(tokenizer_path)
-    wandb.log_artifact(artifact)
+    # this will take a while
+    model.post_init(oscar.train_dataset, cfg.tokenizer_name)
 
     # just so that we can save a PL checkpoint of the model
     trainer.predict(
