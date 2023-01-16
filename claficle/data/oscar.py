@@ -200,14 +200,14 @@ def main(cfg: DictConfig):
     oscar.prepare_data()
 
     # optionally, load the tokenizer and perform tokenization
-    if cfg.tokenizer_path is not None:
+    if cfg.tokenizer_name is not None:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
-            os.path.join("checkpoints", "tokenizers", cfg.tokenizer_path)
+            os.path.join("checkpoints", "tokenizers", cfg.tokenizer_name)
         )
         oscar.set_tokenizer(tokenizer)
         oscar.setup()
     # for english, we can always do the tokenization
-    elif cfg.tokenizer_path is None and cfg.lang == "en":
+    elif cfg.tokenizer_name is None and cfg.lang == "en":
         tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
         oscar.set_tokenizer(tokenizer)
         oscar.setup()

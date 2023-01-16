@@ -9,7 +9,7 @@ seed: 1
 
 disable_wandb: False
 lang: null
-tokenizer_path: null
+tokenizer_name: null  # name of tokenizer in checkpoints/tokenizers/
 
 # to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
 hydra:

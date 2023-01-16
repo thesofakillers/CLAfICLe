@@ -1,2 +1,2 @@
-lang=fr tokenizer_path=tokenizer_fr
-lang=de tokenizer_path=tokenizer_de
+lang=fr tokenizer_name=fr_gewechselt
+lang=de tokenizer_name=de_gewechselt

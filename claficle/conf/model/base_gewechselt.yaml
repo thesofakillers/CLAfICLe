@@ -4,5 +4,3 @@ defaults:
 
 source_lang: "en"
 target_lang: ???
-
-tokenizer_path: null # path to save to/load from for trained target lang tokenizer
