@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
 #SBATCH --time=4:00:00
-#SBATCH --mem=120G
+#SBATCH --mem=80G
 #SBATCH --array=1-4%2
 #SBATCH --output=slurm/outputs/wechsel_init/arrays/wechsel_init_%A_%a.out
 
