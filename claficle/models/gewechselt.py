@@ -44,7 +44,7 @@ class Gewechselt(PlainGPT2):
         tokenizer_path = os.path.join(tokenizer_save_dir, tokenizer_name)
 
         if os.path.exists(tokenizer_path):
-            target_tokenizer = AutoTokenizer.from_pretrained(self.tokenizer_path)
+            target_tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
         else:
             print("Training target tokenizer...")
             tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
