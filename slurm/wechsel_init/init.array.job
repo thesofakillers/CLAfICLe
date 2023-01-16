@@ -20,5 +20,5 @@ source activate claficle
 
 HPARAMS_FILE=slurm/wechsel_init/init.array.txt
 
-srun python -u claficle/run/wechsel_init.py \
+srun python -u claficle/models/gewechselt.py \
   $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)
