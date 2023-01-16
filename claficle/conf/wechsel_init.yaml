@@ -1,6 +1,9 @@
 seed: 1
+tokenizer_name: null
+
 
 defaults:
+  - _self_
   - model: gewechselt/train
   - data: oscar
   - trainer: wechsel_init
