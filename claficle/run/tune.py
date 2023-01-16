@@ -25,7 +25,7 @@ def main(cfg: DictConfig):
     # data
     oscar = OSCARDataModule(config=cfg.data, lang=lang, seed=cfg.seed)
     tokenizer = transformers.AutoTokenizer.from_pretrained(cfg.model.causalLM_variant)
-    oscar.set_tokenizer(tokenizer) # necessary for collate_fn
+    oscar.set_tokenizer(tokenizer)  # necessary for collate_fn
 
     # set up pl trainer (tuner)
     log_save_dir = os.path.join(
@@ -54,12 +54,15 @@ def main(cfg: DictConfig):
             "log_every_n_steps": cfg.trainer.val_check_interval,
             "callbacks": [timer],
         }
+    else:
+        raise ValueError(f"Unknown tune_mode: {cfg.tune_mode}")
     trainer = pl.Trainer(
         max_epochs=1,
         logger=logger,
         enable_progress_bar=cfg.trainer.progress_bar,
         accelerator=cfg.trainer.accelerator,
         devices=cfg.trainer.devices,
+        enable_checkpointing=False,
         **trainer_kwargs,
     )
     model.train_mode = cfg.trainer.train_mode
