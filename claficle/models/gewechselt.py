@@ -39,25 +39,28 @@ class Gewechselt(PlainGPT2):
         Applies WECHSEL initialization.
         Serializes the trained tokenizer if it is not already present.
         """
-        tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
-        os.makedirs(tokenizer_save_dir, exist_ok=True)
-        tokenizer_path = os.path.join(tokenizer_save_dir, tokenizer_name)
+        targ_tok_save_dir = os.path.join("checkpoints", "tokenizers")
+        os.makedirs(targ_tok_save_dir, exist_ok=True)
+        target_tok_path = os.path.join(targ_tok_save_dir, tokenizer_name)
 
-        if os.path.exists(tokenizer_path):
-            target_tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+        source_tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
+
+        if os.path.exists(target_tok_path):
+            target_tokenizer = AutoTokenizer.from_pretrained(target_tok_path)
         else:
             print("Training target tokenizer...")
-            tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
-            target_tokenizer = tokenizer.train_new_from_iterator(
-                target_data["text"], vocab_size=len(tokenizer), length=len(target_data)
+            target_tokenizer = source_tokenizer.train_new_from_iterator(
+                target_data["text"],
+                vocab_size=len(source_tokenizer),
+                length=len(target_data),
             )
             # serializing and uploading to wandb
-            target_tokenizer.save_pretrained(tokenizer_path)
+            target_tokenizer.save_pretrained(target_tok_path)
             artifact = wandb.Artifact(
                 name=tokenizer_name,
                 type="tokenizer",
             )
-            artifact.add_dir(tokenizer_path)
+            artifact.add_dir(target_tok_path)
             wandb.log_artifact(artifact)
 
         print("Initializing WECHSEL...")
@@ -69,7 +72,7 @@ class Gewechselt(PlainGPT2):
 
         print("Generating target embeddings...")
         target_embeddings, info = wechsel.apply(
-            tokenizer,
+            source_tokenizer,
             target_tokenizer,
             self.lm.get_input_embeddings().weight.detach().numpy(),
         )
