@@ -1,12 +1,12 @@
 """
 A Gewechselt model: A model to which WECHSEL is applied
 """
-from typing import Tuple, Dict
+from typing import Dict
 import os
 
 from omegaconf import DictConfig
 from wechsel import WECHSEL, load_embeddings
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
 import torch
 import hydra
 import datasets
@@ -30,20 +30,18 @@ class Gewechselt(PlainGPT2):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def post_init(
-        self, config: DictConfig, target_data: datasets.arrow_dataset.Dataset
-    ) -> AutoTokenizer:
-        """Applies WECHSEL initialization"""
+    def post_init(self, target_data: datasets.arrow_dataset.Dataset) -> AutoTokenizer:
+        """Applies WECHSEL initialization. Returns the trained tokenizer"""
         print("Training target tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
         target_tokenizer = tokenizer.train_new_from_iterator(
-            target_data["text"],
-            vocab_size=len(tokenizer),
+            target_data["text"], vocab_size=len(tokenizer), length=len(target_data)
         )
+        print("Initializing WECHSEL...")
         wechsel = WECHSEL(
-            load_embeddings(config.source_lang),
-            load_embeddings(config.target_lang),
-            bilingual_dictionary=langcode_to_lang[config.target_lang],
+            load_embeddings(self.hparams.source_lang),
+            load_embeddings(self.hparams.target_lang),
+            bilingual_dictionary=langcode_to_lang[self.hparams.target_lang],
         )
         print("Generating target embeddings...")
         target_embeddings, info = wechsel.apply(
@@ -52,16 +50,8 @@ class Gewechselt(PlainGPT2):
             self.lm.get_input_embeddings().weight.detach().numpy(),
         )
         print("Replacing source embeddings with target embeddings...")
-        target_embeddings.dtype = np.float32
         self.lm.get_input_embeddings().weight.data = torch.from_numpy(target_embeddings)
 
-        print("Saving target tokenizer...")
-        # make sure the directory exists, if not create it
-        tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
-        os.makedirs(tokenizer_save_dir, exist_ok=True)
-        target_tokenizer.save_pretrained(
-            os.path.join(tokenizer_save_dir, config.tokenizer_path)
-        )
         print("Done.")
         return target_tokenizer
 
@@ -86,32 +76,102 @@ class Gewechselt(PlainGPT2):
         }
 
 
-@hydra.main(
-    version_base=None, config_path="../conf/model/", config_name="base_gewechselt"
-)
+@hydra.main(version_base=None, config_path="../conf", config_name="wechsel_init")
 def main(cfg: DictConfig):
-    """used for testing: initializes model"""
+    """
+    Handles WECHSEL initialization, which can be a length process on its own as it
+    onvolves the training of a tokenizer, among other computations.
+    To avoid wasting training time, we run initialization separately and serialize
+    the results, through this method
+    """
+    import pytorch_lightning as pl
+    import wandb
     from claficle.data.oscar import OSCARDataModule
-    import yaml
-    from yaml.loader import SafeLoader
+    from omegaconf import OmegaConf
 
-    print(cfg)
-    cfg.name = "gewechselt"
-    cfg.causalLM_variant = "distilgpt2"
-    cfg.target_lang = "fr"
+    print(OmegaConf.to_yaml(cfg))
 
-    # load separate data config from ../conf/data/oscar.yaml
-    with open("claficle/conf/data/oscar.yaml", "r") as f:
-        data_cfg = yaml.load(f, Loader=SafeLoader)
-    data_cfg = DictConfig(data_cfg)
+    pl.seed_everything(cfg.seed)
 
-    data_cfg.num_samples = 400000
+    # we'll need a Trainer instance to save a pl checkpoint, this needs a logger
+    log_save_dir = os.path.join(
+        cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", cfg.model.target_lang
+    )
+    os.makedirs(log_save_dir, exist_ok=True)
+    script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
+    logger = pl.loggers.WandbLogger(
+        save_dir=log_save_dir,
+        job_type="wechsel_init",
+        project="claficle",
+        entity="giulio-uva",
+        mode="disabled" if cfg.trainer.disable_wandb else "online",
+        group=script_host,
+        config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
+    )
+    trainer = pl.Trainer(
+        max_epochs=1,
+        logger=logger,
+        enable_progress_bar=cfg.trainer.progress_bar,
+        accelerator=cfg.trainer.accelerator,
+        devices=cfg.trainer.devices,
+        enable_checkpointing=False,  # we handle this manually
+    )
 
-    oscar_fr = OSCARDataModule(data_cfg, cfg.target_lang, 1)
-    oscar_fr.prepare_data()
-    oscar_fr.setup()
+    oscar = OSCARDataModule(config=cfg.data, lang=cfg.model.target_lang, seed=cfg.seed)
+    oscar.prepare_data()
 
-    model = Gewechselt(cfg, oscar_fr.train_dataset)  # noqa: F841
+    # this will take a while
+    model: Gewechselt = Gewechselt(cfg.model)
+    target_tokenizer = model.post_init(oscar.train_dataset)
+    # save the tokenizer locally
+    tokenizer_save_dir = os.path.join("checkpoints", "tokenizers")
+    os.makedirs(tokenizer_save_dir, exist_ok=True)
+    tokenizer_path = os.path.join(tokenizer_save_dir, cfg.tokenizer_name)
+    target_tokenizer.save_pretrained(tokenizer_path)
+    # and upload it to wandb
+    artifact = wandb.Artifact(
+        name=cfg.tokenizer_name,
+        type="tokenizer",
+    )
+    artifact.add_dir(tokenizer_path)
+    wandb.log_artifact(artifact)
+
+    # just so that we can save a PL checkpoint of the model
+    trainer.predict(
+        model,
+        dataloaders=torch.utils.data.DataLoader(
+            datasets.Dataset.from_list(
+                [
+                    {
+                        "input_ids": torch.randint(0, int(5e4), size=(1024,)),
+                        "attention_mask": torch.ones(1024, dtype=int),
+                    }
+                ]
+            ),
+            batch_size=1,
+            collate_fn=oscar.collate_fn,
+            num_workers=cfg.data.num_workers,
+        ),
+        return_predictions=False,
+    )
+
+    # save the checkpoint locally
+    prefix = (
+        cfg.model.base_checkpoint.split(".")[0]
+        if cfg.model.base_checkpoint is not None
+        else cfg.model.causalLM_variant
+    )
+    model_name = f"{prefix}_{cfg.model.name}_{cfg.model.target_lang}.ckpt"
+    checkpoint_path = os.path.join("checkpoints", model_name)
+    trainer.save_checkpoint(checkpoint_path)
+    # and upload it to wandb
+    artifact = wandb.Artifact(
+        name=model_name,
+        type="model",
+        metadata=OmegaConf.to_container(cfg.model, resolve=True, throw_on_missing=True),
+    )
+    artifact.add_file(checkpoint_path)
+    wandb.log_artifact(artifact, aliases=["init"])
 
 
 if __name__ == "__main__":
