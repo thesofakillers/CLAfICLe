@@ -1,0 +1,7 @@
+
+defaults:
+  - run
+  - _self_
+  - override model: gewechselt/train
+  - override data: oscar
+  - override trainer: train
