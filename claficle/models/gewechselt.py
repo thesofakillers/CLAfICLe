@@ -189,7 +189,7 @@ def main(cfg: DictConfig):
         metadata=OmegaConf.to_container(cfg.model, resolve=True, throw_on_missing=True),
     )
     artifact.add_file(checkpoint_path)
-    wandb.log_artifact(artifact, aliases=["init", cfg.seed])
+    wandb.log_artifact(artifact, aliases=["init", f"seed_{cfg.seed}"])
 
 
 if __name__ == "__main__":
