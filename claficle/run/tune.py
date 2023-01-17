@@ -63,6 +63,7 @@ def main(cfg: DictConfig):
         accelerator=cfg.trainer.accelerator,
         devices=cfg.trainer.devices,
         enable_checkpointing=False,
+        precision=16,
         **trainer_kwargs,
     )
     model.train_mode = cfg.trainer.train_mode
