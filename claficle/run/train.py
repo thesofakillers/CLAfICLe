@@ -49,8 +49,17 @@ def main(cfg: DictConfig):
         mode="disabled" if cfg.trainer.disable_wandb else "online",
         group=script_host,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
+        log_model="all",  # log models to wandb during training rather than at the end
     )
 
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(
+        dirpath="checkpoints",
+        filename=cfg.model.pl_checkpoint,
+        monitor=f"{cfg.trainer.train_mode}/val/perplexity",
+        mode="min",
+        auto_insert_metric_name=False,
+        save_on_train_epoch_end=False,
+    )
     trainer = pl.Trainer(
         max_epochs=1,
         logger=logger,
@@ -59,6 +68,11 @@ def main(cfg: DictConfig):
         devices=cfg.trainer.devices,
         gradient_clip_algorithm="norm",
         gradient_clip_val=cfg.trainer.clip_grad_norm,
+        accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
+        val_check_interval=cfg.trainer.val_check_interval,
+        log_every_n_steps=cfg.trainer.val_check_interval,
+        callbacks=[checkpoint_callback],
+        precision=16
     )
     model.train_mode = cfg.trainer.train_mode
 
