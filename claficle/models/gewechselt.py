@@ -1,7 +1,7 @@
 """
 A Gewechselt model: A model to which WECHSEL is applied
 """
-from typing import Dict, Generator, List
+from typing import Dict
 import os
 
 from omegaconf import DictConfig
@@ -121,6 +121,7 @@ def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
 
     pl.seed_everything(cfg.seed)
+    datasets.disable_caching()
 
     # we'll need a Trainer instance to save a pl checkpoint, this needs a logger
     log_save_dir = os.path.join(
