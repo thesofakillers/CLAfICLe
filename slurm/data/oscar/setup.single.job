@@ -17,4 +17,4 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-srun python -u claficle/data/oscar.py lang=en
+srun python -u claficle/data/oscar.py lang=en data.num_samples=200000
