@@ -1,7 +1,7 @@
 """
 A Gewechselt model: A model to which WECHSEL is applied
 """
-from typing import Dict
+from typing import Dict, Generator, List
 import os
 
 from omegaconf import DictConfig
@@ -14,6 +14,7 @@ import transformers
 import wandb
 
 from claficle.models.plain_gpt2 import PlainGPT2
+from claficle.utils.general import yield_batches_from_stream
 
 langcode_to_lang: Dict[str, str] = {
     "en": "english",
@@ -32,7 +33,8 @@ class Gewechselt(PlainGPT2):
 
     def post_init(
         self,
-        target_data: datasets.arrow_dataset.Dataset,
+        target_data: datasets.IterableDataset,
+        target_data_len: int,
         tokenizer_name: str,
     ):
         """
@@ -50,9 +52,9 @@ class Gewechselt(PlainGPT2):
         else:
             print("Training target tokenizer...")
             target_tokenizer = source_tokenizer.train_new_from_iterator(
-                target_data["text"],
+                yield_batches_from_stream(target_data.take(target_data_len), "text"),
                 vocab_size=len(source_tokenizer),
-                length=len(target_data),
+                length=target_data_len,
             )
             # serializing and uploading to wandb
             target_tokenizer.save_pretrained(target_tok_path)
@@ -149,7 +151,7 @@ def main(cfg: DictConfig):
 
     model: Gewechselt = Gewechselt(cfg.model)
     # this will take a while
-    model.post_init(oscar.train_dataset, cfg.tokenizer_name)
+    model.post_init(oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name)
 
     # just so that we can save a PL checkpoint of the model
     trainer.predict(

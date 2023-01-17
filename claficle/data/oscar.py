@@ -30,11 +30,8 @@ class OSCARDataModule(pl.LightningDataModule):
         super().__init__()
         self.cfg = config
         self.is_setup = False
-        self.raw_save_dir = os.path.join(
-            self.cfg.data_dir, "raw", "oscar", lang, str(self.cfg.num_samples)
-        )
         self.processed_save_dir = os.path.join(
-            self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.num_samples)
+            self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.num_tokens)
         )
         self.lang = lang
         pl.seed_everything(seed)
@@ -43,103 +40,88 @@ class OSCARDataModule(pl.LightningDataModule):
         """Take care of downloading data"""
         if self.is_setup:
             return
-        # if already saved, don't need to download
-        if os.path.exists(self.raw_save_dir):
-            dataset_dict = datasets.load_from_disk(self.raw_save_dir)
-            self.train_dataset = dataset_dict["train"]
-            self.val_dataset = dataset_dict["validation"]
-            return
-        # otherwise, download and save
-        else:
-            Path(self.raw_save_dir).mkdir(parents=True, exist_ok=True)
-            data_stream: datasets.iterable_dataset.IterableDataset = (
-                datasets.load_dataset(
-                    "oscar",
-                    f"unshuffled_deduplicated_{self.lang}",
-                    split="train",
-                    streaming=True,
-                )
-            )
-
-            num_val_samples = int(self.cfg.num_samples * self.cfg.val_frac)
-
-            # generator necessary for Dataset.from_generator below
-            def gen(start, stop, total, desc):
-                for i in itertools.islice(
-                    tqdm(iter(data_stream), total=total, desc=desc), start, stop
-                ):
-                    yield i
-
-            self.train_dataset = Dataset.from_generator(
-                gen,
-                gen_kwargs={
-                    "start": 0,
-                    "stop": self.cfg.num_samples + 1,
-                    "total": self.cfg.num_samples,
-                    "desc": "Train stream",
-                },
-            )
-            self.val_dataset = Dataset.from_generator(
-                gen,
-                gen_kwargs={
-                    "start": self.cfg.num_samples,
-                    "stop": self.cfg.num_samples + num_val_samples + 1,
-                    "total": self.cfg.num_samples + num_val_samples,
-                    "desc": "Validation stream",
-                },
-            )
-            # collect into a dataset dict and save them to disk
-            dataset_dict = DatasetDict(
-                {"train": self.train_dataset, "validation": self.val_dataset}
-            )
-            dataset_dict.save_to_disk(self.raw_save_dir, fs="deprecated")
-            return
+        self.raw_dataset = datasets.load_dataset(
+            "oscar",
+            f"unshuffled_deduplicated_{self.lang}",
+            split="train",
+            streaming=True,
+        )
 
     def setup(self, stage: Optional[str] = None):
         if self.is_setup:
             return
-        if stage == "fit" or stage is None:
-            self.train_dataset_tokens = self.setup_split("train")
-        if stage == "validate" or stage is None:
-            self.val_dataset_tokens = self.setup_split("validation")
+        if stage != "debug":
+            # these are updated when calling setup_split(split, ...)
+            self.entry_batches = {"train": 0, "validation": 0}
+            self.train_dataset_tokens = self.setup_split(
+                "train", 0, self.cfg.num_tokens
+            )
+            num_val_tokens = int(self.cfg.num_tokens * self.cfg.val_frac)
+            self.val_dataset_tokens = self.setup_split(
+                "validation", self.entry_batches["train"], num_val_tokens
+            )
         else:
-            raise ValueError(f"Invalid stage: {stage}")
+            raise NotImplementedError
         self.is_setup = True
 
-    def setup_split(self, split: str):
+    def setup_split(self, split: str, start_batch: int, total_tokens: int):
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
         if os.path.exists(processed_path):
             print("Dataset already tokenized. Loading from disk")
             dataset_tokens = datasets.load_from_disk(processed_path)
         else:
-            dataset = self.train_dataset if split == "train" else self.val_dataset
-            dataset_tokens = dataset.map(
-                self.tokenize_fn,
-                batched=True,
-                remove_columns=dataset.column_names,
+            dataset_tokens = datasets.Dataset.from_generator(
+                self.token_generator,
+                gen_kwargs={
+                    "start_batch": start_batch,
+                    "total": total_tokens,
+                    "split": split,
+                },
             )
+
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
             dataset_tokens.save_to_disk(processed_path, fs="deprecated")
         return dataset_tokens
 
-    def set_tokenizer(self, tokenizer):
-        self.tokenizer = tokenizer
-        self.tokenizer.truncation_side = "left"
-        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
-        self.tokenizer.pad_token = self.tokenizer.eos_token
-        self.pad_token_id = tokenizer.convert_tokens_to_ids(
-            tokenizer.special_tokens_map["pad_token"]
+    def token_generator(self, start_batch: int, total: int, split: str):
+        """
+        Generator for tokenizing dataset
+        Using batch sizes of 1000
+        Optionally skips to the start_batch of our raw_dataset
+        Then tokenizes each incoming batch, yielding each element.
+        This continues until (roughly) `total` tokens have been yielded
+        """
+        # first, setting up generator in case we need to skip a few batches
+        entry_generator = itertools.islice(
+            tqdm(
+                self.raw_dataset.iter(batch_size=1000),
+                total=start_batch,
+                desc="Skipping to the right starting point",
+            ),
+            start_batch,
+            None,
         )
-        self.max_seq_length = min(1024, tokenizer.model_max_length)
-        self.vocab_size = len(self.tokenizer)
+
+        tokens_generated = 0
+        with tqdm(total=total, desc=f"{split} tokens") as pbar:
+            for batch in entry_generator:
+                if tokens_generated > total:
+                    return
+                self.entry_batches[split] += 1
+                tokenized_batch = self.tokenize_fn(batch)
+                batch_size = len(tokenized_batch["input_ids"])
+                num_tokens = batch_size * self.max_seq_length  # approximately
+                pbar.update(num_tokens)
+                tokens_generated += num_tokens
+                for input_ids, attention_mask in zip(
+                    tokenized_batch["input_ids"], tokenized_batch["attention_mask"]
+                ):
+                    yield {"input_ids": input_ids, "attention_mask": attention_mask}
 
     def tokenize_fn(self, batch):
-        output = self.tokenizer(
-            batch["text"],
-            truncation=False,
-        )
+        output = self.tokenizer(batch["text"], truncation=False)
 
         # concatenate every sample into one single list, separating throughout
         concat_input_ids = flatten_list_with_separator(
@@ -164,6 +146,17 @@ class OSCARDataModule(pl.LightningDataModule):
         )
 
         return {"input_ids": input_ids, "attention_mask": attention_mask}
+
+    def set_tokenizer(self, tokenizer):
+        self.tokenizer = tokenizer
+        self.tokenizer.truncation_side = "left"
+        # see https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/2
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.pad_token_id = tokenizer.convert_tokens_to_ids(
+            tokenizer.special_tokens_map["pad_token"]
+        )
+        self.max_seq_length = min(1024, tokenizer.model_max_length)
+        self.vocab_size = len(self.tokenizer)
 
     @staticmethod
     def collate_fn(features: List[Dict[str, List[int]]]) -> Dict[str, torch.Tensor]:

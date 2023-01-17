@@ -3,5 +3,5 @@ defaults:
   - _self_
   - defaults # see claficle/conf/data/defaults.yaml
 
-num_samples: 2400000
+num_tokens: 3000000000  # 3 billion tokens
 val_frac: 0.005 # 0.5 percent, similar to Izsak et al. 2021
