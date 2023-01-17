@@ -72,7 +72,7 @@ def main(cfg: DictConfig):
         val_check_interval=cfg.trainer.val_check_interval,
         log_every_n_steps=cfg.trainer.val_check_interval,
         callbacks=[checkpoint_callback],
-        precision=16
+        precision=16,
     )
     model.train_mode = cfg.trainer.train_mode
 
