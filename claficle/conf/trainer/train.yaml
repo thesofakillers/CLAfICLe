@@ -1,0 +1,8 @@
+# trainer configuration for train run
+defaults:
+  - defaults # see claficle/conf/trainer/defaults.yaml
+  - _self_
+train_mode: "clm"
+accumulate_grad_batches: 256
+val_check_interval: 2500
+clip_grad_norm: 0.5

@@ -57,6 +57,8 @@ def main(cfg: DictConfig):
         enable_progress_bar=cfg.trainer.progress_bar,
         accelerator=cfg.trainer.accelerator,
         devices=cfg.trainer.devices,
+        gradient_clip_algorithm="norm",
+        gradient_clip_val=cfg.trainer.clip_grad_norm,
     )
     model.train_mode = cfg.trainer.train_mode
 
