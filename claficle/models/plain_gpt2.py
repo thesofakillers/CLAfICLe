@@ -23,17 +23,20 @@ class PlainGPT2(BaseModel):
         super().__init__(config)
 
     def training_step(self, batch: Dict[str, Tensor], batch_idx: int) -> Tensor:
-        shared_step_output = self._shared_step(batch, batch_idx)
+        shared_step_output = self._shared_step(batch, batch_idx, "train")
         return shared_step_output["loss"]
 
     def validation_step(self, batch: Dict[str, Tensor], batch_idx: int):
-        shared_step_output = self._shared_step(batch, batch_idx)
+        shared_step_output = self._shared_step(batch, batch_idx, "val")
         # perplexity is just the exponentiation of cross entropy
         perplexity = torch.exp(shared_step_output["loss"].detach().cpu())
-        self.log("val_perplexity", perplexity)
+        self.log(f"{self.train_mode}/val/perplexity", perplexity)
 
     def _shared_step(
-        self, batch: Dict[str, Tensor], batch_idx: int
+        self,
+        batch: Dict[str, Tensor],
+        batch_idx: int,
+        phase: str,
     ) -> Dict[str, Tensor]:
         """
         batch is a dict with keys "input_ids", "attention_mask" and optionally "labels"
@@ -48,11 +51,11 @@ class PlainGPT2(BaseModel):
         outputs a dict (or equivalent) with keys "loss" and "logits"
         """
         if self.train_mode == "clm":
-            return self._clm_step(batch, batch_idx)
+            return self._clm_step(batch, batch_idx, phase)
         else:
             raise NotImplementedError
 
-    def _clm_step(self, batch: Dict[str, Tensor], batch_idx: int):
+    def _clm_step(self, batch: Dict[str, Tensor], batch_idx: int, phase: str):
         """
         Causal language modelling step
         """
@@ -61,6 +64,7 @@ class PlainGPT2(BaseModel):
             attention_mask=batch["attention_mask"],
             labels=batch["input_ids"],
         )
+        self.log(f"{self.train_mode}/{phase}/loss", output["loss"])
         return output
 
     def configure_optimizers(self):
