@@ -1,0 +1,16 @@
+seed: 1
+
+defaults:
+  - _self_
+  - model: null
+  - data: null
+  - trainer: null
+  # https://stackoverflow.com/a/70777327/9889508
+  - override hydra/hydra_logging: none
+  - override hydra/job_logging: none
+ 
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
+  output_subdir: null

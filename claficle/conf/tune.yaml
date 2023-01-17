@@ -1,18 +1,9 @@
-seed: 1
 tune_mode: 'profile_memory'
 
 
 defaults:
+  - run
   - _self_
-  - model: base_gpt2
-  - data: oscar
-  - trainer: tune
-  # https://stackoverflow.com/a/70777327/9889508
-  - override hydra/hydra_logging: none
-  - override hydra/job_logging: none
- 
-# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
-hydra:
-  run:
-    dir: .
-  output_subdir: null
+  - override model: base_gpt2
+  - override data: oscar
+  - override trainer: tune
