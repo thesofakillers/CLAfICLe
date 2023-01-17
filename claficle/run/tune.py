@@ -10,7 +10,6 @@ import transformers
 
 from claficle.models.base import BaseModel
 from claficle.utils.general import run_script_preamble
-from claficle.data.oscar import OSCARDataModule
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="tune")
@@ -21,11 +20,6 @@ def main(cfg: DictConfig):
 
     # hardcode the language to english. Memory and time will be the roughly same for any language
     lang = "en"
-
-    # data
-    oscar = OSCARDataModule(config=cfg.data, lang=lang, seed=cfg.seed)
-    tokenizer = transformers.AutoTokenizer.from_pretrained(cfg.model.causalLM_variant)
-    oscar.set_tokenizer(tokenizer)  # necessary for collate_fn
 
     # set up pl trainer (tuner)
     log_save_dir = os.path.join(
@@ -69,9 +63,9 @@ def main(cfg: DictConfig):
     model.train_mode = cfg.trainer.train_mode
 
     # necessary hacks for train and val loaders in model
-    model.batch_size = oscar.cfg.batch_size
-    model.collate_fn = oscar.collate_fn
-    model.num_workers = oscar.cfg.num_workers
+    model.batch_size = 2
+    model.collate_fn = transformers.default_data_collator
+    model.num_workers = cfg.num_workers
     if cfg.tune_mode == "profile_memory":
         print(f"Running {cfg.tune_mode}...")
         trainer.tune(model)

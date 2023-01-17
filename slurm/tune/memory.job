@@ -17,5 +17,4 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-srun python -u claficle/run/tune.py \
-  data.num_samples=400000
+srun python -u claficle/run/tune.py tune_mode='profile_memory'

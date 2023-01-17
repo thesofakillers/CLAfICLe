@@ -1,9 +1,9 @@
 tune_mode: 'profile_memory'
+num_workers: 18
 
 
 defaults:
   - run
   - _self_
   - override model: base_gpt2
-  - override data: oscar
   - override trainer: tune
