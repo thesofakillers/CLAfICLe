@@ -17,5 +17,6 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
+# 200000 samples is roughly 1 GB of tokens in english
 srun python -u claficle/run/tune.py \
-  data.sample_size_mb=1024 tune_mode='profile_time'
+  data.num_samples=200000 tune_mode='profile_time'
