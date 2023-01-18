@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=TIME
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=04:00:00
+#SBATCH --mem-per-gpu=48G
+#SBATCH --output=slurm/outputs/tune/time_%A.out
+
+source "./slurm/.secrets"
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+srun python -u claficle/run/train.py debug=true model.target_lang=fr \
+  pl_checkpoint=gpt2-large_Gewechselt_fr.ckpt \
+  tokenizer_name=fr_gewechselt
