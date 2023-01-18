@@ -227,6 +227,7 @@ def main(cfg: DictConfig):
     """
     from omegaconf import OmegaConf
     import wandb
+    cfg.data.seed = cfg.seed
     print(OmegaConf.to_yaml(cfg))
 
     script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
