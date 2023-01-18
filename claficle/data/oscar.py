@@ -65,6 +65,26 @@ class OSCARDataModule(pl.LightningDataModule):
             )
         self.is_setup = True
 
+    def train_dataloader(self):
+        return torch.utils.data.DataLoader(
+            self.train_dataset_tokens,
+            batch_size=self.cfg.batch_size,
+            shuffle=True,
+            num_workers=self.cfg.num_workers,
+            pin_memory=True,
+            collate_fn=self._collate_fn,
+        )
+
+    def val_dataloader(self):
+        return torch.utils.data.DataLoader(
+            self.val_dataset_tokens,
+            batch_size=self.cfg.batch_size,
+            shuffle=False,
+            num_workers=self.cfg.num_workers,
+            pin_memory=True,
+            collate_fn=self._collate_fn,
+        )
+
     def _setup_split(self, split: str, start_batch: int, total_tokens: int):
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
