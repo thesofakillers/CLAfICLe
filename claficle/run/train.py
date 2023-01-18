@@ -65,6 +65,7 @@ def main(cfg: DictConfig):
     early_stopping_callback = pl.callbacks.EarlyStopping(
         monitor=f"{cfg.trainer.train_mode}/val/perplexity", patience=4, mode="min"
     )
+    lr_monitor_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
     trainer = pl.Trainer(
         max_epochs=1,
         logger=logger,
@@ -76,7 +77,7 @@ def main(cfg: DictConfig):
         accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
         val_check_interval=cfg.trainer.val_check_interval,
         log_every_n_steps=1,  # log every batch
-        callbacks=[checkpoint_callback, early_stopping_callback],
+        callbacks=[checkpoint_callback, early_stopping_callback, lr_monitor_callback],
         precision=16,
     )
     model.train_mode = cfg.trainer.train_mode
