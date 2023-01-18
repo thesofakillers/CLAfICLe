@@ -20,8 +20,5 @@ source activate claficle
 
 HPARAMS_FILE=slurm/train/gewechselt/clm.array.txt
 
-srun python -u claficle/run/train.py debug=true \
-  model.name=gewechselt \
-  model.pl_checkpoint=gpt2-large_Gewechselt_fr.ckpt \
-  tokenizer_name=fr_gewechselt \
-  trainer.progress_bar=true
+srun python -u claficle/run/train.py model.name=gewechselt \
+  $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)
