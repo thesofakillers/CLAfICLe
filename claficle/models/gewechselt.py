@@ -93,7 +93,7 @@ class Gewechselt(PlainGPT2):
         optimizer = torch.optim.Adam(self.lm.parameters(), self.hparams.peak_lr)
         scheduler = transformers.get_cosine_schedule_with_warmup(
             optimizer,
-            num_warmup_steps=int(0.1 * total_steps),
+            num_warmup_steps=int(0.5 * total_steps),
             num_training_steps=total_steps,
         )
         return {
