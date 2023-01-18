@@ -152,9 +152,7 @@ def main(cfg: DictConfig):
 
     model: Gewechselt = Gewechselt(cfg.model)
     # this will take a while
-    model.post_init(
-        oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name, cfg.model.checkpoint_dir
-    )
+    model.post_init(oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name)
 
     # just so that we can save a PL checkpoint of the model
     trainer.predict(
