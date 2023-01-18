@@ -84,6 +84,7 @@ class OSCARDataModule(pl.LightningDataModule):
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
             dataset_tokens.save_to_disk(processed_path, fs="deprecated")
+            dataset_tokens.cleanup_cache_files()
         return dataset_tokens
 
     def token_generator(self, start_batch: int, total: int, split: str):
