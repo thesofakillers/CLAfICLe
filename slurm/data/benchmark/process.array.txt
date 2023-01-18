@@ -3,28 +3,28 @@ lang=en seed=2
 lang=en seed=3
 lang=en seed=4
 lang=en seed=5
-lang=en seed=1 data.extra_proc_fn=translate batch_size=100
-lang=en seed=2 data.extra_proc_fn=translate batch_size=100
-lang=en seed=3 data.extra_proc_fn=translate batch_size=100
-lang=en seed=4 data.extra_proc_fn=translate batch_size=100
-lang=en seed=5 data.extra_proc_fn=translate batch_size=100
+lang=en seed=1 data.extra_proc_fn=translate data.batch_size=100
+lang=en seed=2 data.extra_proc_fn=translate data.batch_size=100
+lang=en seed=3 data.extra_proc_fn=translate data.batch_size=100
+lang=en seed=4 data.extra_proc_fn=translate data.batch_size=100
+lang=en seed=5 data.extra_proc_fn=translate data.batch_size=100
 lang=fr seed=1
 lang=fr seed=2
 lang=fr seed=3
 lang=fr seed=4
 lang=fr seed=5
-lang=fr seed=1 data.extra_proc_fn=translate batch_size=100
-lang=fr seed=2 data.extra_proc_fn=translate batch_size=100
-lang=fr seed=3 data.extra_proc_fn=translate batch_size=100
-lang=fr seed=4 data.extra_proc_fn=translate batch_size=100
-lang=fr seed=5 data.extra_proc_fn=translate batch_size=100
+lang=fr seed=1 data.extra_proc_fn=translate data.batch_size=100
+lang=fr seed=2 data.extra_proc_fn=translate data.batch_size=100
+lang=fr seed=3 data.extra_proc_fn=translate data.batch_size=100
+lang=fr seed=4 data.extra_proc_fn=translate data.batch_size=100
+lang=fr seed=5 data.extra_proc_fn=translate data.batch_size=100
 lang=de seed=1
 lang=de seed=2
 lang=de seed=3
 lang=de seed=4
 lang=de seed=5
-lang=de seed=1 data.extra_proc_fn=translate batch_size=100
-lang=de seed=2 data.extra_proc_fn=translate batch_size=100
-lang=de seed=3 data.extra_proc_fn=translate batch_size=100
-lang=de seed=4 data.extra_proc_fn=translate batch_size=100
-lang=de seed=5 data.extra_proc_fn=translate batch_size=100
+lang=de seed=1 data.extra_proc_fn=translate data.batch_size=100
+lang=de seed=2 data.extra_proc_fn=translate data.batch_size=100
+lang=de seed=3 data.extra_proc_fn=translate data.batch_size=100
+lang=de seed=4 data.extra_proc_fn=translate data.batch_size=100
+lang=de seed=5 data.extra_proc_fn=translate data.batch_size=100
