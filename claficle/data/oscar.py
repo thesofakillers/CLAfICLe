@@ -49,18 +49,21 @@ class OSCARDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         if self.is_setup:
             return
-        if stage != "debug":
-            # these are updated when calling setup_split(split, ...)
-            self.entry_batches = {"train": 0, "validation": 0}
-            self.train_dataset_tokens = self.setup_split(
-                "train", 0, self.cfg.num_tokens
+        # these are updated when calling setup_split(split, ...)
+        self.entry_batches = {"train": 0, "validation": 0}
+        self.train_dataset_tokens = self.setup_split("train", 0, self.cfg.num_tokens)
+        num_val_tokens = int(self.cfg.num_tokens * self.cfg.val_frac)
+        self.val_dataset_tokens = self.setup_split(
+            "validation", self.entry_batches["train"], num_val_tokens
+        )
+        if stage == "debug":
+            # train for much less time (10 batches of data, instead of 5000)
+            self.train_dataset_tokens = self.train_dataset_tokens.select(
+                range(int(512 * 10))
             )
-            num_val_tokens = int(self.cfg.num_tokens * self.cfg.val_frac)
-            self.val_dataset_tokens = self.setup_split(
-                "validation", self.entry_batches["train"], num_val_tokens
+            self.val_dataset_tokens = self.val_dataset_tokens.select(
+                range(int(512 * 10 * 0.005))
             )
-        else:
-            raise NotImplementedError
         self.is_setup = True
 
     def setup_split(self, split: str, start_batch: int, total_tokens: int):

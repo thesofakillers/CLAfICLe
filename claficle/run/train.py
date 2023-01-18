@@ -33,7 +33,7 @@ def main(cfg: DictConfig):
 
     oscar.prepare_data()
     oscar.set_tokenizer(tokenizer)
-    oscar.setup()
+    oscar.setup("debug" if cfg.debug else None)
 
     # trainer
     log_save_dir = os.path.join(
@@ -45,7 +45,7 @@ def main(cfg: DictConfig):
         save_dir=log_save_dir,
         entity="giulio-uva",
         project="claficle",
-        job_type="train",
+        job_type="train" if not cfg.debug else "train-debug",
         mode="disabled" if cfg.trainer.disable_wandb else "online",
         group=script_host,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
