@@ -17,15 +17,5 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-# name datadir in scratch directory
-datadir=$TMPDIR/$USER/data
-
-# make the datadir
-mkdir -p $datadir
-
-# copy the data to the scratch dir $TMPDIR for quicker access
-cp -r $HOME/repos/claficle/data/* $datadir/
-
 srun python -u claficle/run/eval.py model=sandwich \
-  data.data_dir=$datadir \
   en=false fr=true de=false
