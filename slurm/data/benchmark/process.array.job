@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:0
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=DATA
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
-#SBATCH --array=1-10%10
+#SBATCH --array=1-30%10
 #SBATCH --output=slurm/outputs/data/arrays/benchmark_%A_%a.out
 
 module purge
@@ -19,4 +19,5 @@ source activate claficle
 HPARAMS_FILE=slurm/data/benchmark/process.array.txt
 
 srun python -u claficle/data/benchmark.py \
+  data=benchmark \
   $(head -$SLURM_ARRAY_TASK_ID $HPARAMS_FILE | tail -1)

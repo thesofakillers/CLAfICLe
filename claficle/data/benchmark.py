@@ -219,16 +219,29 @@ class BenchmarkDataModule(pl.LightningDataModule):
         self.max_seq_length = min(1024, tokenizer.model_max_length)
 
 
-@hydra.main(version_base=None, config_path="../conf/benchmark", config_name="eval")
+@hydra.main(version_base=None, config_path="../conf", config_name="setup_data")
 def main(cfg: DictConfig):
-    """downloads and processes the data for benchmark for each of the available languages"""
-    cfg.data_dir = "data/"
+    """
+    downloads and processes the data for benchmark for each of the available languages
+    when calling from CLI, pass data=benchmark
+    """
+    from omegaconf import OmegaConf
+    import wandb
+    print(OmegaConf.to_yaml(cfg))
 
-    for lang in ["en", "fr", "de"]:
-        benchmark = BenchmarkDataModule(cfg, lang)
-        benchmark.prepare_data()
-        benchmark.setup()
-        pprint(benchmark.get_metadata())
+    script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
+    wandb.init(
+        project="claficle",
+        entity="giulio-uva",
+        job_type="benchmark",
+        config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
+        mode="disabled" if cfg.disable_wandb else "online",
+        group=script_host,
+    )
+    benchmark = BenchmarkDataModule(cfg.data, cfg.lang)
+    benchmark.prepare_data()
+    benchmark.setup()
+    pprint(benchmark.get_metadata())
 
 
 if __name__ == "__main__":
