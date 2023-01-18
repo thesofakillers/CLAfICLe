@@ -1,5 +1,5 @@
 seed: 1 # will be overwritten by parent seed if run from parent script
 batch_size: 2 # largest that can fit in memory. Eff may be larger due to grad acc
-data_dir: ${oc.env:TMPDIR/repos/claficle/data/} # where to store the data
+data_dir: ${oc.env:TMPDIR}/repos/claficle/data/ # where to store the data
 num_workers: 18 # num_workers for dataloaders. Snellius has 18 CPUs
 extra_proc_fn: null # additional processing func, such as `translate`; override
