@@ -17,4 +17,4 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-srun python -u claficle/data/benchmark.py
+srun python -u claficle/data/benchmark.py data=benchmark lang=en
