@@ -42,7 +42,8 @@ class OSCARDataModule(pl.LightningDataModule):
             "oscar",
             f"unshuffled_deduplicated_{self.lang}",
             split="train",
-            streaming=True,
+            download_mode="force_redownload",  # to prevent cache from being created
+            streaming=True,  # steaming means lazy loading anyway.
         )
 
     def setup(self, stage: Optional[str] = None):
@@ -178,6 +179,7 @@ def main(cfg: DictConfig):
     We can omit processing by not passing the tokenizer path in the cfg.
     Running the script a second time will not re-download the data.
     """
+    datasets.disable_caching()
     script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
     wandb.init(
         project="claficle",
