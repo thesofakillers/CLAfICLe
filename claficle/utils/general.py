@@ -1,4 +1,5 @@
 """General utils"""
+import os
 from typing import Tuple, List, TypeVar
 import itertools
 
@@ -20,7 +21,9 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     ModelClass: BaseModel = NAME_TO_CLASS[cfg.model.name]
     print("Loading pretrained model...")
     if cfg.model.pl_checkpoint:
-        model = ModelClass.load_from_checkpoint(cfg.model.pl_checkpoint)
+        model = ModelClass.load_from_checkpoint(
+            os.path.join(cfg.model.checkpoint_dir, cfg.model.pl_checkpoint)
+        )
     else:
         model = ModelClass(cfg.model)  # this loads non-pl checkpoints internally
     # get possible additional preprocessing from model and set in data cfg
