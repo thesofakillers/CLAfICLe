@@ -72,7 +72,7 @@ class OSCARDataModule(pl.LightningDataModule):
             shuffle=True,
             num_workers=self.cfg.num_workers,
             pin_memory=True,
-            collate_fn=self._collate_fn,
+            collate_fn=self.collate_fn,
         )
 
     def val_dataloader(self):
@@ -82,7 +82,7 @@ class OSCARDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.cfg.num_workers,
             pin_memory=True,
-            collate_fn=self._collate_fn,
+            collate_fn=self.collate_fn,
         )
 
     def _setup_split(self, split: str, start_batch: int, total_tokens: int):
