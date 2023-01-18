@@ -40,7 +40,7 @@ class BaseModel(pl.LightningModule):
         # optionally load a state dict if using fine-tuned model as starting point
         if config.base_checkpoint is not None:
             state_dict = torch.load(
-                os.path.join("checkpoints/", config.base_checkpoint)
+                os.path.join(config.checkpoint_dir, config.base_checkpoint)
             )
             lm.load_state_dict(state_dict)
         return lm

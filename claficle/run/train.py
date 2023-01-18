@@ -28,7 +28,9 @@ def main(cfg: DictConfig):
             cfg.model.causalLM_variant
         )
     else:
-        tokenizer_path = os.path.join("checkpoints", "tokenizers", cfg.tokenizer_name)
+        tokenizer_path = os.path.join(
+            cfg.model.checkpoint_dir, "tokenizers", cfg.tokenizer_name
+        )
         tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer_path)
 
     oscar.prepare_data()
@@ -53,7 +55,7 @@ def main(cfg: DictConfig):
     )
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        dirpath="checkpoints",
+        dirpath=cfg.model.checkpoint_dir,
         filename=cfg.model.pl_checkpoint,
         monitor=f"{cfg.trainer.train_mode}/val/perplexity",
         mode="min",

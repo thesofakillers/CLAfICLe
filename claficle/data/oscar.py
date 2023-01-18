@@ -198,7 +198,7 @@ def main(cfg: DictConfig):
     # optionally, load the tokenizer and perform tokenization
     if cfg.tokenizer_name is not None:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
-            os.path.join("checkpoints", "tokenizers", cfg.tokenizer_name)
+            os.path.join(cfg.checkpoint_dir, "tokenizers", cfg.tokenizer_name)
         )
         oscar.set_tokenizer(tokenizer)
         oscar.setup()

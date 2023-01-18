@@ -41,7 +41,7 @@ class Gewechselt(PlainGPT2):
         Applies WECHSEL initialization.
         Serializes the trained tokenizer if it is not already present.
         """
-        targ_tok_save_dir = os.path.join("checkpoints", "tokenizers")
+        targ_tok_save_dir = os.path.join(self.hparams.checkpoint_dir, "tokenizers")
         os.makedirs(targ_tok_save_dir, exist_ok=True)
         target_tok_path = os.path.join(targ_tok_save_dir, tokenizer_name)
 
@@ -152,7 +152,9 @@ def main(cfg: DictConfig):
 
     model: Gewechselt = Gewechselt(cfg.model)
     # this will take a while
-    model.post_init(oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name)
+    model.post_init(
+        oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name, cfg.model.checkpoint_dir
+    )
 
     # just so that we can save a PL checkpoint of the model
     trainer.predict(
@@ -180,7 +182,7 @@ def main(cfg: DictConfig):
         else cfg.model.causalLM_variant
     )
     model_name = f"{prefix}_{cfg.model.name}_{cfg.model.target_lang}.ckpt"
-    checkpoint_path = os.path.join("checkpoints", model_name)
+    checkpoint_path = os.path.join(cfg.model.checkpoint_dir, model_name)
     trainer.save_checkpoint(checkpoint_path)
     # and upload it to wandb
     artifact = wandb.Artifact(
