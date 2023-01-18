@@ -14,7 +14,7 @@ import transformers
 import wandb
 
 from claficle.models.plain_gpt2 import PlainGPT2
-from claficle.utils.general import yield_batches_from_stream
+from claficle.data.utils import yield_batches_from_stream
 
 langcode_to_lang: Dict[str, str] = {
     "en": "english",

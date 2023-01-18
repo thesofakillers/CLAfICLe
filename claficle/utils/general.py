@@ -4,7 +4,6 @@ import itertools
 
 import pytorch_lightning as pl
 from omegaconf import DictConfig, OmegaConf
-import datasets
 
 from claficle.models.utils import NAME_TO_CLASS
 from claficle.models.base import BaseModel
@@ -30,14 +29,6 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     cfg.data.seed = cfg.seed
 
     return model, cfg
-
-
-def yield_batches_from_stream(
-    dataset: datasets.IterableDataset, column_name: str, batch_size: int = 1000
-):
-    """yields batches of size batch_size from an iterable dataset"""
-    for batch in dataset.iter(batch_size=batch_size):
-        yield batch[column_name]
 
 
 # used below
