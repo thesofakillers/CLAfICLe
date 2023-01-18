@@ -5,4 +5,5 @@ defaults:
 train_mode: "clm"
 accumulate_grad_batches: 256
 val_check_interval: 2500
+log_every_n_steps: 100
 clip_grad_norm: 0.5

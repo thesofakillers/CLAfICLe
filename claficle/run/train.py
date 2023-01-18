@@ -75,7 +75,7 @@ def main(cfg: DictConfig):
         gradient_clip_val=cfg.trainer.clip_grad_norm,
         accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
         val_check_interval=cfg.trainer.val_check_interval,
-        log_every_n_steps=cfg.trainer.val_check_interval,
+        log_every_n_steps=cfg.trainer.log_every_n_steps,
         callbacks=[checkpoint_callback, early_stopping_callback],
         precision=16,
     )
