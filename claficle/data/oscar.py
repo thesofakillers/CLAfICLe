@@ -42,7 +42,6 @@ class OSCARDataModule(pl.LightningDataModule):
             "oscar",
             f"unshuffled_deduplicated_{self.lang}",
             split="train",
-            download_mode="force_redownload",  # to prevent cache from being created
             streaming=True,  # steaming means lazy loading anyway.
         )
 
