@@ -82,3 +82,7 @@ def main(cfg: DictConfig):
     model.train_mode = cfg.trainer.train_mode
 
     trainer.fit(model, oscar)
+
+
+if __name__ == "__main__":
+    main()
