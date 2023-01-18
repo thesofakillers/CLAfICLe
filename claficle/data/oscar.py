@@ -50,9 +50,9 @@ class OSCARDataModule(pl.LightningDataModule):
             return
         # these are updated when calling setup_split(split, ...)
         self.entry_batches = {"train": 0, "validation": 0}
-        self.train_dataset_tokens = self.setup_split("train", 0, self.cfg.num_tokens)
+        self.train_dataset_tokens = self._setup_split("train", 0, self.cfg.num_tokens)
         num_val_tokens = int(self.cfg.num_tokens * self.cfg.val_frac)
-        self.val_dataset_tokens = self.setup_split(
+        self.val_dataset_tokens = self._setup_split(
             "validation", self.entry_batches["train"], num_val_tokens
         )
         if stage == "debug":
@@ -65,7 +65,7 @@ class OSCARDataModule(pl.LightningDataModule):
             )
         self.is_setup = True
 
-    def setup_split(self, split: str, start_batch: int, total_tokens: int):
+    def _setup_split(self, split: str, start_batch: int, total_tokens: int):
         # load from disk if we already tokenized:
         processed_path = os.path.join(self.processed_save_dir, f"{split}_tokenized")
         if os.path.exists(processed_path):
@@ -73,7 +73,7 @@ class OSCARDataModule(pl.LightningDataModule):
             dataset_tokens = datasets.load_from_disk(processed_path)
         else:
             dataset_tokens = datasets.Dataset.from_generator(
-                self.token_generator,
+                self._token_generator,
                 gen_kwargs={
                     "start_batch": start_batch,
                     "total": total_tokens,
@@ -87,7 +87,7 @@ class OSCARDataModule(pl.LightningDataModule):
             dataset_tokens.cleanup_cache_files()
         return dataset_tokens
 
-    def token_generator(self, start_batch: int, total: int, split: str):
+    def _token_generator(self, start_batch: int, total: int, split: str):
         """
         Generator for tokenizing dataset
         Using batch sizes of 1000
@@ -112,7 +112,7 @@ class OSCARDataModule(pl.LightningDataModule):
                 if tokens_generated > total:
                     return
                 self.entry_batches[split] += 1
-                tokenized_batch = self.tokenize_fn(batch)
+                tokenized_batch = self._tokenize_fn(batch)
                 batch_size = len(tokenized_batch["input_ids"])
                 num_tokens = batch_size * self.max_seq_length  # approximately
                 pbar.update(num_tokens)
@@ -122,7 +122,7 @@ class OSCARDataModule(pl.LightningDataModule):
                 ):
                     yield {"input_ids": input_ids, "attention_mask": attention_mask}
 
-    def tokenize_fn(self, batch):
+    def _tokenize_fn(self, batch):
         output = self.tokenizer(batch["text"], truncation=False)
 
         # concatenate every sample into one single list, separating throughout
