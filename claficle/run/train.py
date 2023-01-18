@@ -56,7 +56,7 @@ def main(cfg: DictConfig):
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         dirpath=cfg.model.checkpoint_dir,
-        filename=cfg.model.pl_checkpoint,
+        filename=cfg.model.pl_checkpoint.split(".")[0],
         monitor=f"{cfg.trainer.train_mode}/val/perplexity",
         mode="min",
         auto_insert_metric_name=False,
