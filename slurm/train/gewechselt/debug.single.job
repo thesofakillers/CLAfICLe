@@ -17,6 +17,8 @@ module load Miniconda3/4.12.0
 
 source activate claficle
 
-srun python -u claficle/run/train.py debug=true model.target_lang=fr \
-  pl_checkpoint=gpt2-large_Gewechselt_fr.ckpt \
+srun python -u claficle/run/train.py debug=true \
+  model.name=debug \
+  model.target_lang=fr \
+  model.pl_checkpoint=gpt2-large_Gewechselt_fr.ckpt \
   tokenizer_name=fr_gewechselt
