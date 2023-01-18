@@ -4,6 +4,6 @@ defaults:
   - _self_
 train_mode: "clm"
 accumulate_grad_batches: 256 # how many micro batches = 1 macro batch
-val_check_interval: 2500  # how many micro batches between validation epochs
+val_check_interval: 12800 # how many micro batches between validation epochs
 log_every_n_steps: 1  # log every n macro batches
 clip_grad_norm: 0.5
