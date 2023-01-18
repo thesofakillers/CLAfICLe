@@ -39,7 +39,7 @@ def main(cfg: DictConfig):
 
     # trainer
     log_save_dir = os.path.join(
-        cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", model.cfg.target_lang
+        cfg.trainer.log_dir, cfg.model.name, f"seed_{cfg.seed}", cfg.model.target_lang
     )
     os.makedirs(log_save_dir, exist_ok=True)
     script_host = "slurm" if "SLURM_JOB_ID" in os.environ else "local"
