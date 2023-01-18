@@ -5,7 +5,7 @@
 #SBATCH --job-name=DEB_G_TRAIN
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=04:00:00
+#SBATCH --time=00:40:00
 #SBATCH --mem-per-gpu=48G
 #SBATCH --output=slurm/outputs/train/debug_gewechselt_%A.out
 
