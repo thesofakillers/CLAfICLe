@@ -3,4 +3,4 @@ causalLM_variant: "gpt2-large"
 base_checkpoint: null
 pl_checkpoint: null
 extra_proc_fn: null
-checkpoint_dir: ${oc.env:TMPDIR}/repos/claficle/checkpoints/
+checkpoint_dir: /scratch-shared/gstarace/repos/claficle/checkpoints/
