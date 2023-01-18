@@ -45,7 +45,7 @@ def main(cfg: DictConfig):
         trainer_kwargs = {
             "accumulate_grad_batches": cfg.trainer.accumulate_grad_batches,
             "val_check_interval": cfg.trainer.val_check_interval,
-            "log_every_n_steps": cfg.trainer.val_check_interval,
+            "log_every_n_steps": 1,
             "callbacks": [timer],
         }
     else:
