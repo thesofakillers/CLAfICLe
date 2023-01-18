@@ -21,4 +21,5 @@ srun python -u claficle/run/train.py debug=true \
   model.name=gewechselt \
   model.target_lang=fr \
   model.pl_checkpoint=gpt2-large_Gewechselt_fr.ckpt \
-  tokenizer_name=fr_gewechselt
+  tokenizer_name=fr_gewechselt \
+  trainer.progress_bar=true
