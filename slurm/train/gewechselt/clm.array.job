@@ -5,9 +5,9 @@
 #SBATCH --job-name=GWCHSLT_TRAIN
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=120:00:00
+#SBATCH --time=5-00:00:00
 #SBATCH --mem-per-gpu=48G
-#SBATCH --array=1-20%4
+#SBATCH --array=1-20%2
 #SBATCH --output=slurm/outputs/train/arrays/clm_gewechselt_%A_%a.out
 
 source "./slurm/.secrets"
