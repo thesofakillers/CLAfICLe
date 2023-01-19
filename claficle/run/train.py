@@ -78,6 +78,7 @@ def main(cfg: DictConfig):
         log_every_n_steps=cfg.trainer.log_every_n_steps,  # log every batch
         callbacks=[checkpoint_callback, early_stopping_callback, lr_monitor_callback],
         precision=16,
+        deterministic=True,
     )
     model.train_mode = cfg.trainer.train_mode
 
