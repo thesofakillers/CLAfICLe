@@ -51,10 +51,9 @@ def main(cfg: DictConfig):
         mode="disabled" if cfg.trainer.disable_wandb else "online",
         group=script_host,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
-        log_model="all",  # log models to wandb during training rather than at the end
+        log_model=False,  # don't log or upload artifacts
     )
-
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(  # save best checkpoints
         dirpath=cfg.model.checkpoint_dir,
         filename=cfg.model.pl_checkpoint.split(".")[0],
         monitor=f"{cfg.trainer.train_mode}/val/perplexity",
