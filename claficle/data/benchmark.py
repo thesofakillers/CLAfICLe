@@ -227,6 +227,7 @@ def main(cfg: DictConfig):
     """
     from omegaconf import OmegaConf
     import wandb
+
     cfg.data.seed = cfg.seed
     print(OmegaConf.to_yaml(cfg))
 
