@@ -19,6 +19,6 @@ source activate claficle
 
 srun python -u claficle/run/train.py model.name=gewechselt \
   seed=1 \
-  model=pl.check_point=metaicl_Gewechselt_fr.ckpt \
+  model.pl_check_point=metaicl_Gewechselt_fr.ckpt \
   model.target_lang=fr \
   tokenizer_name=fr_gewechselt
