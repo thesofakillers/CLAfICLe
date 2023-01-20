@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
 #SBATCH --time=1-00:00:00
-#SBATCH --mem-per-gpu=16G
+#SBATCH --mem-per-gpu=60G
 #SBATCH --output=slurm/outputs/train/clm_gewechselt_%A.out
 
 source "./slurm/.secrets"
@@ -19,6 +19,6 @@ source activate claficle
 
 srun python -u claficle/run/train.py model.name=gewechselt \
   seed=1 \
-  model.pl_checkpoint=metaicl_Gewechselt_fr.ckpt \
-  model.target_lang=fr \
-  tokenizer_name=fr_gewechselt
+  model.pl_checkpoint=gpt2-large_Gewechselt_de.ckpt \
+  model.target_lang=de \
+  tokenizer_name=de_gewechselt

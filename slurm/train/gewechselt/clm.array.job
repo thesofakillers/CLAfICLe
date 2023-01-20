@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
 #SBATCH --time=1-00:00:00
-#SBATCH --mem-per-gpu=16G
+#SBATCH --mem-per-gpu=60GB
 #SBATCH --array=1-4%4
 #SBATCH --output=slurm/outputs/train/arrays/clm_gewechselt_%A_%a.out
 
