@@ -2,7 +2,7 @@ import os
 
 import datasets
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 import wandb
 
 from claficle.data.oscar import OSCARDataModule
