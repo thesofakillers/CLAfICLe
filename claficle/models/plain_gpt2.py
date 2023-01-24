@@ -62,7 +62,7 @@ class PlainGPT2(BaseModel):
         output = self.lm(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["input_ids"],
+            labels=batch["labels"],
         )
         self.log(f"{self.train_mode}/{phase}/loss", output["loss"])
         return output

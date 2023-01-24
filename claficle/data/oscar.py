@@ -64,6 +64,15 @@ class OSCARDataModule(pl.LightningDataModule):
                 range(int(512 * 10 * 0.005))
             )
         self.is_setup = True
+        if stage == "distillation":
+            # we won't get through the entire dataset in 24 hrs on a single GPU
+            # so we'll just use a subset of the data (~ 1 fifth)
+            self.train_dataset_tokens = self._setup_teacher_tokens(
+                self.train_dataset_tokens, int(6.2e8), "train"
+            )
+            self.val_dataset_tokens = self._setup_teacher_tokens(
+                self.val_dataset_tokens, int(6.2e8 * self.cfg.val_frac), "validation"
+            )
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
@@ -84,6 +93,44 @@ class OSCARDataModule(pl.LightningDataModule):
             pin_memory=True,
             collate_fn=self.collate_fn,
         )
+
+    def _setup_teacher_tokens(
+        self, dataset: datasets.Dataset, num_tokens: int, split: str
+    ):
+        processed_path = os.path.join(
+            self.processed_save_dir, f"{split}_teacher_tokenized"
+        )
+        if os.path.exists(processed_path):
+            print("Teacher labels already generated. Loading from disk")
+            teacher_tokens = datasets.load_from_disk(processed_path)
+        else:
+            teacher_tokens = dataset.select(range(num_tokens)).map(
+                self._gen_teacher_labels, batch_size=2
+            )
+            # save to disk for next time
+            os.makedirs(processed_path, exist_ok=True)
+            teacher_tokens.save_to_disk(processed_path, fs="deprecated")
+            teacher_tokens.cleanup_cache_files()
+        return teacher_tokens
+
+    def _gen_teacher_labels(self, batch: Dict[str, List[List[int]]]):
+        """
+        Passes a batch through the collator,
+        replaces the labels with the output of self.teacher
+        """
+        input_ids_tensor = torch.LongTensor(batch["input_ids"])
+        attention_mask_tensor = torch.LongTensor(batch["attention_mask"])
+        teacher_logits = self.teacher(
+            input_ids=input_ids_tensor, attention_mask=attention_mask_tensor
+        ).logits
+        teacher_labels = teacher_logits.argmax(-1)
+        # note: we need to truncate the generated labels on the right and input on the left
+        # because huggingface shifts labels to the left internally
+        batch["labels"] = teacher_labels[:, :-1]
+        batch["input_ids"] = input_ids_tensor[:, 1:]
+        batch["attention_mask"] = attention_mask_tensor[:, 1:]
+        # so our max seq length decreases by 1
+        return batch
 
     def _setup_split(self, split: str, start_batch: int, total_tokens: int):
         # load from disk if we already tokenized:
@@ -184,9 +231,13 @@ class OSCARDataModule(pl.LightningDataModule):
     def collate_fn(features: List[Dict[str, List[int]]]) -> Dict[str, torch.Tensor]:
         """
         Converts a list of dictionaries of tensors into a dictionary of tensors
+        Makes a 'labels' column from the inputs if it doesn't exist
         """
         # converting to dict of tensors
-        return transformers.default_data_collator(features)
+        dict_of_tensors = transformers.default_data_collator(features)
+        if "labels" not in dict_of_tensors:
+            dict_of_tensors["labels"] = dict_of_tensors["input_ids"].clone()
+        return dict_of_tensors
 
 
 @hydra.main(version_base=None, config_path="../conf/", config_name="setup_data")
