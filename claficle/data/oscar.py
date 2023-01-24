@@ -119,8 +119,10 @@ class OSCARDataModule(pl.LightningDataModule):
         Passes a batch through the collator,
         replaces the labels with the output of self.teacher
         """
-        input_ids_tensor = torch.LongTensor(batch["input_ids"])
-        attention_mask_tensor = torch.LongTensor(batch["attention_mask"])
+        input_ids_tensor = torch.LongTensor(batch["input_ids"], device=self.device)
+        attention_mask_tensor = torch.LongTensor(
+            batch["attention_mask"], device=self.device
+        )
         teacher_logits = self.teacher.lm(
             input_ids=input_ids_tensor, attention_mask=attention_mask_tensor
         ).logits
@@ -233,8 +235,11 @@ class OSCARDataModule(pl.LightningDataModule):
         This needs to be called before setting
         up the distillation dataset for the first time
         """
+        # set cuda device appropriately
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.teacher = teacher
         self.teacher.eval()
+        self.teacher.to(self.device)
 
     @staticmethod
     def collate_fn(features: List[Dict[str, List[int]]]) -> Dict[str, torch.Tensor]:
