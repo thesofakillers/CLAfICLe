@@ -32,7 +32,7 @@ class OSCARDataModule(pl.LightningDataModule):
             self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.num_tokens)
         )
         self.lang = lang
-        self.seed
+        self.seed = seed
         pl.seed_everything(seed)
 
     def prepare_data(self):
@@ -106,7 +106,7 @@ class OSCARDataModule(pl.LightningDataModule):
             teacher_tokens = datasets.load_from_disk(processed_path)
         else:
             teacher_tokens = dataset.select(range(num_tokens)).map(
-                self._gen_teacher_labels, batch_size=2
+                self._gen_teacher_labels, batch_size=2, batched=True
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
