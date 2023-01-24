@@ -108,8 +108,10 @@ class OSCARDataModule(pl.LightningDataModule):
             print("Teacher labels already generated. Loading from disk")
             teacher_tokens = datasets.load_from_disk(processed_path)
         else:
-            teacher_tokens = dataset.select(range(num_samples)).map(
-                self._gen_teacher_labels, batch_size=2, batched=True
+            teacher_tokens = (
+                dataset.select(range(num_samples))
+                .with_format("torch", device=self.device)
+                .map(self._gen_teacher_labels, batch_size=2, batched=True)
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
@@ -122,12 +124,8 @@ class OSCARDataModule(pl.LightningDataModule):
         Passes a batch through the collator,
         replaces the labels with the output of self.teacher
         """
-        input_ids_tensor = torch.tensor(
-            batch["input_ids"], device=self.device, dtype=int
-        )
-        attention_mask_tensor = torch.tensor(
-            batch["attention_mask"], device=self.device, dtype=int
-        )
+        input_ids_tensor = batch["input_ids"]
+        attention_mask_tensor = batch["attention_mask"]
         teacher_logits = self.teacher.lm(
             input_ids=input_ids_tensor, attention_mask=attention_mask_tensor
         ).logits
