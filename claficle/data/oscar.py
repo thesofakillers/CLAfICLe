@@ -121,13 +121,13 @@ class OSCARDataModule(pl.LightningDataModule):
         """
         input_ids_tensor = torch.LongTensor(batch["input_ids"])
         attention_mask_tensor = torch.LongTensor(batch["attention_mask"])
-        teacher_logits = self.teacher(
+        teacher_logits = self.teacher.lm(
             input_ids=input_ids_tensor, attention_mask=attention_mask_tensor
         ).logits
-        teacher_labels = teacher_logits.argmax(-1)
-        # note: we need to truncate the generated labels on the right and input on the left
+        teacher_preds = teacher_logits.argmax(-1)
+        # note: we need to truncate the predictions on the right and input on the left
         # because huggingface shifts labels to the left internally
-        batch["labels"] = teacher_labels[:, :-1]
+        batch["labels"] = teacher_preds[:, :-1]
         batch["input_ids"] = input_ids_tensor[:, 1:]
         batch["attention_mask"] = attention_mask_tensor[:, 1:]
         # so our max seq length decreases by 1
