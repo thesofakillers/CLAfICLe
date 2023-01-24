@@ -227,6 +227,14 @@ class OSCARDataModule(pl.LightningDataModule):
         self.max_seq_length = min(1024, tokenizer.model_max_length)
         self.vocab_size = len(self.tokenizer)
 
+    def set_teacher(self, teacher: pl.LightningModule):
+        """
+        This needs to be called before setting
+        up the distillation dataset for the first time
+        """
+        self.teacher = teacher
+        self.teacher.eval()
+
     @staticmethod
     def collate_fn(features: List[Dict[str, List[int]]]) -> Dict[str, torch.Tensor]:
         """
@@ -263,7 +271,7 @@ def main(cfg: DictConfig):
         mode="disabled" if cfg.disable_wandb else "online",
         group=script_host,
     )
-    oscar = OSCARDataModule(cfg.data, cfg.lang, 1)
+    oscar = OSCARDataModule(cfg.data, cfg.lang, cfg.seed)
     oscar.prepare_data()
 
     # optionally, load the tokenizer and perform tokenization
