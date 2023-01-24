@@ -68,11 +68,14 @@ class OSCARDataModule(pl.LightningDataModule):
         if stage == "distillation":
             # we won't get through the entire dataset in 24 hrs on a single GPU
             # so we'll just use a subset of the data (~ 1 fifth)
+            num_teacher_samples = 6e5
             self.train_dataset_tokens = self._setup_teacher_tokens(
-                self.train_dataset_tokens, int(6.2e8), "train"
+                self.train_dataset_tokens, int(num_teacher_samples), "train"
             )
             self.val_dataset_tokens = self._setup_teacher_tokens(
-                self.val_dataset_tokens, int(6.2e8 * self.cfg.val_frac), "validation"
+                self.val_dataset_tokens,
+                int(num_teacher_samples * self.cfg.val_frac),
+                "validation",
             )
 
     def train_dataloader(self):
@@ -96,7 +99,7 @@ class OSCARDataModule(pl.LightningDataModule):
         )
 
     def _setup_teacher_tokens(
-        self, dataset: datasets.Dataset, num_tokens: int, split: str
+        self, dataset: datasets.Dataset, num_samples: int, split: str
     ):
         processed_path = os.path.join(
             self.processed_save_dir, f"{split}_teacher_tokenized", str(self.seed)
@@ -105,7 +108,7 @@ class OSCARDataModule(pl.LightningDataModule):
             print("Teacher labels already generated. Loading from disk")
             teacher_tokens = datasets.load_from_disk(processed_path)
         else:
-            teacher_tokens = dataset.select(range(num_tokens)).map(
+            teacher_tokens = dataset.select(range(num_samples)).map(
                 self._gen_teacher_labels, batch_size=2, batched=True
             )
             # save to disk for next time
