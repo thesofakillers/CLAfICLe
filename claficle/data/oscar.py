@@ -32,6 +32,7 @@ class OSCARDataModule(pl.LightningDataModule):
             self.cfg.data_dir, "processed", "oscar", lang, str(self.cfg.num_tokens)
         )
         self.lang = lang
+        self.seed
         pl.seed_everything(seed)
 
     def prepare_data(self):
@@ -98,7 +99,7 @@ class OSCARDataModule(pl.LightningDataModule):
         self, dataset: datasets.Dataset, num_tokens: int, split: str
     ):
         processed_path = os.path.join(
-            self.processed_save_dir, f"{split}_teacher_tokenized"
+            self.processed_save_dir, f"{split}_teacher_tokenized", self.seed
         )
         if os.path.exists(processed_path):
             print("Teacher labels already generated. Loading from disk")
