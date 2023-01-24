@@ -1,0 +1,6 @@
+name: "plain_gpt2"
+base_checkpoint: "metaicl.pt"
+
+defaults:
+  - _self_
+  - base_model
