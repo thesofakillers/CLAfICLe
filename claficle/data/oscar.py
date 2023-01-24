@@ -111,7 +111,7 @@ class OSCARDataModule(pl.LightningDataModule):
             teacher_tokens = (
                 dataset.select(range(num_samples))
                 .with_format("torch", device=self.device)
-                .map(self._gen_teacher_labels, batch_size=2, batched=True)
+                .map(self._gen_teacher_labels, batch_size=4, batched=True)
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
