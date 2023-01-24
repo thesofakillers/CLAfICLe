@@ -29,7 +29,7 @@ class BaseModel(pl.LightningModule):
         return self.lm(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["input_ids"],
+            labels=batch["labels"],
         )
 
     def initialize_lm(self, config: DictConfig) -> AutoModelForCausalLM:
