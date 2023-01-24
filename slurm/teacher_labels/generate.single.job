@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=TEACHER
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=24:00:00
+#SBATCH --mem=120G
+#SBATCH --output=slurm/outputs/teacher_labels/teacher_%A.out
+
+source "./slurm/.secrets"
+
+module purge
+module load 2022
+module load Miniconda3/4.12.0
+
+source activate claficle
+
+srun python -u claficle/run/gen_teacher_labels.py
