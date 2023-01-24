@@ -119,9 +119,11 @@ class OSCARDataModule(pl.LightningDataModule):
         Passes a batch through the collator,
         replaces the labels with the output of self.teacher
         """
-        input_ids_tensor = torch.LongTensor(batch["input_ids"], device=self.device)
-        attention_mask_tensor = torch.LongTensor(
-            batch["attention_mask"], device=self.device
+        input_ids_tensor = torch.tensor(
+            batch["input_ids"], device=self.device, dtype=int
+        )
+        attention_mask_tensor = torch.tensor(
+            batch["attention_mask"], device=self.device, dtype=int
         )
         teacher_logits = self.teacher.lm(
             input_ids=input_ids_tensor, attention_mask=attention_mask_tensor
