@@ -115,7 +115,9 @@ class OSCARDataModule(pl.LightningDataModule):
             )
             # save to disk for next time
             os.makedirs(processed_path, exist_ok=True)
-            teacher_tokens.save_to_disk(processed_path, fs="deprecated")
+            teacher_tokens.with_format("arrow").save_to_disk(
+                processed_path, fs="deprecated"
+            )
             teacher_tokens.cleanup_cache_files()
         return teacher_tokens
 
