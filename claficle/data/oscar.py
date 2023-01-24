@@ -99,7 +99,7 @@ class OSCARDataModule(pl.LightningDataModule):
         self, dataset: datasets.Dataset, num_tokens: int, split: str
     ):
         processed_path = os.path.join(
-            self.processed_save_dir, f"{split}_teacher_tokenized", self.seed
+            self.processed_save_dir, f"{split}_teacher_tokenized", str(self.seed)
         )
         if os.path.exists(processed_path):
             print("Teacher labels already generated. Loading from disk")
