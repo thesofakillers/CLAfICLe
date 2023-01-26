@@ -1,0 +1,8 @@
+stage: "distillation"
+post_init: true
+tokenizer_name: null
+
+defaults:
+  - train
+  - _self_
+  - override model: metaicl_vessel

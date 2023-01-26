@@ -1,0 +1,6 @@
+defaults: 
+  - vessel
+  - _self_
+
+adapter_checkpoint: "metaicl_vessel"
+adapter_name: "metaicl"

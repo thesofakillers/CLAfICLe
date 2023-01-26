@@ -1,4 +1,5 @@
-debug: false
+stage: null # can be null, "debug" or "distillation"
+post_init: False # whether to run model.post_init()
 tokenizer_name: null
 
 defaults:

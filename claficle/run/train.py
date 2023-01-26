@@ -13,11 +13,16 @@ from claficle.data.oscar import OSCARDataModule
 
 @hydra.main(version_base=None, config_path="../conf", config_name="train")
 def main(cfg: DictConfig):
+    """
+    Set --config_name=distil to run distillation instead of training
+    """
     if cfg.model.pl_checkpoint is None:
         raise ValueError("Must provide a (init) PL checkpoint to train")
     # sets seed, parses model name
     model: BaseModel
     model, cfg = run_script_preamble(cfg)
+    if cfg.post_init:
+        model.post_init()
 
     # data
     oscar = OSCARDataModule(config=cfg.data, lang=cfg.model.target_lang, seed=cfg.seed)
@@ -35,7 +40,7 @@ def main(cfg: DictConfig):
 
     oscar.prepare_data()
     oscar.set_tokenizer(tokenizer)
-    oscar.setup("debug" if cfg.debug else None)
+    oscar.setup(cfg.stage)
 
     # trainer
     log_save_dir = os.path.join(
