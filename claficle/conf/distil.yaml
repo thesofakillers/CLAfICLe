@@ -1,0 +1,6 @@
+defaults:
+  - run
+  - _self_
+  - override model: metaiclva
+  - override data: oscar
+  - override trainer: train
