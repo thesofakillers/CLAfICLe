@@ -17,8 +17,7 @@ class Vessel(PlainGPT2):
         Depending on whether the file at self.hparams.adapter_checkpoint exists
         """
         self.adapter_path = os.path.join(
-            self.hparams.checkpoint_dir,
-            f"{self.hparams.adapter_checkpoint}-seed_{seed}",
+            self.hparams.checkpoint_dir, f"{self.hparams.adapter_checkpoint}-v{seed}"
         )
         # checkpoint loading branch
         if os.path.exists(self.adapter_path):
