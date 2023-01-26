@@ -26,7 +26,7 @@ class Vessel(PlainGPT2):
         else:
             self.lm.add_adapter(self.hparams.adapter_name, config="pfeiffer")
 
-    def on_train_start(self):
+    def on_fit_start(self):
         # freeze the GPT2 weights and only train the adapter
         self.lm.train_adapter(self.hparams.adapter_name)
         self.lm.set_active_adapters(self.hparams.adapter_name)
