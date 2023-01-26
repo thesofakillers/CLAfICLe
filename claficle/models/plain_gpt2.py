@@ -45,8 +45,8 @@ class PlainGPT2(BaseModel):
 
         training mode can either be:
         - causal language modelling (clm)
-        - MetaICL (meta-icl)
-        - vessel (vessel)
+        - MetaICL (meta-icl) (deprecated)
+        - vessel (vessel) (deprecated)
 
         outputs a dict (or equivalent) with keys "loss" and "logits"
         """
