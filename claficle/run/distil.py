@@ -18,7 +18,7 @@ def main(cfg: DictConfig):
     model, cfg = run_script_preamble(cfg)
 
     # additional post initialization (activating adapter, freezing gpt2)
-    model.post_init()
+    model.post_init(seed=cfg.seed)
 
     # we are only doing vessel distillation in english
     lang = "en"

@@ -11,13 +11,14 @@ class Vessel(PlainGPT2):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def post_init(self):
+    def post_init(self, seed: int):
         """
         Either initializes or loads the adapter weights
         Depending on whether the file at self.hparams.adapter_checkpoint exists
         """
         self.adapter_path = os.path.join(
-            self.hparams.checkpoint_dir, self.hparams.adapter_checkpoint
+            self.hparams.checkpoint_dir,
+            f"{self.hparams.adapter_checkpoint}-seed_{seed}",
         )
         # checkpoint loading branch
         if os.path.exists(self.adapter_path):
