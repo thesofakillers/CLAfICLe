@@ -1,0 +1,6 @@
+defaults:
+  - base_gpt2
+  - _self_
+
+adapter_checkpoint: ???  # (str) required
+adapter_name: ??? # (str) required
