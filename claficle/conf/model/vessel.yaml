@@ -1,6 +1,7 @@
 defaults:
-  - base_gpt2
+  - base_model
   - _self_
 
+name: "vessel"
 adapter_checkpoint: ???  # (str) required
 adapter_name: ??? # (str) required
