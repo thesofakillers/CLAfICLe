@@ -1,5 +1,6 @@
 import os
 from typing import Dict, List, Tuple, Optional
+from collections import OrderedDict
 
 import pytorch_lightning as pl
 from omegaconf import DictConfig
@@ -44,7 +45,10 @@ class BaseModel(pl.LightningModule):
             )
             checkpoint_file_ext = config.base_checkpoint.split(".")[-1]
             if checkpoint_file_ext == "ckpt":
-                state_dict = ckpt["state_dict"]
+                # need to get rid of 'lm.' prefix for pl_lightning checkpoints
+                state_dict = OrderedDict(
+                    [(k[3:], v) for k, v in ckpt["state_dict"].items()]
+                )
             elif checkpoint_file_ext == "pt":
                 state_dict = ckpt
             else:
