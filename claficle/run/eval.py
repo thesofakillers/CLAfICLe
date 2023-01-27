@@ -22,6 +22,7 @@ def main(cfg: DictConfig):
     benchmark = BenchmarkDataModule(config=cfg.data, lang=lang)
     benchmark.prepare_data()
     benchmark.setup()
+    print(benchmark.get_metadata())
     # so that the model knows names and metrics of dataloaders before testing
     model.set_benchmark_metadata(benchmark.get_metadata())
 
