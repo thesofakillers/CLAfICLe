@@ -4,3 +4,4 @@ base_checkpoint: null
 pl_checkpoint: null
 extra_proc_fn: null
 checkpoint_dir: /scratch-shared/gstarace/repos/claficle/checkpoints/
+preamble_post_init: false

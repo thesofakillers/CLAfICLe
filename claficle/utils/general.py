@@ -6,7 +6,7 @@ import itertools
 import pytorch_lightning as pl
 from omegaconf import DictConfig, OmegaConf
 
-from claficle.models.utils import NAME_TO_CLASS
+from claficle.models.utils import NAME_TO_CLASS, get_model_preamble_post_init_kwargs
 from claficle.models.base import BaseModel
 
 
@@ -30,6 +30,9 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     cfg.data.extra_proc_fn = cfg.model.extra_proc_fn
     # overwrite data cfg seed with run script seed
     cfg.data.seed = cfg.seed
+    # if requested, run model.post_init(**kwargs)
+    if cfg.model.preamble_post_init:
+        model.post_init(**get_model_preamble_post_init_kwargs(cfg))
 
     return model, cfg
 
