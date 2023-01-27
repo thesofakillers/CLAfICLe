@@ -126,13 +126,13 @@ EXTRA_FN_KSHOT_BY_NAME: Dict[Optional[str], Callable[..., Any]] = {
 
 def process_dataset(
     processed_test_split: Dataset, lang: str, cfg: DictConfig, dataset_name: str
-) -> Tuple[Any, List[str], str]:
+) -> Tuple[Any, List[str], int, str]:
     """
     Gets relevant splits
     Generates k-shot context from non-test portion of data
     Prepends each test input with k-shot context
     Adds options column to track options
-    Returns processed test dataset and relevant metrics
+    Returns processed test dataset and relevant metrics, num_classes and collection_name
     """
     Helper = HELPER_BY_NAME[dataset_name]
     rng = np.random.default_rng(cfg.seed)
@@ -160,66 +160,66 @@ def process_dataset(
     )
     if os.path.exists(dataset_path):  # no need to process again
         processed_test_split = datasets.load_from_disk(dataset_path)
-        return processed_test_split, metrics, collection_name
-
-    # column renaming
-    for source, target in Helper.rename_cols.items():
-        processed_test_split = processed_test_split.rename_column(source, target)
-
-    # k-shot context handling
-    k_shot_source = Helper.get_k_source(processed_test_split, lang)
-    k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k, rng)
-    k_shot_string = utils.prepare_kshot_str(
-        k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
-    )
-    if extra_proc_fn_kshot is not None:  # additional k_shot processing if requested
-        k_shot_string = extra_proc_fn_kshot(
-            k_shot_string,
-            fn_kwargs={"src_lang": lang, "dest_lang": "en", "separator": cfg.separator},
-        )
-
-    # handling splits
-    if Helper.k_from_test:
-        test_indices = np.setdiff1d(np.arange(len(k_shot_source)), k_indices)
-        test_split = k_shot_source.select(test_indices)
     else:
-        test_split = Helper.get_test_split(processed_test_split, lang)
+        # column renaming
+        for source, target in Helper.rename_cols.items():
+            processed_test_split = processed_test_split.rename_column(source, target)
 
-    # finally, processing
-    processed_test_split = test_split.map(
-        utils.prepare_and_process,
-        remove_columns=Helper.remove_cols,
-        fn_kwargs={
-            "k_shot_str": k_shot_string,
-            "separator": cfg.separator,
-            "preparer": Helper.prepare_example,
-            "optioner": Helper.get_options,
-        },
-    )
-
-    # additional processing if needed
-    if extra_proc_fn is not None:
-        # if we're doing classification, options are same for every example
-        if Helper.is_classification:
-            processed_options = extra_proc_fn_options(
-                processed_test_split[0]["options"],
-                fn_kwargs={"src_lang": lang, "dest_lang": "en"},
-            )
-        else:
-            processed_options = None
-        processed_test_split = processed_test_split.map(
-            extra_proc_fn,
-            fn_kwargs={
-                "src_lang": lang,
-                "dest_lang": "en",
-                "separator": cfg.separator,
-                "processed_options": processed_options,
-            },
-            batched=True,
-            batch_size=cfg.batch_size,
+        # k-shot context handling
+        k_shot_source = Helper.get_k_source(processed_test_split, lang)
+        k_shot, k_indices = utils.get_k_shot_subset(k_shot_source, cfg.k, rng)
+        k_shot_string = utils.prepare_kshot_str(
+            k_shot, cfg.separator, Helper.prepare_example, Helper.get_options
         )
-    # create save directory if it doesn't exist, and save to disk
-    Path(dataset_path).mkdir(parents=True, exist_ok=True)
-    processed_test_split.save_to_disk(dataset_path)
+        if extra_proc_fn_kshot is not None:  # additional k_shot processing if requested
+            k_shot_string = extra_proc_fn_kshot(
+                k_shot_string,
+                fn_kwargs={"src_lang": lang, "dest_lang": "en", "separator": cfg.separator},
+            )
 
-    return processed_test_split, metrics, collection_name
+        # handling splits
+        if Helper.k_from_test:
+            test_indices = np.setdiff1d(np.arange(len(k_shot_source)), k_indices)
+            test_split = k_shot_source.select(test_indices)
+        else:
+            test_split = Helper.get_test_split(processed_test_split, lang)
+
+        # finally, processing
+        processed_test_split = test_split.map(
+            utils.prepare_and_process,
+            remove_columns=Helper.remove_cols,
+            fn_kwargs={
+                "k_shot_str": k_shot_string,
+                "separator": cfg.separator,
+                "preparer": Helper.prepare_example,
+                "optioner": Helper.get_options,
+            },
+        )
+
+        # additional processing if needed
+        if extra_proc_fn is not None:
+            # if we're doing classification, options are same for every example
+            if Helper.is_classification:
+                processed_options = extra_proc_fn_options(
+                    processed_test_split[0]["options"],
+                    fn_kwargs={"src_lang": lang, "dest_lang": "en"},
+                )
+            else:
+                processed_options = None
+            processed_test_split = processed_test_split.map(
+                extra_proc_fn,
+                fn_kwargs={
+                    "src_lang": lang,
+                    "dest_lang": "en",
+                    "separator": cfg.separator,
+                    "processed_options": processed_options,
+                },
+                batched=True,
+                batch_size=cfg.batch_size,
+            )
+        # create save directory if it doesn't exist, and save to disk
+        Path(dataset_path).mkdir(parents=True, exist_ok=True)
+        processed_test_split.save_to_disk(dataset_path)
+
+    num_classes = len(processed_test_split[0]["options"])
+    return processed_test_split, metrics, num_classes, collection_name
