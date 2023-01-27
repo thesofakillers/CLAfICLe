@@ -23,9 +23,11 @@ class Vessel(PlainGPT2):
         )
         # checkpoint loading branch
         if os.path.exists(self.adapter_path):
+            print("Adapter weights found, loading...")
             self.lm.load_adapter(self.adapter_path, config="pfeiffer", set_active=True)
         # initialization branch
         else:
+            print("Adapter weights not found, initializing...")
             self.lm.add_adapter(self.hparams.adapter_name, config="pfeiffer")
 
     def on_fit_start(self):
