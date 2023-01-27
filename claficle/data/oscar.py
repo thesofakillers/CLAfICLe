@@ -289,13 +289,12 @@ def main(cfg: DictConfig):
         tokenizer = transformers.AutoTokenizer.from_pretrained(
             os.path.join(cfg.checkpoint_dir, "tokenizers", cfg.tokenizer_name)
         )
-        oscar.set_tokenizer(tokenizer)
-        oscar.setup()
     # for english, we can always do the tokenization
     elif cfg.tokenizer_name is None and cfg.lang == "en":
         tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
-        oscar.set_tokenizer(tokenizer)
-        oscar.setup()
+
+    oscar.set_tokenizer(tokenizer)
+    oscar.setup()
 
 
 if __name__ == "__main__":
