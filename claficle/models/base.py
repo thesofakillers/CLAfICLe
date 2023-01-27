@@ -39,9 +39,16 @@ class BaseModel(pl.LightningModule):
         lm = AutoModelForCausalLM.from_pretrained(config.causalLM_variant)
         # optionally load a state dict if using fine-tuned model as starting point
         if config.base_checkpoint is not None:
-            state_dict = torch.load(
+            ckpt = torch.load(
                 os.path.join(config.checkpoint_dir, config.base_checkpoint)
             )
+            checkpoint_file_ext = config.base_checkpoint.split(".")[-1]
+            if checkpoint_file_ext == "ckpt":
+                state_dict = ckpt["state_dict"]
+            elif checkpoint_file_ext == "pt":
+                state_dict = ckpt
+            else:
+                raise ValueError("Expected .ckpt or .pt file extension")
             lm.load_state_dict(state_dict)
         return lm
 
