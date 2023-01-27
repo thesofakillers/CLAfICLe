@@ -5,3 +5,5 @@ defaults:
   - override data: benchmark
   - override trainer: eval
   - override model: ???
+
+lang: ???
