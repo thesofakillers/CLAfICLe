@@ -1,10 +1,11 @@
 import os
 from typing import Dict, List, Tuple, Optional
 from collections import OrderedDict
+from functools import partial
 
 import pytorch_lightning as pl
 from omegaconf import DictConfig
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoModelForCausalLM
 from torch import Tensor
 import torch.nn.functional as F
 import torchmetrics.functional as TF
@@ -21,8 +22,8 @@ class BaseModel(pl.LightningModule):
         self.save_hyperparameters(config)
         self.curr_dataloader_name: Optional[str] = None
         self.metric_to_fn = {
-            "f1": TF.f1_score,
-            "accuracy": TF.accuracy,
+            "f1": TF.classification.multiclass_f1_score,
+            "accuracy": TF.classification.multiclass_accuracy,
         }
         self.lm = self.initialize_lm(config)
 
@@ -86,8 +87,11 @@ class BaseModel(pl.LightningModule):
         preds, losses = self.do_metaicl_inference(concats, tok_type_ids)
 
         dataloader_config = self.benchmark_metadata["datasets"][dataloader_idx]
+        num_classes = dataloader_config["num_classes"]
         for metric in dataloader_config["metrics"]:
-            score = self.metric_to_fn[metric](preds, labels)
+            score = self.metric_to_fn[metric](
+                preds=preds, target=labels, num_classes=num_classes
+            )
             self.log(
                 f"{dataloader_config['name']}/test/{metric}",
                 score,
