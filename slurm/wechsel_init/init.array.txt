@@ -1,4 +1,4 @@
-model.target_lang="fr" model.name="Gewechselt" tokenizer_name="fr_gewechselt"
-model.target_lang="de" model.name="Gewechselt" tokenizer_name="de_gewechselt"
-model.target_lang="fr" model.name="Gewechselt" tokenizer_name="fr_gewechselt" model.base_checkpoint="metaicl.pt"
-model.target_lang="de" model.name="Gewechselt" tokenizer_name="de_gewechselt" model.base_checkpoint="metaicl.pt"
+model.target_lang="fr" model.name="Gewechselt" model.tokenizer_name="fr_gewechselt"
+model.target_lang="de" model.name="Gewechselt" model.tokenizer_name="de_gewechselt"
+model.target_lang="fr" model.name="Gewechselt" model.tokenizer_name="fr_gewechselt" model.base_checkpoint="metaicl.pt"
+model.target_lang="de" model.name="Gewechselt" model.tokenizer_name="de_gewechselt" model.base_checkpoint="metaicl.pt"

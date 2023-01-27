@@ -11,7 +11,6 @@ import torch
 import hydra
 import datasets
 import transformers
-import wandb
 
 from claficle.models.plain_gpt2 import PlainGPT2
 from claficle.data.utils import yield_batches_from_stream
@@ -35,7 +34,6 @@ class Gewechselt(PlainGPT2):
         self,
         target_data: datasets.IterableDataset,
         target_data_len: int,
-        tokenizer_name: str,
     ):
         """
         Applies WECHSEL initialization.
@@ -43,7 +41,7 @@ class Gewechselt(PlainGPT2):
         """
         targ_tok_save_dir = os.path.join(self.hparams.checkpoint_dir, "tokenizers")
         os.makedirs(targ_tok_save_dir, exist_ok=True)
-        target_tok_path = os.path.join(targ_tok_save_dir, tokenizer_name)
+        target_tok_path = os.path.join(targ_tok_save_dir, self.hparams.tokenizer_name)
 
         source_tokenizer = AutoTokenizer.from_pretrained(self.hparams.causalLM_variant)
 
@@ -56,14 +54,8 @@ class Gewechselt(PlainGPT2):
                 vocab_size=len(source_tokenizer),
                 length=target_data_len,
             )
-            # serializing and uploading to wandb
+            # serializing
             target_tokenizer.save_pretrained(target_tok_path)
-            artifact = wandb.Artifact(
-                name=tokenizer_name,
-                type="tokenizer",
-            )
-            artifact.add_dir(target_tok_path)
-            wandb.log_artifact(artifact)
 
         print("Initializing WECHSEL...")
         wechsel = WECHSEL(
@@ -73,7 +65,7 @@ class Gewechselt(PlainGPT2):
         )
 
         print("Generating target embeddings...")
-        target_embeddings, info = wechsel.apply(
+        target_embeddings, _ = wechsel.apply(
             source_tokenizer,
             target_tokenizer,
             self.lm.get_input_embeddings().weight.detach().numpy(),
@@ -152,7 +144,7 @@ def main(cfg: DictConfig):
 
     model: Gewechselt = Gewechselt(cfg.model)
     # this will take a while
-    model.post_init(oscar.raw_dataset, int(2.4e6), cfg.tokenizer_name)
+    model.post_init(oscar.raw_dataset, int(2.4e6))
 
     # just so that we can save a PL checkpoint of the model
     trainer.predict(

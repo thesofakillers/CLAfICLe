@@ -5,3 +5,4 @@ defaults:
 source_lang: "en"
 target_lang: ???
 peak_lr: 0.0005
+tokenizer_name: ???
