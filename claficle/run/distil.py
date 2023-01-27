@@ -48,7 +48,7 @@ def main(cfg: DictConfig):
     )
     checkpoint_callback = pl.callbacks.ModelCheckpoint(  # save best checkpoints
         dirpath=cfg.model.checkpoint_dir,
-        filename="distillation",
+        filename=f"adapter_distillation_-v{cfg.seed}",
         monitor=f"{cfg.trainer.train_mode}/val/perplexity",
         mode="min",
         auto_insert_metric_name=False,
