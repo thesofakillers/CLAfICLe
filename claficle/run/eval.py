@@ -32,7 +32,7 @@ def main(cfg: DictConfig):
         tokenizer = transformers.AutoTokenizer.from_pretrained(
             os.path.join(cfg.checkpoint_dir, "tokenizers", cfg.tokenizer_name)
         )
-    elif cfg.model.tokenizer_name is None and cfg.lang == "en":
+    else:
         tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
 
     benchmark.set_tokenizer(tokenizer)
