@@ -2,6 +2,15 @@
 
 Cross-Lingual Adaptation for In-Context Learning
 
+<!-- vim-markdown-toc GFM -->
+
+* [Requirements and Setup](#requirements-and-setup)
+    * [Required Packages](#required-packages)
+    * [Checkpoints](#checkpoints)
+* [Project Organization](#project-organization)
+
+<!-- vim-markdown-toc -->
+
 ## Requirements and Setup
 
 ### Required Packages
