@@ -7,6 +7,7 @@ Cross-Lingual Adaptation for In-Context Learning
 * [Requirements and Setup](#requirements-and-setup)
     * [Required Packages](#required-packages)
     * [Checkpoints](#checkpoints)
+* [Model Reference](#model-reference)
 * [Project Organization](#project-organization)
 
 <!-- vim-markdown-toc -->
@@ -55,6 +56,17 @@ translation API. For this checkpoint, please refer to the instructions on the
 [MetaICL repo](https://github.com/facebookresearch/MetaICL) for downloading
 their `metaicl` model in the `hr_to_lr` setting. Once downloaded, rename this to
 `metaicl.pt` and place it in the relevant checkpoints directory.
+
+## Model Reference
+
+| **Model Name**                         | **Evaluation Languages** | **Description**                                                                                                                                                                              |
+| -------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `metaicl`                              | en                       | `direct` `hr_to_lr` checkpoint from the [MetaICL repo](https://github.com/facebookresearch/MetaICL).                                                                                         |
+| `plain_gpt2`                           | en                       | [gpt2-large](https://huggingface.co/gpt2-large) from Hugging Face.                                                                                                                           |
+| `sandwich-{lang}`                      | fr, de                   | `metaicl` sandwiched in a translation API for `lang`, serving as a baseline.                                                                                                                 |
+| `{base}-gewechselt-{lang}-{0shot/clm}` | fr, de                   | An english `base` (either metaicl or `plain_gpt2`) adapted to a `lang` (fr or de) using [WECHSEL](https://github.com/CPJKU/wechsel), 0 shot or with the additional recommended CLM training. |
+| `{base}-metaicla`                      | fr, de                   | A `base` (any of the `plain_gpt2-gewechselt-{lang}-clm`) with a MetaICL adapter, trained the standard way.                                                                                   |
+| `{base}-metaiclva`                     | fr, de                   | A `base` (any of the `plain_gpt2-gewechselt-{lang}-clm`) with a MetaICL _vessel_ adapter, trained with targeted distillation.                                                                |
 
 ## Project Organization
 
