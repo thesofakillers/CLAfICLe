@@ -5,9 +5,9 @@
 #SBATCH --job-name=EVAL
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=24:00:00
+#SBATCH --time=10:00:00
 #SBATCH --mem=120G
-#SBATCH --array=1-6%6
+#SBATCH --array=1-9%9
 #SBATCH --output=slurm/outputs/eval/arrays/benchmark_%A_%a.out
 
 source "./slurm/.secrets"

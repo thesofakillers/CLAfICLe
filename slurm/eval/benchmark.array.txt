@@ -1,3 +1,6 @@
+seed=1 model=eval/metaicl lang=en
+seed=1 model=eval/sandwich lang=fr
+seed=1 model=eval/sandwich lang=de
 seed=1 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt
 seed=1 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v1
 seed=1 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v1
