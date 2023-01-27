@@ -1,5 +1,6 @@
 """Evaluates model on benchmark of tasks"""
 import os
+from pprint import pprint
 
 import pytorch_lightning as pl
 import hydra
@@ -22,7 +23,7 @@ def main(cfg: DictConfig):
     benchmark = BenchmarkDataModule(config=cfg.data, lang=lang)
     benchmark.prepare_data()
     benchmark.setup()
-    print(benchmark.get_metadata())
+    pprint(benchmark.get_metadata())
     # so that the model knows names and metrics of dataloaders before testing
     model.set_benchmark_metadata(benchmark.get_metadata())
 
