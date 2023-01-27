@@ -4,6 +4,6 @@ tokenizer_name: null
 defaults:
   - run
   - _self_
-  - override model: gewechselt/train
+  - override model: gewechselt
   - override data: oscar
   - override trainer: train
