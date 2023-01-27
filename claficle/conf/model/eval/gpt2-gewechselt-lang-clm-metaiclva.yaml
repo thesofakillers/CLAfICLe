@@ -1,6 +1,6 @@
 # WECHSELized GPT2 with a MetaICL adapter, trained in the standard way
 
-base_checkpoint: "metaicl_Gewechselt_{$LANG}-clm-v{$SEED}.ckpt"
+base_checkpoint: "gpt2-large_Gewechselt_{$LANG}_clm-v{$SEED}.ckpt"
 
 defaults:
   - base_model
@@ -8,4 +8,4 @@ defaults:
 name: "vessel"
 tokenizer_name: "{LANG}_gewechselt"
 adapter_checkpoint: "metaiclva-v{$SEED}"
-adapter_name: "metaicl"
+adapter_name: "metaicl_vessel"
