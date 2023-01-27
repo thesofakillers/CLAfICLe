@@ -1,0 +1,47 @@
+seed=1 model=eval/metaicl lang=en
+seed=1 model=eval/sandwich lang=fr
+seed=1 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt
+seed=1 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v1
+seed=1 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v1.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v1
+seed=1 model=eval/sandwich lang=de
+seed=1 model=eval/metaicl-gewechselt-lang-clm lang=de model.target_lang=de model.base_checkpoint=metaicl-Gewechselt_de_clm-v1.ckpt model.tokenizer_name=de_gewechselt
+seed=1 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v1.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v1
+seed=1 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v1.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v1
+
+# one day we will have all these seeds
+seed=2 model=eval/metaicl lang=en
+seed=2 model=eval/sandwich lang=fr
+seed=2 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v2.ckpt model.tokenizer_name=fr_gewechselt
+seed=2 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v2.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v2
+seed=2 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v2.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v2
+seed=2 model=eval/sandwich lang=de
+seed=2 model=eval/metaicl-gewechselt-lang-clm lang=de model.target_lang=de model.base_checkpoint=metaicl-Gewechselt_de_clm-v2.ckpt model.tokenizer_name=de_gewechselt
+seed=2 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v2.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v2
+seed=2 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v2.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v2
+seed=3 model=eval/metaicl lang=en
+seed=3 model=eval/sandwich lang=fr
+seed=3 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v3.ckpt model.tokenizer_name=fr_gewechselt
+seed=3 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v3.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v3
+seed=3 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v3.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v3
+seed=3 model=eval/sandwich lang=de
+seed=3 model=eval/metaicl-gewechselt-lang-clm lang=de model.target_lang=de model.base_checkpoint=metaicl-Gewechselt_de_clm-v3.ckpt model.tokenizer_name=de_gewechselt
+seed=3 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v3.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v3
+seed=3 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v3.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v3
+seed=4 model=eval/metaicl lang=en
+seed=4 model=eval/sandwich lang=fr
+seed=4 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v4.ckpt model.tokenizer_name=fr_gewechselt
+seed=4 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v4.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v4
+seed=4 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v4.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v4
+seed=4 model=eval/sandwich lang=de
+seed=4 model=eval/metaicl-gewechselt-lang-clm lang=de model.target_lang=de model.base_checkpoint=metaicl-Gewechselt_de_clm-v4.ckpt model.tokenizer_name=de_gewechselt
+seed=4 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v4.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v4
+seed=4 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v4.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v4
+seed=5 model=eval/metaicl lang=en
+seed=5 model=eval/sandwich lang=fr
+seed=5 model=eval/metaicl-gewechselt-lang-clm lang=fr model.target_lang=fr model.base_checkpoint=metaicl-Gewechselt_fr_clm-v5.ckpt model.tokenizer_name=fr_gewechselt
+seed=5 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v5.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v5
+seed=5 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=fr model.base_checkpoint=gpt2-large_Gewechselt_fr_clm-v5.ckpt model.tokenizer_name=fr_gewechselt model.adapter_checkpoint=metaicla-v5
+seed=5 model=eval/sandwich lang=de
+seed=5 model=eval/metaicl-gewechselt-lang-clm lang=de model.target_lang=de model.base_checkpoint=metaicl-Gewechselt_de_clm-v5.ckpt model.tokenizer_name=de_gewechselt
+seed=5 model=eval/gpt2-gewechselt-lang-clm-metaicla lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v5.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v5
+seed=5 model=eval/gpt2-gewechselt-lang-clm-metaiclva lang=de model.base_checkpoint=gpt2-large_Gewechselt_de_clm-v5.ckpt model.tokenizer_name=de_gewechselt model.adapter_checkpoint=metaicla-v5
