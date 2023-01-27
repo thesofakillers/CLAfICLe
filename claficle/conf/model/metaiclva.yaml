@@ -2,5 +2,5 @@ defaults:
   - vessel
   - _self_
 
-adapter_checkpoint: "metaicl_vessel"
-adapter_name: "metaicl_vessel"
+adapter_checkpoint: "metaiclva"
+adapter_name: "metaiclva"
