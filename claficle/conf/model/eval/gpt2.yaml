@@ -1,6 +1,0 @@
-# just a plain-old gpt2-large english model. Download from hf and go
-
-defaults:
-  - base_model
-  - _self_
-name: "plain_gpt2"
