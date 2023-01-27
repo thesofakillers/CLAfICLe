@@ -4,6 +4,7 @@ import os
 import pytorch_lightning as pl
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import transformers
 
 from claficle.data.benchmark import BenchmarkDataModule
 from claficle.models.base import BaseModel
