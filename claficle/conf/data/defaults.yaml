@@ -1,5 +1,17 @@
+defaults:
+  - _self_
+  # https://stackoverflow.com/a/70777327/9889508
+  - override hydra/hydra_logging: none
+  - override hydra/job_logging: none
+
 seed: 1 # will be overwritten by parent seed if run from parent script
 batch_size: 2 # largest that can fit in memory. Eff may be larger due to grad acc
 data_dir: /scratch-shared/gstarace/repos/claficle/data/ # where to store the data
 num_workers: 18 # num_workers for dataloaders. Snellius has 18 CPUs
 extra_proc_fn: null # additional processing func, such as `translate`; override
+ 
+# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
+hydra:
+  run:
+    dir: .
+  output_subdir: null

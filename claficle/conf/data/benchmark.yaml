@@ -40,9 +40,3 @@ dataset_names: # list of huggingface dataset;split names
   # - swiss_judgment_prediction;mt_en
   # - swiss_judgment_prediction;de
   # - swiss_judgment_prediction;fr
-
-# to avoid hydra creating output dirs: https://stackoverflow.com/a/64635492/9889508
-hydra:
-  run:
-    dir: .
-  output_subdir: null
