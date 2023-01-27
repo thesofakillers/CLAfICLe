@@ -4,4 +4,4 @@ defaults:
   - _self_
   - override data: benchmark
   - override trainer: eval
-  - override model: base_model
+  - override model: ???
