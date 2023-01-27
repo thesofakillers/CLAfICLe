@@ -1,5 +1,6 @@
 seed: 1
 tokenizer_name: null
+disable_wandb: false
 
 
 defaults:

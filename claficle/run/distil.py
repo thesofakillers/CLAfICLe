@@ -41,7 +41,7 @@ def main(cfg: DictConfig):
         entity="giulio-uva",
         project="claficle",
         job_type="distillation",
-        mode="disabled" if cfg.trainer.disable_wandb else "online",
+        mode="disabled" if cfg.disable_wandb else "online",
         group=script_host,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
         log_model=False,  # don't log or upload artifacts

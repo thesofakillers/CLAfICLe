@@ -32,7 +32,7 @@ def main(cfg: DictConfig):
         job_type=f"tune-{cfg.tune_mode}",
         project="claficle",
         entity="giulio-uva",
-        mode="disabled" if cfg.trainer.disable_wandb else "online",
+        mode="disabled" if cfg.disable_wandb else "online",
         group=script_host,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
     )
