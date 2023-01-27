@@ -141,7 +141,7 @@ def process_dataset(
 
     collection_name, language_available = Helper.language_available(dataset_name, lang)
     if not language_available:
-        return None, [], collection_name
+        return None, [], 0, collection_name
     print(f"Processing {collection_name}")
 
     # extra proc fns
