@@ -2,3 +2,4 @@ defaults:
   - base_model
 
 name: "plain_gpt2"
+peak_lr: ???
