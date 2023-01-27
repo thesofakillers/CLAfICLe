@@ -24,8 +24,15 @@ def main(cfg: DictConfig):
     # so that the model knows names and metrics of dataloaders before testing
     model.set_benchmark_metadata(benchmark.get_metadata())
 
-    # TODO: handle tokenizer
-    benchmark.set_tokenizer(model.tokenizer)
+    # gewechselt models come with trained tokenizers
+    if cfg.tokenizer_name is not None:
+        tokenizer = transformers.AutoTokenizer.from_pretrained(
+            os.path.join(cfg.checkpoint_dir, "tokenizers", cfg.tokenizer_name)
+        )
+    elif cfg.tokenizer_name is None and cfg.lang == "en":
+        tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
+
+    benchmark.set_tokenizer(tokenizer)
 
     # set up pl trainer (tester)
     log_save_dir = os.path.join(
