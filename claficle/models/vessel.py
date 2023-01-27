@@ -3,6 +3,8 @@ from typing import Dict, Any
 import os
 
 from omegaconf import DictConfig
+import torch
+import transformers
 
 from claficle.models.plain_gpt2 import PlainGPT2
 
@@ -42,3 +44,23 @@ class Vessel(PlainGPT2):
         """
         self.lm.save_adapter(self.adapter_path, self.hparams.adapter_name)
         del checkpoint["state_dict"]
+
+    def configure_optimizers(self):
+        """
+        Adam with Cosine annealing to 0 by end of training with warmup
+        peak learning rate of 5e-4
+        """
+        total_steps = self.trainer.estimated_stepping_batches
+        optimizer = torch.optim.Adam(self.lm.parameters(), self.hparams.peak_lr)
+        scheduler = transformers.get_cosine_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=int(0.1 * total_steps),  # more aggressive warmup than std
+            num_training_steps=total_steps,
+        )
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": "step",  # scheduler is called after each step
+            },
+        }
