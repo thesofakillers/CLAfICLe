@@ -1,0 +1,7 @@
+# MetaICL direct hr_to_lr weights on gpt2
+
+defaults:
+  - base_model
+  - _self_
+name: "plain_gpt2"
+base_checkpoint: "metaicl.pt"

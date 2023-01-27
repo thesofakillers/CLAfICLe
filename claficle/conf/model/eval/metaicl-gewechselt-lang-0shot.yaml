@@ -1,0 +1,13 @@
+# WECHSEL applied to MetaICL, 0 shot
+# You need to provide base_checkpoint, target_lang, tokenizer_name
+# with apprpriate {$LANG} and {$SEED} filled in
+
+base_checkpoint: "metaicl_Gewechselt_{$LANG}-0shot-v{$SEED}.ckpt"
+
+defaults:
+  - base_model
+  - _self_
+name: "plain_gpt2"
+source_lang: "en"
+target_lang: "{$LANG}" # ensure this matches checkpoint and run.lang
+tokenizer_name: "{LANG}_gewechselt"

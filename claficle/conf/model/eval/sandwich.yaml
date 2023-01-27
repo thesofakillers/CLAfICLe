@@ -1,0 +1,8 @@
+# sandwich model: translates data to english before passing to metaicl
+
+defaults:
+  - base_model
+  - _self_
+name: "sandwich"
+base_checkpoint: "metaicl.pt"
+extra_proc_fn: "translate"
