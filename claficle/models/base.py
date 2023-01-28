@@ -41,6 +41,7 @@ class BaseModel(pl.LightningModule):
         lm = AutoModelForCausalLM.from_pretrained(config.causalLM_variant)
         # optionally load a state dict if using fine-tuned model as starting point
         if config.base_checkpoint is not None:
+            print(f"Loading weights from {config.base_checkpoint}")
             ckpt = torch.load(
                 os.path.join(config.checkpoint_dir, config.base_checkpoint)
             )
