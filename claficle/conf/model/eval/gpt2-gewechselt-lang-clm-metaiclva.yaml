@@ -7,6 +7,6 @@ defaults:
   - _self_
 name: "vessel"
 tokenizer_name: "{LANG}_gewechselt"
-adapter_checkpoint: "metaiclva-v{$SEED}"
+adapter_checkpoint: "metaiclva"
 adapter_name: "metaicl_vessel"
 preamble_post_init: True
