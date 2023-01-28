@@ -9,3 +9,4 @@ name: "vessel"
 tokenizer_name: "{LANG}_gewechselt"
 adapter_checkpoint: "metaicla-v{$SEED}"
 adapter_name: "metaicl"
+preamble_post_init: true
