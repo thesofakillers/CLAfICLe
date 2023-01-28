@@ -33,7 +33,7 @@ def run_script_preamble(cfg: DictConfig) -> Tuple[BaseModel, DictConfig]:
     # if requested, run model.post_init(**kwargs)
     if cfg.model.preamble_post_init:
         model.post_init(**get_model_preamble_post_init_kwargs(cfg))
-
+    print("Done.")
     return model, cfg
 
 

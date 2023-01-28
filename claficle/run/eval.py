@@ -28,6 +28,7 @@ def main(cfg: DictConfig):
     model.set_benchmark_metadata(benchmark.get_metadata())
 
     # gewechselt models come with trained tokenizers
+    print("Loading tokenizer...")
     if cfg.model.tokenizer_name is not None:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
             os.path.join(
