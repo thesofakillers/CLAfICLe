@@ -30,7 +30,9 @@ def main(cfg: DictConfig):
     # gewechselt models come with trained tokenizers
     if cfg.model.tokenizer_name is not None:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
-            os.path.join(cfg.checkpoint_dir, "tokenizers", cfg.tokenizer_name)
+            os.path.join(
+                cfg.model.checkpoint_dir, "tokenizers", cfg.model.tokenizer_name
+            )
         )
     else:
         tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2-large")
