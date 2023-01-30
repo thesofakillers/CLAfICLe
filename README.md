@@ -49,12 +49,14 @@ sh gen_pip_reqs.sh
 
 ### Checkpoints
 
-We provide the checkpoints for the models used in our paper. These can be
-downloaded using the `claficle/run/checkpoints.py` script.
+If you wish to run evaluation without first training the model, we provide our
+checkpoints via [The Internet Archive](https://archive.org/) at
+[this link](https://archive.org/download/claficle/checkpoints.zip). Please unzip
+this folder and organize it such that the checkpoints are in the `checkpoints`
+folder at the root of this repository.
 
-The above script downloads all checkpoints except for the one necessary for our
-baseline sandwich model, which wraps an English `hr_to_lr` MetaICL model with a
-translation API. For this checkpoint, please refer to the instructions on the
+We do not provide the bare `hr_to_lr` MetaICL model checkpoint. For this
+checkpoint, please refer to the instructions on the
 [MetaICL repo](https://github.com/facebookresearch/MetaICL) for downloading
 their `metaicl` model in the `hr_to_lr` setting. Once downloaded, rename this to
 `metaicl.pt` and place it in the relevant checkpoints directory.
