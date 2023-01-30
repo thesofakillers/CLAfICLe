@@ -104,7 +104,7 @@ class ProcessHelper:
         """
         raise NotImplementedError
 
-    # whether to use F1 or accuracy as a metric
+    # true -> use accuracy; false -> use F1. TODO: rename this variable
     is_classification = True
 
     # source name : target name
