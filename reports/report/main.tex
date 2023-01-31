@@ -56,7 +56,6 @@
   \texttt{giulio.starace@gmail.com} \\}
 
 % user settings
-\usepackage{layouts} % to get textwidth
 \usepackage{graphicx} % for images
 \usepackage{subcaption} % for subfigures
 \graphicspath{{../figures/}}
@@ -89,7 +88,6 @@
 	\hfill
 	\subcaptionbox{}
 	{\includegraphics{gpt2-gewechselt+metaiclva.pdf}}
-
 	\caption{Overview of each of the models evaluated in one of the two TGT
 		languages (French or German). The baseline
 		\textcolor[HTML]{79d6ae}{sandwich} model (\subref{fig:sandwich}) sandwiches
@@ -105,10 +103,7 @@
 		\textcolor{Dandelion}{MetaICLVA} is trained via targeted distillation with
 		supervision provided by MetaICL. For more details, refer to section
 		\ref{sec:method}.}
-
 \end{figure*}
-textwidth in inches: \printinunitsof{in}\prntlen{\textwidth} \\
-columnwidth in inches: \printinunitsof{in}\prntlen{\columnwidth} \\
 
 \section{Results and Discussion}
 \begin{figure*}

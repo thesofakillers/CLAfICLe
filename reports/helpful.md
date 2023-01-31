@@ -19,3 +19,8 @@ import seaborn as sns
 model_cmap = sns.color_palette('mako_r', 5)
 model_cmap.as_hex()
 ```
+
+## Report text width
+
+- **TEXT_WIDTH_INCHES** = 6.30045
+- **COL_WIDTH_INCHES** = 3.03209
