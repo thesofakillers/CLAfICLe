@@ -74,6 +74,14 @@
 
 \section{Introduction}
 
+contributions
+\begin{itemize}
+	\item successfully apply WECHSEL to GPT2 Large, release the checkpoints which did not exist
+	\item More complete evaluation of WECHSEL in the CLM setting
+	\item propose method for preserving FT when performing cross-lingual adaptation
+	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc disentanglement
+\end{itemize}
+
 \section{Related Work}
 
 \section{Method}\label{sec:method}
@@ -107,16 +115,26 @@
 \end{figure*}
 
 \section{Results and Discussion}
-
 \begin{figure*}
 	\includegraphics{baselines.pdf}
-	\caption{Performance on a particular language dimension of our multi-task benchmark of our two
+	\caption{Performance (max is 1) on a particular language dimension of our multi-task benchmark of our two
 		baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
 		accuracy (left) or F1-score (right) as the performance metric.}
-	\label{fig:results}
+	\label{fig:baselines}
 \end{figure*}
 
-\begin{figure*}
+Fig. \ref{fig:baselines} shows the performance on each dataset of our benchmark for the two baseline
+models, MetaICL and Sandwich. As summarized in Table \ref{tab:results-summary}, Sandwich performs
+roughly on-par with MetaICL on both target languages, respectively with scores of 0.317 and 0.322 in
+French and German compared to MetaICL's score of 0.327 in English. We note generally low scores
+across all tasks. This is particularly perplexing in the case of MetaICL, scoring around 0.1 points
+less than with the evaluation ensemble used by \citet{min_metaicl_2022}, where the same checkpoint
+was reported scoring 0.417 in the worst case (a 25 \% decrease). While similar values are reached in certain tasks in
+our benchmark (e.g. most of XGLUE and WINO-X), it is unclear what the origin of this discrepancy is,
+whether due to differences in evaluation implementation or difficulty of the tasks. Given that
+\citet{min_metaicl_2022} simply report macro-averaged scores, it is impossible to verify the latter.
+
+\begin{figure*}[ht]
 	\includegraphics{results.pdf}
 	\caption{Performance gap on our multi-task benchmark between each of the language-adapted models
 		and the ``Sandwich'' baseline. Positive values indicate that the adapted models are
@@ -126,13 +144,33 @@
 	\label{fig:results}
 \end{figure*}
 
+Fig. \ref{fig:results} shows the difference in performance on each dataset of our benchmark between
+the proposed models and Sandwich. In general, we observe that the proposed models underperform
+across almost all tasks in both French and German, with the trends aligning at a task-level (e.g.
+all models underperform on QAM, by roughly the same amount). As reported in Table
+\ref{tab:results-summary}, the best of our proposed models is MetaICL-geWECHSELt, which
+underperformed Sandwich by roughly 0.02-0.03 points. This undermines the motivation for the other
+two models, which were designed to avoid catastrophic forgetting by separating language and ICL
+capabilities via adapters. The results suggest that the tradeoff between catastrophic forgetting and
+needing to train ICL-adapters leans in favour of the former in this compute regime. In this sense,
+we can conclude that WECHSEL does not suffer tremendously due to catastrophic forgetting when
+adapting fine-tuned causal language models such as the MetaICL variant of GPT2.
+
+Future work should
+\begin{itemize}
+	\item todo
+\end{itemize}
+
+
+
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
 \begin{table}[ht]
 	\centering
-	\caption{Average performance across the datasets from our multi-task benchmark for the models
-		considered in this work. We report average difference in performance for each proposed alternative
-		to Sandwich. Negative values indicate underperformance compared to Sandwich.}
+	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
+		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
+		difference in performance for each proposed alternative to Sandwich. Negative values indicate
+		underperformance compared to Sandwich.}
 	\label{tab:results-summary}
 	\begin{tabular}{@{}rccc@{}}
 		\toprule
@@ -154,6 +192,7 @@
 
 Use \verb|\appendix| before any appendix section to switch the section numbering over to letters. See Appendix~\ref{sec:appendix} for an example.
 
+\appendix
 \section{Example Appendix}
 \label{sec:appendix}
 
