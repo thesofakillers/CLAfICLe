@@ -61,6 +61,7 @@
 \graphicspath{{../figures/}}
 \usepackage[export]{adjustbox}
 \usepackage{geometry}
+\usepackage{booktabs}
 
 
 \begin{document}
@@ -90,7 +91,7 @@
 	{\includegraphics{gpt2-gewechselt+metaiclva.pdf}}
 	\caption{Overview of each of the models evaluated in one of the two TGT
 		languages (French or German). The baseline
-		\textcolor[HTML]{79d6ae}{sandwich} model (\subref{fig:sandwich}) sandwiches
+		\textcolor[HTML]{79d6ae}{Sandwich} model (\subref{fig:sandwich}) sandwiches
 		\textcolor[HTML]{332345}{MetaICL} \citep{min_metaicl_2022} (which we
 		separately evaluate only in English) between two complementary translation
 		API calls. \textcolor[HTML]{38AAAC}{MetaICL-geWECHSELt}
@@ -106,15 +107,44 @@
 \end{figure*}
 
 \section{Results and Discussion}
+
+\begin{figure*}
+	\includegraphics{baselines.pdf}
+	\caption{Performance on a particular language dimension of our multi-task benchmark of our two
+		baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
+		accuracy (left) or F1-score (right) as the performance metric.}
+	\label{fig:results}
+\end{figure*}
+
 \begin{figure*}
 	\includegraphics{results.pdf}
-	\caption{Performance gap on our multi-task benchmark between each of the
-		language-adapted models in our target languages and MetaICL in English.
-		Positive values indicate that the adapted models are outperforming MetaICL,
-		while negative values indicate the reverse. The dashed line separates
-		whether a given task uses accuracy (left) or F1-score (right) as the
-		performance metric.}
+	\caption{Performance gap on our multi-task benchmark between each of the language-adapted models
+		and the ``Sandwich'' baseline. Positive values indicate that the adapted models are
+		outperforming the baseline, while negative values indicate the reverse. The dashed line
+		separates whether a given task uses accuracy (left) or F1-score (right) as the performance
+		metric.}
+	\label{fig:results}
 \end{figure*}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[ht]
+	\centering
+	\caption{Average performance across the datasets from our multi-task benchmark for the models
+		considered in this work. We report average difference in performance for each proposed alternative
+		to Sandwich. Negative values indicate underperformance compared to Sandwich.}
+	\label{tab:results-summary}
+	\begin{tabular}{@{}rccc@{}}
+		\toprule
+		\multicolumn{1}{c}{} & en    & fr     & de                             \\ \midrule
+		MetaICL              & 0.327 & -      & -                              \\
+		Sandwich             & -     & 0.317  & 0.322                          \\ \midrule
+		\multicolumn{4}{c}{\textit{Difference in Performance w.r.t. Sandwich}} \\
+		MetaICL-W            & -     & -0.020 & -0.026                         \\
+		GPT2-W+MetaICLA      & -     & -0.041 & -0.042                         \\
+		GPT2-W+MetaICLVA     & -     & -0.036 & -0.045                         \\ \bottomrule
+	\end{tabular}
+\end{table}
 
 \section{Conclusion}
 
