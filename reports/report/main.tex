@@ -74,19 +74,94 @@
 
 \section{Introduction}
 
+in-context learning (ICL)
+Decoder-only transformer (DOT).
 contributions
 \begin{itemize}
 	\item successfully apply WECHSEL to GPT2 Large, release the checkpoints which did not exist
 	\item More complete evaluation of WECHSEL in the GPT2 setting
 	\item propose method for preserving FT when performing cross-lingual adaptation
 	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc
-	      disentanglement. We call it PhoDiVA (Post HOc DIsentanglement via Vessel Adapters and
-	      Targeted Distillation).
+	      disentanglement. We call it \textsc{PHoDiVA} (\textbf{P}ost \textbf{Ho}c
+	      \textbf{Di}sentanglement via \textbf{V}essel \textbf{A}dapters).
 \end{itemize}
 
 \section{Related Work}
 
-\section{Method}\label{sec:method}
+todo
+
+\section{Methods and Models}\label{sec:method}
+
+\subsection{MetaICL}
+
+Due to the complete lack of prompting/instruction templates in non-English languages, we rely on
+MetaICL \citep{min_metaicl_2022}, which circumvents the need for prompt/instruction templates at
+train-time and test-time. With MetaICL, a pretrained DOT is fine-tuned by concatenating $k$ examples
+of input-output pairs from a variety of tasks and feeding this as input to the model. The final
+input-output pair is truncated such that only the input is shown, and the model is trained to
+predict the output using a negative log-likelihood objective. The trained model is then able to
+generalise to unseen tasks presented in the same way by utilizing the $k$ shots provided in the
+context.  We refer to this model simply as \textit{MetaICL}.
+
+\subsection{WECHSEL}
+
+To adapt a monolingual DOT from a source language to a target language we employ WECHSEL
+\citep{minixhofer_wechsel_2022}, which has shown success in adapting the small variant of GPT2 (117M
+parameters) to a number of target languages. WECHSEL works by retraining the tokenizer into the
+target language and re-initializing the transformer embedding layers such that the target embeddings
+are semantically similar to the source embeddings. This is done by leveraging existing parallel
+multilingual static word embeddings. As done by \citet{de_vries_adapting_2021}, after
+re-initialization, additional causal language modeling (CLM) is performed in the target language to
+account for syntactical differences. Applying WECHSEL to MetaICL, we obtain what we refer to as
+\textit{MetaICL-geWECHSELt}.
+
+\subsection{Adapters}
+
+Because we are interested in adapting a fine-tuned DOT (MetaICL), we hypothesize that the additional
+CLM at the end of WECHSEL can lead to catastrophic forgetting of the fine-tuning. Furthermore, we
+hypothesize that the fine-tuning may contain language-specific information, entangled with the task
+information relevant to the fine-tuning objective. To address this issue, inspired by MAD-X
+\citep{pfeiffer_mad-x_2020} we train a ``task adapter'' on the same ICL objective and data as
+MetaICL with a GPT2 base, obtaining an ``ICL-adapter'', which we refer to as \textit{MetaICLA}.
+Adapters introduce ``bottleneck'' dense layers at each transformer layer of their base. The adapter
+is trained on a particular objective while the base is kept frozen, allowing for parameter-efficient
+and modular fine-tuning. These dense layers consist in a down matrix $\mathbf{W}_{down}$, projecting
+the hidden states into a lower dimension $d_{bottleneck}$, a non-linearity $f$, which is applied to
+this projection and an up matrix $\mathbf{W}_{up}$ that projects back to the original dimension:
+\begin{equation} \mathbf{h} \leftarrow \mathbf{W}_{up} f(\mathbf{W}_{down} \mathbf{h}) + \mathbf{r},
+\end{equation} where $r$ is a residual connection. Various configurations of the above exist.
+Having separated the task-specific information, we apply WECHSEL to the GPT2 base, obtaining what we
+refer to as \textit{GPT2-geWECHSELt}. Adding MetaICLA to GPT2-geWECHSELt, we obtain a model
+theoretically capable of ICL on the target language, \textit{GPT2-geWECHSELt+MetaICLA}.
+
+\subsection{\textsc{PHoDiVA}}
+
+To address situations where repeating fine-tuning is not permissible, either because the data is not
+released, the process too complicated or the compute simply not available, we propose
+\textsc{PHoDiVA}
+
+todo
+
+\subsection{Sandwich}
+
+todo
+
+\section{Experimental Setup}
+
+For our work, we use the \verb_pfeiffer_ configuration from AdapterHub
+\citep{pfeiffer_adapterhub_2020}.
+
+\citet{min_metaicl_2022} train a number of variants, releasing checkpoints however only for the
+large variant (774M parameters) of GPT2. We base the rest of our models on the same GPT2 variant and
+use the ``high resource to low resource'' direct MetaICL checkpoint as we consider this to be the
+most realistic.
+
+\subsection{Training}
+\subsubsection{\textsc{CrossFit} and \textsc{UnifiedQA}}
+\subsubsection{OSCAR}
+\subsection{Evaluation}
+\subsubsection{Multi-lingual Multi-task Benchmark}
+
 \begin{figure*}[ht]
 	\subcaptionbox{\label{fig:sandwich}}
 	{\includegraphics{sandwich.pdf}}
@@ -137,7 +212,7 @@ evaluation, future work may wish to investigate whether this holds for longer tr
 rest of our work considers, among other questions, the robustness of WECHSEL via extrinsic
 evaluation on downstream tasks performed by MetaICL.
 
-\begin{figure*}
+\begin{figure*}[ht]
 	\includegraphics{baselines.pdf}
 	\caption{Performance (max is 1) on a particular language dimension of our multi-task benchmark of
 		our two baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
@@ -181,7 +256,7 @@ two models, which were designed to avoid catastrophic forgetting by separating l
 capabilities via adapters. The results suggest that the tradeoff between catastrophic forgetting and
 needing to train ICL-adapters leans in favour of the former in this compute regime. In this sense,
 we can conclude that WECHSEL does not suffer tremendously due to catastrophic forgetting when
-adapting fine-tuned causal language models such as the MetaICL variant of GPT2.
+adapting fine-tuned DOTs such as the MetaICL variant of GPT2.
 
 Our work is mainly limited by its preliminary nature. Apart for considering more appropriate
 (\textit{sc.} larger) compute scales, future work could investigate training ICL-adapters more
@@ -189,7 +264,7 @@ thoroughly, for example by performing hyperparameter optimization or incorporati
 adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
 \citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
 
-We are also interested in a more complete treatment of PhoDiVA. For instance, future work could
+We are also interested in a more complete treatment of \textsc{PHoDiVA}. For instance, future work could
 explore different forms of student-teacher distillation, consider other forms of loss criterions
 and/or take inspiration from similar solutions such as \citet{khrulkov_disentangled_2021}'s work on
 generative models. We believe work in this direction could benefit from simplifying the problem
@@ -232,16 +307,16 @@ draw more definitive conclusions.
 
 \section{Conclusion}
 
-We explore the problem of language-adapting a monolingual causal language model previously
-fine-tuned to perform in-context learning. To this end, we stress test the current SoTA adaptation
-method, WECHSEL, scaling to previously untested model sizes, applying it a fine-tuned variant of
-GPT2 (MetaICL) and evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL
-successfully scales to larger model sizes, we find that at our compute regime, WECHSEL-adapted
-MetaICL underperforms compared to simply sandwiching the English model between translation API
-calls. We experiment with separating ICL fine-tuning and language adaptation to address potential
-catastrophic forgetting through the use of Adapters, but find these approaches unsuccessful. In
-doing so, we propose PhoDiVA, a novel method for post-hoc disentanglement through vessel adapters.
-We share PhoDiVA in this rudimentary form as a starting point for future work in this direction.
+We explore the problem of language-adapting a monolingual DOT previously fine-tuned to perform
+in-context learning. To this end, we stress test the current SoTA adaptation method, WECHSEL,
+scaling to previously untested model sizes, applying it a fine-tuned variant of GPT2 (MetaICL) and
+evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL successfully scales
+to larger model sizes, we find that at our compute regime, WECHSEL-adapted MetaICL underperforms
+compared to simply sandwiching the English model between translation API calls. We experiment with
+separating ICL fine-tuning and language adaptation to address potential catastrophic forgetting
+through the use of Adapters, but find these approaches unsuccessful. In doing so, we propose
+\textsc{PHoDiVA}, a novel method for post-hoc disentanglement through vessel adapters. We share
+\textsc{PHoDiVA} in this rudimentary form as a starting point for future work in this direction.
 
 \bibliography{anthology,custom}
 
