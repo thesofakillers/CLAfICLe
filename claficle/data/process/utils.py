@@ -2,28 +2,6 @@ from typing import Callable, Dict, List
 
 from datasets.arrow_dataset import Dataset
 import numpy as np
-from googletrans import Translator
-
-translator = Translator()
-
-
-def translate_bulk(texts: List[str], src_lang: str, dest_lang: str) -> List[str]:
-    """Translate a list of strings"""
-    res = translator.translate(texts, src=src_lang, dest=dest_lang)
-    return [trans.text for trans in res]
-
-
-def translate_single_text(
-    text: str, src_lang: str, dest_lang: str, separator: str
-) -> str:
-    """Translate a single string. Will chunk string if too long"""
-    if len(text) > 4000:
-        chunks = text.split(separator * 3)
-        trans_chunks = translate_bulk(chunks, src_lang, dest_lang)
-        text = (separator * 3).join(trans_chunks)
-    else:
-        text = translator.translate(text, src=src_lang, dest=dest_lang).text
-    return text
 
 
 def prepare_kshot_str(
