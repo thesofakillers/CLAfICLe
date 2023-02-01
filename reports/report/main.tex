@@ -181,9 +181,20 @@ needing to train ICL-adapters leans in favour of the former in this compute regi
 we can conclude that WECHSEL does not suffer tremendously due to catastrophic forgetting when
 adapting fine-tuned causal language models such as the MetaICL variant of GPT2.
 
-Future work should
+Our work is mainly limited by its preliminary nature. Apart for considering more appropriate
+(\textit{sc.} larger) compute scales, future work could investigate training ICL-adapters more
+thoroughly, for example by performing hyperparameter optimization or incorporating more recent
+adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
+\citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
+
+We are also interested
+
 \begin{itemize}
-	\item todo
+	\item more in-depth look at targeted distillation via vessel adapters
+	\item other forms of adaptation: MiniModel adaptation, GitRebasin
+	\item multilingual models
+	\item by 'more in-depth', i mean with more care given to hyperparameters, loss, training data
+	\item verify on a range of seeds
 \end{itemize}
 
 % Please add the following required packages to your document preamble:
