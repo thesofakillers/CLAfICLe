@@ -80,7 +80,7 @@ contributions
 	\item More complete evaluation of WECHSEL in the GPT2 setting
 	\item propose method for preserving FT when performing cross-lingual adaptation
 	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc
-	      disentanglement. We call it PHoDiVATD (Post HOc DIsentanglement via Vessel Adapters and
+	      disentanglement. We call it PhoDiVA (Post HOc DIsentanglement via Vessel Adapters and
 	      Targeted Distillation).
 \end{itemize}
 
@@ -189,7 +189,7 @@ thoroughly, for example by performing hyperparameter optimization or incorporati
 adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
 \citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
 
-We are also interested in a more complete treatment of PHoDiVATD. For instance, future work could
+We are also interested in a more complete treatment of PhoDiVA. For instance, future work could
 explore different forms of student-teacher distillation, consider other forms of loss criterions
 and/or take inspiration from similar solutions such as \citet{khrulkov_disentangled_2021}'s work on
 generative models. We believe work in this direction could benefit from simplifying the problem
@@ -231,6 +231,17 @@ draw more definitive conclusions.
 \end{table}
 
 \section{Conclusion}
+
+We explore the problem of language-adapting a monolingual causal language model previously
+fine-tuned to perform in-context learning. To this end, we stress test the current SoTA adaptation
+method, WECHSEL, scaling to previously untested model sizes, applying it a fine-tuned variant of
+GPT2 (MetaICL) and evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL
+successfully scales to larger model sizes, we find that at our compute regime, WECHSEL-adapted
+MetaICL underperforms compared to simply sandwiching the English model between translation API
+calls. We experiment with separating ICL fine-tuning and language adaptation to address potential
+catastrophic forgetting through the use of Adapters, but find these approaches unsuccessful. In
+doing so, we propose PhoDiVA, a novel method for post-hoc disentanglement through vessel adapters.
+We share PhoDiVA in this rudimentary form as a starting point for future work in this direction.
 
 \bibliography{anthology,custom}
 
