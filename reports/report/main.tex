@@ -124,16 +124,16 @@ contributions
 	\label{fig:gpt2-w_ppl}
 \end{figure}
 
-Fig.\@ \ref{fig:gpt2-w_ppl} shows the performance of GPT2 after around 1k steps of training, evaluated
-intrinsically in terms of perplexity. For both French and German, we see perplexity decrease to
-sub-50 values, with the French model reaching a perplexity of $\approx$ 28. Both models are clearly
-underfit, still monotonically decreasing by the end of the training. These observations are roughly
-in-line with \citet{minixhofer_wechsel_2022}'s findings for smaller variants of GPT2, although we
-train for much less time and hence are left with higher perplexities. While we believe our
-preliminary results suggest WECHSEL scales well to larger models in terms of intrinsic evaluation,
-future work may wish to investigate whether this holds for longer training times. The rest of our
-work considers, among other questions, the robustness of WECHSEL via extrinsic evaluation on
-downstream tasks performed by MetaICL.
+Fig.\@ \ref{fig:gpt2-w_ppl} shows the performance of GPT2 after around 1k steps of training,
+evaluated intrinsically in terms of perplexity. For both French and German, we see perplexity
+decrease to sub-50 values, with the French model reaching a perplexity of $\approx$ 28. Both models
+are clearly underfit, still monotonically decreasing by the end of the training. These observations
+are roughly in-line with \citet{minixhofer_wechsel_2022}'s findings for smaller variants of GPT2,
+although we train for much less time and hence are left with higher perplexities. While we believe
+our preliminary results suggest WECHSEL scales well to larger models in terms of intrinsic
+evaluation, future work may wish to investigate whether this holds for longer training times. The
+rest of our work considers, among other questions, the robustness of WECHSEL via extrinsic
+evaluation on downstream tasks performed by MetaICL.
 
 \begin{figure*}
 	\includegraphics{baselines.pdf}
@@ -143,21 +143,21 @@ downstream tasks performed by MetaICL.
 	\label{fig:baselines}
 \end{figure*}
 
-Fig.\@ \ref{fig:baselines} shows the performance on each dataset of our benchmark for the two baseline
-models, MetaICL and Sandwich. As summarized in Table \ref{tab:results-summary}, Sandwich performs
-roughly on-par with MetaICL on both target languages, respectively with scores of 0.317 and 0.322 in
-French and German compared to MetaICL's score of 0.327 in English. We note generally low scores
-across all tasks. This is particularly perplexing in the case of MetaICL, scoring around 0.1 points
-less than with the evaluation ensemble used by \citet{min_metaicl_2022}, where the same checkpoint
-was reported scoring 0.417 in the worst case (a 25 \% decrease). While similar values are reached in certain tasks in
-our benchmark (e.g. most of XGLUE and WINO-X), it is unclear what the origin of this discrepancy is,
-whether due to differences in evaluation implementation or difficulty of the tasks. Given that
-\citet{min_metaicl_2022} simply report macro-averaged scores, it is impossible to verify the latter.
-Nevertheless, our results suggest that Sandwich-like solutions may be satisfactory for transferring
-performance from English to other languages given the surprisingly closeness of the scores. The
-decision between using Sandwich or ``properly'' adapted models with the same capabilities then
-becomes an economic one in terms of the cost of API calls (for the former) vs the cost of
-inference plus training (for the latter).
+Fig.\@ \ref{fig:baselines} shows the performance on each dataset of our benchmark for the two
+baseline models, MetaICL and Sandwich. As summarized in Table \ref{tab:results-summary}, Sandwich
+performs roughly on-par with MetaICL on both target languages, respectively with scores of 0.317 and
+0.322 in French and German compared to MetaICL's score of 0.327 in English. We note generally low
+scores across all tasks. This is particularly perplexing in the case of MetaICL, scoring around
+0.1 points less than with the evaluation ensemble used by \citet{min_metaicl_2022}, where the same
+checkpoint was reported scoring 0.417 in the worst case (a 25 \% decrease). While similar values
+are reached in certain tasks in our benchmark (e.g. most of XGLUE and WINO-X), it is unclear what
+the origin of this discrepancy is, whether due to differences in evaluation implementation or
+difficulty of the tasks. Given that \citet{min_metaicl_2022} simply report macro-averaged scores,
+it is impossible to verify the latter. Nevertheless, our results suggest that Sandwich-like
+solutions may be satisfactory for transferring performance from English to other languages given
+the surprisingly closeness of the scores. The decision between using Sandwich or ``properly''
+adapted models with the same capabilities then becomes an economic one in terms of the cost of API
+calls (for the former) versus the cost of inference plus training (for the latter).
 
 \begin{figure*}[ht]
 	\includegraphics{results.pdf}
@@ -169,10 +169,10 @@ inference plus training (for the latter).
 	\label{fig:results}
 \end{figure*}
 
-Fig.\@ \ref{fig:results} shows the difference in performance on each dataset of our benchmark between
-the proposed models and Sandwich. In general, we observe that the proposed models underperform
-across almost all tasks in both French and German, with the trends aligning at a task-level (e.g.
-all models underperform on QAM, by roughly the same amount). As reported in Table
+Fig.\@ \ref{fig:results} shows the difference in performance on each dataset of our benchmark
+between the proposed models and Sandwich. In general, we observe that the proposed models
+underperform across almost all tasks in both French and German, with the trends aligning at
+a task-level (e.g. all models underperform on QAM, by roughly the same amount). As reported in Table
 \ref{tab:results-summary}, the best of our proposed models is MetaICL-geWECHSELt, which
 underperformed Sandwich by roughly 0.02-0.03 points. This undermines the motivation for the other
 two models, which were designed to avoid catastrophic forgetting by separating language and ICL
@@ -185,8 +185,6 @@ Future work should
 \begin{itemize}
 	\item todo
 \end{itemize}
-
-
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
@@ -215,7 +213,8 @@ Future work should
 
 \section{Appendices}
 
-Use \verb|\appendix| before any appendix section to switch the section numbering over to letters. See Appendix~\ref{sec:appendix} for an example.
+Use \verb|\appendix| before any appendix section to switch the section numbering over to letters.
+See Appendix~\ref{sec:appendix} for an example.
 
 \appendix
 \section{Example Appendix}
