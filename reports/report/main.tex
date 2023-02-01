@@ -103,17 +103,24 @@ predict the output using a negative log-likelihood objective. The trained model 
 generalise to unseen tasks presented in the same way by utilizing the $k$ shots provided in the
 context.  We refer to this model simply as \textit{MetaICL}.
 
+\subsection{Sandwich}
+
+As a baseline, we consider the obvious solution of simply translating input in the target language
+to English, feeding the translation to MetaICL, and translating the output back to the target
+language. We refer to this model as \textit{Sandwich}. We make use of Google's Cloud Translation AI
+API\footnote{\href{https://cloud.google.com/translate}{https://cloud.google.com/translate}}.
+
 \subsection{WECHSEL}
 
-To adapt a monolingual DOT from a source language to a target language we employ WECHSEL
-\citep{minixhofer_wechsel_2022}, which has shown success in adapting the small variant of GPT2 (117M
-parameters) to a number of target languages. WECHSEL works by retraining the tokenizer into the
-target language and re-initializing the transformer embedding layers such that the target embeddings
-are semantically similar to the source embeddings. This is done by leveraging existing parallel
-multilingual static word embeddings. As done by \citet{de_vries_adapting_2021}, after
-re-initialization, additional causal language modeling (CLM) is performed in the target language to
-account for syntactical differences. Applying WECHSEL to MetaICL, we obtain what we refer to as
-\textit{MetaICL-geWECHSELt}.
+Aside from translation API calls, to adapt a monolingual DOT from a source language to a target
+language we employ WECHSEL \citep{minixhofer_wechsel_2022}, which has shown success in adapting the
+small variant of GPT2 (117M parameters) to a number of target languages. WECHSEL works by retraining
+the tokenizer into the target language and re-initializing the transformer embedding layers such
+that the target embeddings are semantically similar to the source embeddings. This is done by
+leveraging existing parallel multilingual static word embeddings. As done by
+\citet{de_vries_adapting_2021}, after re-initialization, additional causal language modeling (CLM)
+is performed in the target language to account for syntactical differences. Applying WECHSEL to
+MetaICL, we obtain what we refer to as \textit{MetaICL-geWECHSELt}.
 
 \subsection{Adapters}
 
@@ -139,10 +146,6 @@ theoretically capable of ICL on the target language, \textit{GPT2-geWECHSELt+Met
 To address situations where repeating fine-tuning is not permissible, either because the data is not
 released, the process too complicated or the compute simply not available, we propose
 \textsc{PHoDiVA}
-
-todo
-
-\subsection{Sandwich}
 
 todo
 
