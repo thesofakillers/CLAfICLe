@@ -79,7 +79,9 @@ contributions
 	\item successfully apply WECHSEL to GPT2 Large, release the checkpoints which did not exist
 	\item More complete evaluation of WECHSEL in the GPT2 setting
 	\item propose method for preserving FT when performing cross-lingual adaptation
-	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc disentanglement
+	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc
+	      disentanglement. We call it PHoDiVATD (Post HOc DIsentanglement via Vessel Adapters and
+	      Targeted Distillation).
 \end{itemize}
 
 \section{Related Work}
@@ -187,15 +189,25 @@ thoroughly, for example by performing hyperparameter optimization or incorporati
 adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
 \citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
 
-We are also interested
+We are also interested in a more complete treatment of PHoDiVATD. For instance, future work could
+explore different forms of student-teacher distillation, consider other forms of loss criterions
+and/or take inspiration from similar solutions such as \citet{khrulkov_disentangled_2021}'s work on
+generative models. We believe work in this direction could benefit from simplifying the problem
+setting first, by considering a smaller, encoder-only transformer fine-tuned on a single downstream
+task on a single-language.
 
-\begin{itemize}
-	\item more in-depth look at targeted distillation via vessel adapters
-	\item other forms of adaptation: MiniModel adaptation, GitRebasin
-	\item multilingual models
-	\item by 'more in-depth', i mean with more care given to hyperparameters, loss, training data
-	\item verify on a range of seeds
-\end{itemize}
+Other future work may consider different adaptation approaches that have recently emerged. For
+example, \citet{marchisio_mini-model_2022}'s Mini-Model adaptation has yet to be tested on
+decoder-only transformers, and it would be interesting to see how it compares to WECHSEL in this
+regard. Other, slightly more distant approaches such as meta-learning a-la X-MAML
+\citep{nooralahzadeh_zero-shot_2020} may provide different results.
+
+Perhaps a clear limitation of this direction of research is that the setting remains monolingual.
+Future work could explore whether it is possible to adapt a monolingual model to multiple languages
+simultaneously, and how such adaptations would compare to monolingual-to-monolingual adaptation in
+terms of resources and performance. Finally, undermining all of this work is our restriction to
+results on a single random seed. Future work with more seeds and more compute would be necessary to
+draw more definitive conclusions.
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
