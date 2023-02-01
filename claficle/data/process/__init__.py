@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from typing import Any, Callable, Dict, Tuple, List, Optional
-from googletrans.gtoken import time
+import time
 
 from omegaconf import DictConfig
 from datasets.arrow_dataset import Dataset
