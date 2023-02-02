@@ -273,7 +273,7 @@ of our models on the same GPT2 version and use the ``high resource to low resour
 checkpoint as we consider this to be the most realistic. We make use of the HuggingFace Transformers
 \citep{wolf_transformers_2020} implementation of GPT2 throughout.
 
-\subsection{Evaluation}
+\subsection{Evaluation}\label{sec:experiment:eval}
 
 For assessing ICL, we reimplement the same evaluation setup as \citet{min_metaicl_2022}, evaluating
 a given model on a suite of tasks, prepending the input with $k=16$ training examples sampled
@@ -407,11 +407,39 @@ needing to train ICL-adapters leans in favour of the former in this compute regi
 we can conclude that WECHSEL does not suffer tremendously due to catastrophic forgetting when
 adapting fine-tuned DOTs such as the MetaICL variant of GPT2.
 
+\begin{table}[ht]
+	\centering
+	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
+		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
+		difference in performance for each proposed alternative to Sandwich. Negative values indicate
+		underperformance compared to Sandwich.}
+	\label{tab:results-summary}
+	\begin{tabular}{@{}rccc@{}}
+		\toprule
+		\multicolumn{1}{c}{} & en    & fr     & de                             \\ \midrule
+		MetaICL              & 0.327 & -      & -                              \\
+		Sandwich             & -     & 0.317  & 0.322                          \\ \midrule
+		\multicolumn{4}{c}{\textit{Difference in Performance w.r.t. Sandwich}} \\
+		MetaICL-W            & -     & -0.020 & -0.026                         \\
+		GPT2-W+MetaICLA      & -     & -0.041 & -0.042                         \\
+		GPT2-W+MetaICLVA     & -     & -0.036 & -0.045                         \\ \bottomrule
+	\end{tabular}
+\end{table}
+ 
 Our work is mainly limited by its preliminary nature. Apart for considering more appropriate
 (\textit{sc.} larger) compute scales, future work could investigate training ICL-adapters more
 thoroughly, for example by performing hyperparameter optimization or incorporating more recent
 adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
 \citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
+
+Similarly, we note that the despite our best efforts our ICL evaluation benchmark faces some
+limitations. Due to the design restrictions mentioned in Section \ref{sec:experiment:eval} and the
+lack of non-English datasets we only evaluate on 9 tasks, despite focusing on high-resource
+languages like German and French. This is a small number of tasks compared to what is done in
+English, where 10s and 100s of tasks can comprise a multi-task benchmark. Furthermore, many of our
+datasets are either human or machine translated versions of English, which can lead to noise
+\citep{koppel_translationese_2011}. We hope to raise awareness of the complete English dominance of
+the NLP data landscape.
 
 We are also interested in a more complete treatment of \textsc{PHoDiVA}. For instance, future work
 could explore different forms of student-teacher distillation, consider other forms of loss
@@ -433,30 +461,6 @@ terms of resources and performance. Finally, undermining all of this work is our
 results on a single random seed. Future work with more seeds and more compute would be necessary to
 draw more definitive conclusions.
 
-\begin{itemize}
-	\item TODO: few datasets, lack of multilingual data, problem with datasets being machine
-	      translated
-	\item consider other general fine-tuning paradigms such as RLHF
-\end{itemize}
-
-\begin{table}[ht]
-	\centering
-	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
-		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
-		difference in performance for each proposed alternative to Sandwich. Negative values indicate
-		underperformance compared to Sandwich.}
-	\label{tab:results-summary}
-	\begin{tabular}{@{}rccc@{}}
-		\toprule
-		\multicolumn{1}{c}{} & en    & fr     & de                             \\ \midrule
-		MetaICL              & 0.327 & -      & -                              \\
-		Sandwich             & -     & 0.317  & 0.322                          \\ \midrule
-		\multicolumn{4}{c}{\textit{Difference in Performance w.r.t. Sandwich}} \\
-		MetaICL-W            & -     & -0.020 & -0.026                         \\
-		GPT2-W+MetaICLA      & -     & -0.041 & -0.042                         \\
-		GPT2-W+MetaICLVA     & -     & -0.036 & -0.045                         \\ \bottomrule
-	\end{tabular}
-\end{table}
 
 \section{Conclusion}
 
