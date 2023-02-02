@@ -74,7 +74,32 @@
 
 \section{Introduction}
 
-in-context learning (ICL)
+Pre-trained large language models (LLMs) are dominating NLP research for tackling downstream tasks
+\citep{devlin_bert_2019,raffel_exploring_2020,brown_language_2020}. These models rely on the
+availability of vast amounts of unsupervised training data and the high usage computing resources
+that can be leveraged by variants of the transformer architecture \citep{vaswani_attention_2017}.
+Because access to such data and compute is limited, and due to the anglocentric nature of the field,
+the majority LLM research and application prioritises the English language. This leads to a large
+gap between what can be achieved in English and other languages. Research in multilingual LLMs
+attempts to address this issue, with encouraging results in many aspects
+\citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These multilingual models however
+have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and more niche
+applications such as fine-tuning for zero-shot and in-context prompted generalisation
+\citep{sanh_multitask_2022,wang_benchmarking_2022} remain almost exclusively in English. One
+approach to address this issue is developing techniques for adapting existing English models to work
+in other languages. Recent research in model adaptation has shown promising results
+\citep{houlsby_parameter-efficient_2019,ainsworth_git_2022}, and there already exist some works
+applying these techniques directly to the problem of cross-lingual transfer
+\citep{artetxe_cross-lingual_2020}. These works however mainly focus either on encoder-only
+transformer (EOT) variants or on performance on a few downstream tasks, through the use of
+additional language- and/or task-specific fine-tuning
+\citet{de_vries_adapting_2021,de_vries_as_2021,gogoulou_cross-lingual_2022}. 
+
+This work instead considers techniques for the efficient cross-lingual transfer of models capable
+of in-context learning (ICL) for multi-task performance \citep{min_metaicl_2022} These models avoid
+the need for task-specific fine-tuning, which may not always be possible for certain tasks in
+certain languages.
+
 Decoder-only transformer (DOT).
 contributions
 \begin{itemize}
@@ -272,7 +297,7 @@ evaluation, future work may wish to investigate whether this holds for longer tr
 rest of our work considers, among other questions, the robustness of WECHSEL via extrinsic
 evaluation on downstream tasks performed by MetaICL.
 
-\begin{figure*}[t]
+\begin{figure*}[ht]
 	\includegraphics{baselines.pdf}
 	\caption{Performance (max is 1) on a particular language dimension of our multi-task benchmark of
 		our two baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
@@ -296,7 +321,7 @@ the surprisingly closeness of the scores. The decision between using Sandwich or
 adapted models with the same capabilities then becomes an economic one in terms of the cost of API
 calls (for the former) versus the cost of inference plus training (for the latter).
 
-\begin{figure*}[t]
+\begin{figure*}[ht]
 	\includegraphics{results.pdf}
 	\caption{Performance gap on our multi-task benchmark between each of the language-adapted models
 		and the ``Sandwich'' baseline. Positive values indicate that the adapted models are
@@ -344,7 +369,12 @@ terms of resources and performance. Finally, undermining all of this work is our
 results on a single random seed. Future work with more seeds and more compute would be necessary to
 draw more definitive conclusions.
 
-\begin{table}[h]
+\begin{itemize}
+	\item TODO: few datasets, lack of multilingual data, problem with datasets being machine
+	      translated
+\end{itemize}
+
+\begin{table}[ht]
 	\centering
 	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
 		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
