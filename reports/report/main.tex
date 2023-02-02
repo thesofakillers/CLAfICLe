@@ -67,9 +67,21 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-	This document is a supplement to the general instructions for *ACL authors. It contains instructions for using the \LaTeX{} style files for ACL conferences.
-	The document itself conforms to its own specifications, and is therefore an example of what your manuscript should look like.
-	These instructions should be used both for papers submitted for review and for final versions of accepted papers.
+
+	As the field of NLP becomes enveloped with pre-trained large language models (LLMs), it becomes
+	more and more dependent on data and compute. In parallel, fine-tuning paradigms such as in-context
+	learning (ICL) have emerged to address these requirements. Unfortunately, most of this research
+	has only been conducted in English and is either prohibitively expensive or impossible to repeat
+	in other languages. Multilingual LLMs have been proposed to address this issue, but have been
+	shown to be outperformed by their monolingual counterparts. While research language adaptation of
+	monolingual models shows promising results, these typically focus on encoder-only transformers and
+	in the decoder-only setting limit themselves to intrinsic evaluation of language modeling. In this
+	work, we tackle the problem of the cross-lingual adaptation of monolingual models fine-tuned to
+	perform ICL. We combine state of the art language and task adaptation techniques and show that it
+	is still difficult to outperform a simple baseline consisting of sandwhiching the model between
+	translation API calls. We also introduce a novel technique for post-hoc disentanglement, PHoDiVA,
+	and propose directions for future research.
+
 \end{abstract}
 
 \section{Introduction}
@@ -127,12 +139,15 @@ models trained under this particular framework, and present the following contri
 	      information from a fine-tuned model.  We refer to our technique as \textsc{PHoDiVA}
 	      (\textbf{P}ost \textbf{Ho}c \textbf{Di}sentanglement via \textbf{V}essel \textbf{A}dapters).
 \end{enumerate}
+Surprisingly, we fail to match the performance a simple baseline consisting of sandwhiching the
+model between translation API calls, which performs almost on par with the original model. We
+hypothesize this may be due to under-trained models, and propose directions for future research.
 
 \section{Related Work}
 
 todo
 
-\section{Methods and Models}\label{sec:method}
+\section{Method}\label{sec:method}
 
 \subsection{MetaICL}
 
