@@ -74,42 +74,59 @@
 
 \section{Introduction}
 
-Pre-trained large language models (LLMs) are dominating NLP research for tackling downstream tasks
-\citep{devlin_bert_2019,raffel_exploring_2020,brown_language_2020}. These models rely on the
-availability of vast amounts of unsupervised training data and the high usage computing resources
-that can be leveraged by variants of the transformer architecture \citep{vaswani_attention_2017}.
-Because access to such data and compute is limited, and due to the anglocentric nature of the field,
-the majority LLM research and application prioritises the English language. This leads to a large
-gap between what can be achieved in English and other languages. Research in multilingual LLMs
-attempts to address this issue, with encouraging results in many aspects
-\citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These multilingual models however
-have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and more niche
-applications such as fine-tuning for zero-shot and in-context prompted generalisation
-\citep{sanh_multitask_2022,wang_benchmarking_2022} remain almost exclusively in English. One
-approach to address this issue is developing techniques for adapting existing English models to work
-in other languages. Recent research in model adaptation has shown promising results
+Pre-trained large language models (LLMs) are dominating natural language processing (NLP) research
+for tackling downstream tasks \citep{devlin_bert_2019,raffel_exploring_2020,brown_language_2020}.
+These models rely on the availability of vast amounts of unsupervised training data and the high
+usage computing resources that can be leveraged by variants of the transformer architecture
+\citep{vaswani_attention_2017}. Because access to such data and compute is limited, and due to the
+anglocentric nature of the field, the majority LLM research and application prioritises the English
+language. This leads to a large gap between what can be achieved in English and other languages.
+Research in multilingual LLMs attempts to address this issue, with encouraging results in many
+aspects \citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These multilingual models
+however have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and
+datasets for more niche applications such as fine-tuning for zero-shot and in-context prompted
+generalisation remain almost exclusively in English
+\citep{bach_promptsource_2022,mishra_cross-task_2022}. One approach to address this issue is
+developing techniques for adapting existing English models to work in other languages. Recent
+research in model adaptation has shown promising results
 \citep{houlsby_parameter-efficient_2019,ainsworth_git_2022}, and there already exist some works
 applying these techniques directly to the problem of cross-lingual transfer
 \citep{artetxe_cross-lingual_2020}. These works however mainly focus either on encoder-only
 transformer (EOT) variants or on performance on a few downstream tasks, through the use of
 additional language- and/or task-specific fine-tuning
-\citet{de_vries_adapting_2021,de_vries_as_2021,gogoulou_cross-lingual_2022}. 
+\citep{de_vries_adapting_2021,gogoulou_cross-lingual_2022}. Works that consider decoder-only
+transformer (DOT) variants on the other \citep{de_vries_as_2021, minixhofer_wechsel_2022} limit the
+scope to pretrained variants and intrinsic evaluation, with little focus on how their techniques
+interact with \textit{fine-tuned} models and their performance on downstream tasks.
 
-This work instead considers techniques for the efficient cross-lingual transfer of models capable
-of in-context learning (ICL) for multi-task performance \citep{min_metaicl_2022} These models avoid
-the need for task-specific fine-tuning, which may not always be possible for certain tasks in
-certain languages.
-
-Decoder-only transformer (DOT).
-contributions
-\begin{itemize}
-	\item successfully apply WECHSEL to GPT2 Large, release the checkpoints which did not exist
-	\item More complete evaluation of WECHSEL in the GPT2 setting
-	\item propose method for preserving FT when performing cross-lingual adaptation
-	\item formalize concept of vessel adapters with targeted distillation, a form of post-hoc
-	      disentanglement. We call it \textsc{PHoDiVA} (\textbf{P}ost \textbf{Ho}c
-	      \textbf{Di}sentanglement via \textbf{V}essel \textbf{A}dapters).
-\end{itemize}
+This work instead considers techniques for the efficient cross-lingual transfer of models fine-tuned
+on \textit{in-context learning} (ICL). Here, the models are fine-tuned to leverage information
+presented in the context window to address some downstream task, demonstrating improved performance
+and generalisation \citep{wei_finetuned_2021,sanh_multitask_2022,wang_benchmarking_2022}, enabling
+multi-task learning and eliminating the need for task-specific fine-tuning. Scaled versions of these
+models \citep{chung_scaling_2022} are now on par with the best models from the similarly emerging
+paradigm of LLM training with reinforcement learning from human feedback (RLHF)
+\citep{ouyang_training_2022}. Lamentably, just like their training, the evaluation of these ICL
+fine-tuned models relies on instruction and prompt templates, which are mainly available only in
+English. This renders any cross-lingual adaptation of these models futile, as there is no way to
+extrinsically evaluate them in the target language. Recent work from \citet{min_metaicl_2022}
+circumvents this requirement by directly fine-tuning a model on chains of input-output pairs from
+a suite of tasks, matching the performance of instruction-based ICL. We therefore focus on adapting
+models trained under this particular framework, and present the following contributions:
+\begin{enumerate}
+	\item We show that \citet{minixhofer_wechsel_2022}'s WECHSEL language-adaptation technique scales,
+	      successfully adapting the large variant of GPT2 (774M) to French and German. We release the our
+	      checkpoints, which previously did not exist at this parameter scale for these languages.
+	\item We continue the evaluation of WECHSEL by measuring its robustness by applying it to
+	      a fine-tuned variant of GPT2 and measuring its performance on a number of downstream tasks,
+	      rather than just examining perplexity.
+	\item We share our methods and results for adapting fine-tuned models capable of ICL from English to
+	      French and German.
+	\item We introduce the notion of ``targeted distillation'', a form of post-hoc disentanglement
+	      leveraging adapters \citep{houlsby_parameter-efficient_2019} to extract only the fine-tuned
+	      information from a fine-tuned model.  We refer to our technique as \textsc{PHoDiVA}
+	      (\textbf{P}ost \textbf{Ho}c \textbf{Di}sentanglement via \textbf{V}essel \textbf{A}dapters).
+\end{enumerate}
 
 \section{Related Work}
 
@@ -307,7 +324,7 @@ evaluation on downstream tasks performed by MetaICL.
 
 Fig.\@ \ref{fig:baselines} shows the performance on each dataset of our benchmark for the two
 baseline models, MetaICL and Sandwich. As summarized in Table \ref{tab:results-summary}, Sandwich
-performs roughly on-par with MetaICL on both target languages, respectively with scores of 0.317 and
+performs roughly on par with MetaICL on both target languages, respectively with scores of 0.317 and
 0.322 in French and German compared to MetaICL's score of 0.327 in English. We note generally low
 scores across all tasks. This is particularly perplexing in the case of MetaICL, scoring around
 0.1 points less than with the evaluation ensemble used by \citet{min_metaicl_2022}, where the same
@@ -372,6 +389,7 @@ draw more definitive conclusions.
 \begin{itemize}
 	\item TODO: few datasets, lack of multilingual data, problem with datasets being machine
 	      translated
+	\item consider other general fine-tuning paradigms such as RLHF
 \end{itemize}
 
 \begin{table}[ht]
