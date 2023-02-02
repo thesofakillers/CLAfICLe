@@ -97,11 +97,11 @@ todo
 Due to the complete lack of prompting/instruction templates in non-English languages, we rely on
 MetaICL \citep{min_metaicl_2022}, which circumvents the need for prompt/instruction templates at
 train-time and test-time. With MetaICL, a pretrained DOT is fine-tuned by concatenating $k$ examples
-of input-output pairs from a variety of tasks and feeding this as input to the model. The final
-input-output pair is truncated such that only the input is shown, and the model is trained to
-predict the output using a negative log-likelihood objective. The trained model is then able to
-generalise to unseen tasks presented in the same way by utilizing the $k$ shots provided in the
-context.  We refer to this model simply as \textit{MetaICL}.
+of input-output pairs (``shots'') from a variety of tasks and feeding this as input to the model.
+The final input-output pair is truncated such that only the input is shown, and the model is trained
+to predict the output using a negative log-likelihood objective from a number of possible options.
+The trained model is then generalises to unseen tasks presented in the same way by utilizing the $k$
+shots provided in the context.  We refer to this model as \textit{MetaICL}.
 
 \subsection{Sandwich}
 
@@ -122,7 +122,7 @@ leveraging existing parallel multilingual static word embeddings. As done by
 is performed in the target language to account for syntactical differences. Applying WECHSEL to
 MetaICL, we obtain what we refer to as \textit{MetaICL-geWECHSELt}.
 
-\subsection{Adapters}
+\subsection{Adapters}\label{sec:method:adapters}
 
 Because we are interested in adapting a fine-tuned DOT (MetaICL), we hypothesize that the additional
 CLM at the end of WECHSEL can lead to catastrophic forgetting of the fine-tuning. Furthermore, we
@@ -139,15 +139,30 @@ this projection and an up matrix $\mathbf{W}_{up}$ that projects back to the ori
 \end{equation} where $r$ is a residual connection. Various configurations of the above exist.
 Having separated the task-specific information, we apply WECHSEL to the GPT2 base, obtaining what we
 refer to as \textit{GPT2-geWECHSELt}. Adding MetaICLA to GPT2-geWECHSELt, we obtain a model
-theoretically capable of ICL on the target language, \textit{GPT2-geWECHSELt+MetaICLA}.
+theoretically capable of ICL in the target language, \textit{GPT2-geWECHSELt+MetaICLA}.
 
 \subsection{\textsc{PHoDiVA}}
 
 To address situations where repeating fine-tuning is not permissible, either because the data is not
 released, the process too complicated or the compute simply not available, we propose
-\textsc{PHoDiVA}
-
-todo
+\textsc{PHoDiVA}. Here, instead of repeating ICL fine-tuning, we leverage the fine-tuned MetaICL
+checkpoint, using it as a teacher in a modified student-teacher offline distillation
+\citep{hinton_distilling_2015} setup. More specifically, before WECHSEL adaptation, we add
+a ``vessel'' adapter to a (frozen) GPT2 base, and then perform CLM in the source language (English).
+Vessel adapters are exactly the same as task adapters, except that they act as a ``vessel'' for
+distilled capabilities rather than as additional parameters for fine-tuning. Rather than predicting
+the actual next word, the adapter is trained to predict the next word greedily sampled from the
+teacher. The idea is to overfit the adapter to the teacher outputs (hence the greedy sampling).
+Because the GPT2 base is frozen and theoretically shares the original language modeling capabilities
+of the teacher, we hypothesize that this ``targeted distillation'' can disentangle the fine-tuned
+capabilities into the vessel adapter. We use the CLM objective because of the constraint to keep the
+distillation process as simple as possible, so to make it advantageous over repeating a potentially
+complex fine-tuning process. The only constraint of this method is that the adapter base is the same
+pretrained base that was fine-tuned into the teacher. When using MetaICL as the teacher, we refer to
+the resulting vessel adapter as \textit{MetaICLVA}. Like in section \ref{sec:method:adapters}, after
+applying WECHSEL to a GPT2 base, we can then combine the language-adapted base and MetaICLVA to
+obtain \textit{GPT2-geWECHSELt+MetaICLVA}, another model theoretically capable of ICL in the target
+language.
 
 \section{Experimental Setup}
 
@@ -267,12 +282,12 @@ thoroughly, for example by performing hyperparameter optimization or incorporati
 adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
 \citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
 
-We are also interested in a more complete treatment of \textsc{PHoDiVA}. For instance, future work could
-explore different forms of student-teacher distillation, consider other forms of loss criterions
-and/or take inspiration from similar solutions such as \citet{khrulkov_disentangled_2021}'s work on
-generative models. We believe work in this direction could benefit from simplifying the problem
-setting first, by considering a smaller, encoder-only transformer fine-tuned on a single downstream
-task on a single-language.
+We are also interested in a more complete treatment of \textsc{PHoDiVA}. For instance, future work
+could explore different forms of student-teacher distillation, consider other forms of loss
+criterions, use beam search rather than greedy sampling and/or take inspiration from similar
+solutions such as \citet{khrulkov_disentangled_2021}'s work on generative models. We believe work in
+this direction could benefit from simplifying the problem setting first, by considering a smaller,
+encoder-only transformer fine-tuned on a single downstream task on a single-language.
 
 Other future work may consider different adaptation approaches that have recently emerged. For
 example, \citet{marchisio_mini-model_2022}'s Mini-Model adaptation has yet to be tested on
