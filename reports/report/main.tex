@@ -136,10 +136,10 @@ and modular fine-tuning. These dense layers consist in a down matrix $\mathbf{W}
 the hidden states into a lower dimension $d_{bottleneck}$, a non-linearity $f$, which is applied to
 this projection and an up matrix $\mathbf{W}_{up}$ that projects back to the original dimension:
 \begin{equation} \mathbf{h} \leftarrow \mathbf{W}_{up} f(\mathbf{W}_{down} \mathbf{h}) + \mathbf{r},
-\end{equation} where $r$ is a residual connection. Various configurations of the above exist.
-Having separated the task-specific information, we apply WECHSEL to the GPT2 base, obtaining what we
-refer to as \textit{GPT2-geWECHSELt}. Adding MetaICLA to GPT2-geWECHSELt, we obtain a model
-theoretically capable of ICL in the target language, \textit{GPT2-geWECHSELt+MetaICLA}.
+\end{equation} where $r$ is a residual connection. Having separated the task-specific information,
+we apply WECHSEL to the GPT2 base, obtaining what we refer to as \textit{GPT2-geWECHSELt}. Adding
+MetaICLA to GPT2-geWECHSELt, we obtain a model theoretically capable of ICL in the target language,
+\textit{GPT2-geWECHSELt+MetaICLA}.
 
 \subsection{\textsc{PHoDiVA}}
 
@@ -166,53 +166,95 @@ language.
 
 \section{Experimental Setup}
 
-For our work, we use the \verb_pfeiffer_ configuration from AdapterHub
-\citep{pfeiffer_adapterhub_2020}.
+We use the PyTorch Lightning Python framework \citep{falcon_pytorch_2019} to implement our work.
+Because we envision the direct application of this work to be most useful to smaller companies and
+start-ups, we limit our compute to a single 40GB NVIDIA A100 GPU and run jobs for a maximum of 24
+hours. Our code is available on
+GitHub\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
 
-\citet{min_metaicl_2022} train a number of variants, releasing checkpoints however only for the
-large variant (774M parameters) of GPT2. We base the rest of our models on the same GPT2 variant and
-use the ``high resource to low resource'' direct MetaICL checkpoint as we consider this to be the
-most realistic.
+\subsection{Models}
+
+There exist various possible adapter setups, specifying different configurations of the up and down
+weight matrices, non-linearity and residual connection, among other settings. For our work, we use
+the \verb_pfeiffer_ configuration from AdapterHub \citep{pfeiffer_adapterhub_2020}.
+
+Regarding MetaICL, \citet{min_metaicl_2022} train a number of variants, releasing checkpoints
+however only for variants fine tuning the large version of GPT2 (774M parameters). We base the rest
+of our models on the same GPT2 version and use the ``high resource to low resource'' direct MetaICL
+checkpoint as we consider this to be the most realistic. We make use of the HuggingFace Transformers
+\citep{wolf_transformers_2020} implementation of GPT2 throughout.
+
+\subsection{Evaluation}
+
+For assessing ICL, we reimplement the same evaluation setup as \citet{min_metaicl_2022}, evaluating
+a given model on a suite of tasks, prepending the input with $k=16$ training examples sampled
+randomly for each task. For our evaluation metrics, like \citet{min_metaicl_2022}, we use F1 for
+tasks where the label options change across examples, and accuracy for tasks where the label options
+are always the same. Because the evaluation benchmark used by \citet{min_metaicl_2022} is limited to
+English, we develop our own multilingual multi-task benchmark spanning 9 different tasks across
+3 languages (English, German, and French). Our benchmark design is restricted to tasks that can be
+handled by the MetaICL framework, namely multi-class, single-label tasks. To enable complete
+comparisons across languages, we also restrict our benchmark to only contain language-parallel
+datasets. Correspondingly, we list the ICL benchmark datasets in Table \ref{tab:benchmark}.
+
+\begingroup
+\setlength{\tabcolsep}{0.5pt}
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[t]
+	\centering
+	\caption{The datasets constituting our ICL benchmark. Most originate from pre-existing benchmarks,
+		namely XGLUE \citep{liang_xglue_2020} and \citep{lin_common_2021}.}
+	\label{tab:benchmark}
+	\begin{tabular}{@{}llc@{}}
+		\toprule
+		\multicolumn{1}{l}{Dataset} & \multicolumn{1}{l}{(Origin)}    & Collection \\ \midrule
+		HateCheck                   & \citep{rottger_hatecheck_2021}  & -          \\
+		XNLI                        & \citep{conneau_xnli_2018}       & XGLUE      \\
+		QAM                         & \citep{liang_xglue_2020}        & XGLUE      \\
+		QADSM                       & \citep{liang_xglue_2020}        & XGLUE      \\
+		PAWS-X                      & \citep{yang_paws-x_2019}        & XGLUE      \\
+		MARC                        & \citep{keung_multilingual_2020} & -          \\
+		X-CODAH                     & \citep{lin_common_2021}         & XCSR       \\
+		X-CSQA                      & \citep{lin_common_2021}         & XCSR       \\
+		Wino-X                      & \citep{emelin_wino-x_2021}      & -          \\ \bottomrule
+	\end{tabular}
+\end{table}
+\endgroup
+
+To evaluate the successful application of WECHSEL to GPT2, we use the same process as
+\citet{minixhofer_wechsel_2022}, namely measuring perplexity on a held out test set. For all
+language modeling, we use the original release of the OSCAR corpus
+\citep{ortiz_suarez_monolingual_2020}.
 
 \subsection{Training}
-\subsubsection{\textsc{CrossFit} and \textsc{UnifiedQA}}
-\subsubsection{OSCAR}
-\subsection{Evaluation}
-\subsubsection{Multi-lingual Multi-task Benchmark}
 
-\begin{figure*}[ht]
-	\subcaptionbox{\label{fig:sandwich}}
-	{\includegraphics{sandwich.pdf}}
-	\hfill
-	\subcaptionbox{\label{fig:metaicl-gewechselt}}
-	{\includegraphics{metaicl-gewechselt.pdf}}
-	\hfill
-	\subcaptionbox{}
-	{\includegraphics{gpt2-gewechselt+metaicla.pdf}}
-	\hfill
-	\subcaptionbox{}
-	{\includegraphics{gpt2-gewechselt+metaiclva.pdf}}
-	\caption{Overview of each of the models evaluated in one of the two TGT
-		languages (French or German). The baseline
-		\textcolor[HTML]{79d6ae}{Sandwich} model (\subref{fig:sandwich}) sandwiches
-		\textcolor[HTML]{332345}{MetaICL} \citep{min_metaicl_2022} (which we
-		separately evaluate only in English) between two complementary translation
-		API calls. \textcolor[HTML]{38AAAC}{MetaICL-geWECHSELt}
-		(\subref{fig:metaicl-gewechselt}) is the result of applying WECHSEL
-		\citep{minixhofer_wechsel_2022} to MetaICL.
-		\textcolor[HTML]{357aa2}{GPT2-geWECHSELt+MetaICLA} combines
-		\textcolor{Dandelion}{MetaICLA}, an adapter trained on the MetaICL dataset
-		and objective, with a TGT-language GPT2 base obtained via WECHSEL.
-		\textcolor[HTML]{40498e}{GPT2-geWECHSELt+MetaICLVA} does the same, except
-		\textcolor{Dandelion}{MetaICLVA} is trained via targeted distillation with
-		supervision provided by MetaICL. For more details, refer to section
-		\ref{sec:method}.}
-\end{figure*}
+When performing CLM training, due to our limited compute, we heed the advice of
+\citet{geiping_cramming_2022} and pack as samples into 1024-token sequences (the maximum length
+possible) by separating them with EOS tokens, so to minimize the number of padding tokens and
+maximize GPU utilisation. With this we are able to fit a batch size of 2 into memory, while actually
+presenting the model with more than two examples per batch in most cases\footnote{This technique is
+	also suggested by HuggingFace in their CLM tutorial:
+	\href{https://huggingface.co/course/chapter7/6}{https://huggingface.co/course/chapter7/6}.}. We
+achieve a virtual batch size of 512 by accumulating gradients over 256 steps. We employ single-epoch
+training \citep{komatsuzaki_one_2019} on a total of 600M tokens, which we estimate to be the number
+of tokens consumed by our model in a single epoch by running a profiling run on a smaller download.
+Based on the information in \citet{geiping_cramming_2022} and \citet{minixhofer_wechsel_2022}, we
+decide to use Adam \citep{kingma_adam_2015} with a linear warmup for the first half of training to
+a peak learning rate of 5e-4, followed by cosine annealing to 0 by the end of training. When
+performing targeted distillation for MetaICLVA, we reduce the linear warmup to the first 10\% of
+training to help with our voluntary overfitting. As suggested by \citet{izsak_how_2021}, to maximize
+training time, we evaluate on only 0.5\% of the data, logging every 50 steps.
+
+For the ICL training necessary for MetaICLA, we modify \citet{min_metaicl_2022}'s implementation so
+to work with adapters. In particular, we use their \verb+HR→LR+ training mixture, which consists of
+61 tasks sourced from the \textsc{CrossFit} \citep{ye_crossfit_2021} and \textsc{UnifiedQA}
+\citep{khashabi_unifiedqa_2020} benchmarks.
 
 \section{Results and Discussion}
-\begin{figure}[ht]
+\begin{figure}[t]
 	\centering
-	\includegraphics[width=0.9\linewidth]{gpt2-w_ppl.pdf}
+	\includegraphics{gpt2-w_ppl.pdf}
 	\caption{Perplexity on the held out set when performing the recommended CLM training after WECHSEL
 		language-adaptation of GPT2. A step corresponds to an optimizer update. We evaluate every 50
 		steps.}
@@ -230,7 +272,7 @@ evaluation, future work may wish to investigate whether this holds for longer tr
 rest of our work considers, among other questions, the robustness of WECHSEL via extrinsic
 evaluation on downstream tasks performed by MetaICL.
 
-\begin{figure*}[ht]
+\begin{figure*}[t]
 	\includegraphics{baselines.pdf}
 	\caption{Performance (max is 1) on a particular language dimension of our multi-task benchmark of
 		our two baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
@@ -254,7 +296,7 @@ the surprisingly closeness of the scores. The decision between using Sandwich or
 adapted models with the same capabilities then becomes an economic one in terms of the cost of API
 calls (for the former) versus the cost of inference plus training (for the latter).
 
-\begin{figure*}[ht]
+\begin{figure*}[t]
 	\includegraphics{results.pdf}
 	\caption{Performance gap on our multi-task benchmark between each of the language-adapted models
 		and the ``Sandwich'' baseline. Positive values indicate that the adapted models are
@@ -302,9 +344,7 @@ terms of resources and performance. Finally, undermining all of this work is our
 results on a single random seed. Future work with more seeds and more compute would be necessary to
 draw more definitive conclusions.
 
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-\begin{table}[ht]
+\begin{table}[h]
 	\centering
 	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
 		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
