@@ -204,15 +204,22 @@ whether any of these methods can be applied to fine-tuned versions of GPT2, with
 catastrophic forgetting. Our work attempts to address these issues by exploring the transferability
 MetaICL \citep{min_metaicl_2022} from English to French and German.
 
-\begin{itemize}
-	\item wechsel, devries, artexte, etc.
-\end{itemize}
 \subsection{Adaptation}
-\begin{itemize}
-	\item adapters
-	\item meta-learning
-	\item minimodel
-\end{itemize}
+
+Adapters \citep{houlsby_parameter-efficient_2019} are an emerging method in NLP for the efficient
+fine-tuning of LLMs, operating by injecting a small number of trainable parameters into the layers
+of a pre-trained base. Originating from computer vision \citep{rebuffi_learning_2017}, in NLP they
+have mainly been used for adapting to new tasks \citep{stickland_bert_2019} and domains
+\citep{bapna_simple_2019} while avoiding catastrophic forgetting
+\citep{mccloskey_catastrophic_1989}. There exist a few methods employing adapters for adapting to
+new languages \citep{pfeiffer_mad-x_2020, ustun_hyper-x_2022}, but these methods generally rely on
+multilingual transformer bases. In our work, we explore the use of adapters for separating
+fine-tuning from language-adaptation, so to avoid catastrophic forgetting occurring during the
+latter. In parallel, \citet{marchisio_mini-model_2022} propose a similar method which trains a small
+model in parallel to the base and then operates over the smaller model for adaptation. Other
+non-adapter approaches include meta-learning, which has also been applied to language adaptation
+\citep{nooralahzadeh_zero-shot_2020}.
+
 \subsection{Other related work}
 \begin{itemize}
 	\item distillation
