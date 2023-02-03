@@ -181,6 +181,35 @@ m
 
 \section{Method}\label{sec:method}
 
+\begin{figure*}[ht]
+	\subcaptionbox{\label{fig:sandwich}}
+	{\includegraphics{sandwich.pdf}}
+	\hfill
+	\subcaptionbox{\label{fig:metaicl-gewechselt}}
+	{\includegraphics{metaicl-gewechselt.pdf}}
+	\hfill
+	\subcaptionbox{}
+	{\includegraphics{gpt2-gewechselt+metaicla.pdf}}
+	\hfill
+	\subcaptionbox{}
+	{\includegraphics{gpt2-gewechselt+metaiclva.pdf}}
+	\caption{Overview of each of the models evaluated in one of the two TGT
+		languages (French or German). The baseline
+		\textcolor[HTML]{79d6ae}{Sandwich} model (\subref{fig:sandwich}) sandwiches
+		\textcolor[HTML]{332345}{MetaICL} \citep{min_metaicl_2022} (which we
+		separately evaluate only in English) between two complementary translation
+		API calls. \textcolor[HTML]{38AAAC}{MetaICL-geWECHSELt}
+		(\subref{fig:metaicl-gewechselt}) is the result of applying WECHSEL
+		\citep{minixhofer_wechsel_2022} to MetaICL.
+		\textcolor[HTML]{357aa2}{GPT2-geWECHSELt+MetaICLA} combines
+		\textcolor{Dandelion}{MetaICLA}, an adapter trained on the MetaICL dataset
+		and objective, with a TGT-language GPT2 base obtained via WECHSEL.
+		\textcolor[HTML]{40498e}{GPT2-geWECHSELt+MetaICLVA} does the same, except
+		\textcolor{Dandelion}{MetaICLVA} is trained via targeted distillation with
+		supervision provided by MetaICL. For more details, refer to section
+		\ref{sec:method}.}
+\end{figure*}
+
 \subsection{MetaICL}
 
 Due to the complete lack of prompting/instruction templates in non-English languages, we rely on
@@ -474,6 +503,13 @@ separating ICL fine-tuning and language adaptation to address potential catastro
 through the use of Adapters, but find these approaches unsuccessful. In doing so, we propose
 \textsc{PHoDiVA}, a novel method for post-hoc disentanglement through vessel adapters. We share
 \textsc{PHoDiVA} in this rudimentary form as a starting point for future work in this direction.
+
+\section{Acknowledgements}
+
+We would like to thank Sami Jullien and Mozhdeh Ariannezhad for their helpful feedback and general
+supervision throughout this project. We would also like to thank Prof. Katia Shutova for acting as
+the examiner. Finally we thank the University of Amsterdam for providing the opportunity and
+resources necessary for the produced output.
 
 \bibliography{anthology,custom}
 
