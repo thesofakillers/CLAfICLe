@@ -75,12 +75,13 @@
 	in other languages. Multilingual LLMs have been proposed to address this issue, but have been
 	shown to be outperformed by their monolingual counterparts. While research on the language
 	adaptation of monolingual models shows promising results, this typically focuses on encoder-only
-	transformers and in the decoder-only setting limit themselves to intrinsic evaluation. In this
-	work, we tackle the problem of the cross-lingual adaptation of monolingual models fine-tuned to
-	perform ICL. We combine state of the art language and task adaptation techniques and show that it
-	is still difficult to outperform a simple baseline consisting of sandwhiching the model between
+	transformers and in the decoder-only setting is limited to intrinsic evaluation. In this work, we
+	tackle the problem of the cross-lingual adaptation of monolingual models fine-tuned to perform
+	ICL. We combine state-of-the-art (SOTA) language and task adaptation techniques and show that it
+	is still difficult to outperform a simple baseline consisting of sandwiching the model between
 	translation API calls. Finally, we introduce a novel technique for post-hoc disentanglement,
-	PHoDiVA, and propose directions for future research.
+	PHoDiVA, and propose directions for future research. We release our code and
+	models to the public\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
 
 \end{abstract}
 \section{Introduction}
@@ -97,7 +98,7 @@ aspects \citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These 
 however have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and
 datasets for more niche applications such as fine-tuning for zero-shot and in-context prompted
 generalisation remain almost exclusively in English
-\citep{bach_promptsource_2022,mishra_cross-task_2022}. One approach to address this issue is
+\citep{bach_promptsource_2022,mishra_cross-task_2022}. One approach for addressing this issue is
 developing techniques for adapting existing English models to work in other languages. Recent
 research in model adaptation has shown promising results
 \citep{houlsby_parameter-efficient_2019,ainsworth_git_2022}, and there already exist some works
@@ -107,7 +108,7 @@ transformer (EOT) variants or on performance on a few downstream tasks, through 
 additional language- and/or task-specific fine-tuning
 \citep{de_vries_adapting_2021,gogoulou_cross-lingual_2022}. Works that consider decoder-only
 transformer (DOT) variants on the other hand \citep{de_vries_as_2021, minixhofer_wechsel_2022} limit
-the scope to pretrained variants and intrinsic evaluation, with little focus on how their techniques
+the scope to pre-trained variants and intrinsic evaluation, with little focus on how their techniques
 interact with \textit{fine-tuned} models and their performance on downstream tasks.
 
 This work instead considers techniques for the efficient cross-lingual transfer of models fine-tuned
@@ -126,7 +127,7 @@ a suite of tasks, matching the performance of instruction-based ICL. We therefor
 models trained under this particular framework, and contribute the following:
 \begin{enumerate}
 	\item We show that \citet{minixhofer_wechsel_2022}'s WECHSEL language-adaptation technique scales,
-	      successfully adapting the large variant of GPT2 (774M) to French and German. We release the our
+	      successfully adapting the large variant of GPT2 (774M) to French and German. We release our
 	      checkpoints, which previously did not exist at this parameter scale for these languages.
 	\item We continue the evaluation of WECHSEL by assessing its robustness, applying it to
 	      a fine-tuned variant of GPT2 and measuring its performance on a number of downstream tasks,
@@ -151,7 +152,7 @@ in a transformer's context window is augmented with some additional information 
 downstream task. The model is said to ``learn''  from (\textit{sc.} leverage) this information,
 without the need for any parameter updates. A very basic example of ICL is ``prompting'' the model
 by prefixing the input with task-specific instructions. ICL provides a number of advantages. Because
-the input is entirely in natural language, it acts an interpretable interface for human-model
+the input is entirely in natural language, it acts as an interpretable interface for human-model
 interaction. As mentioned, ICL does not require any parameter updates, greatly reducing the
 computational costs necessary and enabling the multi-task generalisation necessary for
 language-model-as-a-service applications \citep{sun_black-box_2022}. Considerable research attention
@@ -166,7 +167,7 @@ prompt choice and ordering. Unsurprisingly, some studies find a performance boos
 fine-tuning the models directly on ICL examples \citep{sanh_multitask_2022,wang_benchmarking_2022}
 and develop template-based datasets for this purpose
 \citep{bach_promptsource_2022,mishra_cross-task_2022}. To circumvent the variability or need for
-templates, \citet{lester_power_2021} fine-tune a ``soft'' prompt instead of the task, while
+templates, \citet{lester_power_2021} fine-tune a ``soft'' prompt instead of the model, while
 \citet{min_metaicl_2022} directly use chains of input-output pairs for fine-tuning rather than
 templates. All of these approaches limit themselves to English, leaving a large gap in multilingual
 NLP. Our work attempts to partly address this gap by exploring ways of adapting ICL-fine-tuned
@@ -174,6 +175,7 @@ English models to other languages.
 
 \subsection{Multilingual NLP}
 
+\looseness=-1
 Democratizing LLMs to other languages has mainly been achieved by repeating the pre-training process
 on massive multi-lingual corpora. While non-transformer approaches exist
 \citep{artetxe_massively_2019}, most attention is devoted to transformers, resulting in
@@ -196,13 +198,14 @@ consisting in retraining the lexical embeddings in the target language while kee
 model frozen. \citet{de_vries_adapting_2021} successfully apply this method to low-resource target
 languages and \citet{de_vries_as_2021} extend the method to DOT, successfully adapting GPT2 to
 Italian and Dutch. Recently, \citet{minixhofer_wechsel_2022} has optimized the method by using
-dictionaries of parallel static word embeddings to reinitialize the embeddings in an efficient way
-before re-training them on the target language. Unfortunately in the DOT setting, none of these
-methods consider variants larger than GPT2-small (117M parameters) and crucially focus only on
-intrinsic evaluation rather than performance on downstream tasks. Furthermore, it remains to be seen
-whether any of these methods can be applied to fine-tuned versions of GPT2, without leading to
-catastrophic forgetting. Our work attempts to address these issues by exploring the transferability
-MetaICL \citep{min_metaicl_2022} from English to French and German.
+dictionaries of parallel static multilingual word embeddings to reinitialize the embeddings in an
+efficient way before re-training them on the target language. Unfortunately in the DOT setting, none
+of these methods consider variants larger than GPT2-small (117M parameters) and crucially focus only
+on intrinsic evaluation rather than performance on downstream tasks. Furthermore, it remains to be
+seen whether any of these methods can be applied to fine-tuned versions of GPT2, without leading to
+catastrophic forgetting \citep{mccloskey_catastrophic_1989}. Our work attempts to address these
+issues by exploring the transferability MetaICL \citep{min_metaicl_2022} from English to French and
+German.
 
 \subsection{Adaptation}
 
@@ -210,15 +213,14 @@ Adapters \citep{houlsby_parameter-efficient_2019} are an emerging method in NLP 
 fine-tuning of LLMs, operating by injecting a small number of trainable parameters into the layers
 of a pre-trained base. Originating from computer vision \citep{rebuffi_learning_2017}, in NLP they
 have mainly been used for adapting to new tasks \citep{stickland_bert_2019} and domains
-\citep{bapna_simple_2019} while avoiding catastrophic forgetting
-\citep{mccloskey_catastrophic_1989}. There exist a few methods employing adapters for adapting to
-new languages \citep{pfeiffer_mad-x_2020, ustun_hyper-x_2022}, but these methods generally rely on
-multilingual transformer bases. In our work, we explore the use of adapters for separating
-fine-tuning from language-adaptation, so to avoid catastrophic forgetting occurring during the
-latter. In parallel, \citet{marchisio_mini-model_2022} propose a similar method which trains a small
-model in parallel to the base and then operates over the smaller model for adaptation. Other
-non-adapter approaches include meta-learning, which has also been applied to language adaptation
-\citep{nooralahzadeh_zero-shot_2020}.
+\citep{bapna_simple_2019} while avoiding catastrophic forgetting. There exist a few methods
+employing adapters for adapting to new languages \citep{pfeiffer_mad-x_2020, ustun_hyper-x_2022},
+but these methods generally rely on multilingual transformer bases. In our work, we explore the use
+of adapters for separating fine-tuning from language-adaptation, so to avoid catastrophic forgetting
+occurring during the latter. Contemporaneously, \citet{marchisio_mini-model_2022} propose a similar
+method which trains a small model in parallel to the base and then operates over the smaller model
+for adaptation. Other non-adapter approaches include meta-learning, which has also been applied to
+language adaptation \citep{nooralahzadeh_zero-shot_2020}.
 
 \subsection{Other related work}
 
@@ -232,6 +234,8 @@ similarly to \citet{khrulkov_disentangled_2021}.
 
 \section{Method}\label{sec:method}
 
+We present an overview of our methods in Fig.\@~\ref{fig:method}.
+
 \begin{figure*}[ht]
 	\subcaptionbox{\label{fig:sandwich}}
 	{\includegraphics{sandwich.pdf}}
@@ -244,32 +248,29 @@ similarly to \citet{khrulkov_disentangled_2021}.
 	\hfill
 	\subcaptionbox{}
 	{\includegraphics{gpt2-gewechselt+metaiclva.pdf}}
-	\caption{Overview of each of the models evaluated in one of the two TGT
-		languages (French or German). The baseline
-		\textcolor[HTML]{79d6ae}{Sandwich} model (\subref{fig:sandwich}) sandwiches
-		\textcolor[HTML]{332345}{MetaICL} \citep{min_metaicl_2022} (which we
-		separately evaluate only in English) between two complementary translation
-		API calls. \textcolor[HTML]{38AAAC}{MetaICL-geWECHSELt}
-		(\subref{fig:metaicl-gewechselt}) is the result of applying WECHSEL
-		\citep{minixhofer_wechsel_2022} to MetaICL.
-		\textcolor[HTML]{357aa2}{GPT2-geWECHSELt+MetaICLA} combines
-		\textcolor{Dandelion}{MetaICLA}, an adapter trained on the MetaICL dataset
-		and objective, with a TGT-language GPT2 base obtained via WECHSEL.
-		\textcolor[HTML]{40498e}{GPT2-geWECHSELt+MetaICLVA} does the same, except
-		\textcolor{Dandelion}{MetaICLVA} is trained via targeted distillation with
-		supervision provided by MetaICL. For more details, refer to section
-		\ref{sec:method}.}
+	\caption{Overview of each of the models evaluated in one of the two target (TGT) languages (French
+		or German). The baseline \textcolor[HTML]{79d6ae}{Sandwich} model (\subref{fig:sandwich})
+		sandwiches \textcolor[HTML]{332345}{MetaICL} \citep{min_metaicl_2022} (which we separately
+		evaluate only in English) between two complementary translation API calls.
+		\textcolor[HTML]{38AAAC}{MetaICL-geWECHSELt} (\subref{fig:metaicl-gewechselt}) is the result of
+		applying WECHSEL \citep{minixhofer_wechsel_2022} to MetaICL.
+		\textcolor[HTML]{357aa2}{GPT2-geWECHSELt+MetaICLA} combines \textcolor{Dandelion}{MetaICLA}, an
+		adapter trained on the MetaICL dataset and objective, with a TGT-language GPT2 base obtained via
+		WECHSEL. \textcolor[HTML]{40498e}{GPT2-geWECHSELt+MetaICLVA} does the same, except
+		\textcolor{Dandelion}{MetaICLVA} is trained via targeted distillation with supervision provided
+		by MetaICL. For more details, refer to section \ref{sec:method}.}
+	\label{fig:method}
 \end{figure*}
 
 \subsection{MetaICL}
 
 Due to the complete lack of prompting/instruction templates in non-English languages, we rely on
 MetaICL \citep{min_metaicl_2022}, which circumvents the need for prompt/instruction templates at
-train-time and test-time. With MetaICL, a pretrained DOT is fine-tuned by concatenating $k$ examples
+train-time and test-time. With MetaICL, a pre-trained DOT is fine-tuned by concatenating $k$ examples
 of input-output pairs (``shots'') from a variety of tasks and feeding this as input to the model.
 The final input-output pair is truncated such that only the input is shown, and the model is trained
 to predict the output using a negative log-likelihood objective from a number of possible options.
-The trained model is then generalises to unseen tasks presented in the same way by utilizing the $k$
+The trained model then generalises to unseen tasks presented in the same way by utilizing the $k$
 shots provided in the context.  We refer to this model as \textit{MetaICL}.
 
 \subsection{Sandwich}
@@ -305,13 +306,14 @@ and modular fine-tuning. These dense layers consist in a down matrix $\mathbf{W}
 the hidden states into a lower dimension $d_{bottleneck}$, a non-linearity $f$, which is applied to
 this projection and an up matrix $\mathbf{W}_{up}$ that projects back to the original dimension:
 \begin{equation} \mathbf{h} \leftarrow \mathbf{W}_{up} f(\mathbf{W}_{down} \mathbf{h}) + \mathbf{r},
-\end{equation} where $r$ is a residual connection. Having separated the task-specific information,
-we apply WECHSEL to the GPT2 base, obtaining what we refer to as \textit{GPT2-geWECHSELt}. Adding
-MetaICLA to GPT2-geWECHSELt, we obtain a model theoretically capable of ICL in the target language,
-\textit{GPT2-geWECHSELt+MetaICLA}.
+\end{equation} where $\mathbf{r}$ is a residual connection. Having separated the task-specific
+information, we apply WECHSEL to the GPT2 base, obtaining what we refer to as
+\textit{GPT2-geWECHSELt}. Adding MetaICLA to GPT2-geWECHSELt, we obtain a model theoretically
+capable of ICL in the target language, \textit{GPT2-geWECHSELt+MetaICLA}.
 
 \subsection{\textsc{PHoDiVA}}
 
+\looseness=-1
 To address situations where repeating fine-tuning is not permissible, either because the data is not
 released, the process too complicated or the compute simply not available, we propose
 \textsc{PHoDiVA}. Here, instead of repeating ICL fine-tuning, we leverage the fine-tuned MetaICL
@@ -327,7 +329,7 @@ of the teacher, we hypothesize that this ``targeted distillation'' can disentang
 capabilities into the vessel adapter. We use the CLM objective because of the constraint to keep the
 distillation process as simple as possible, so to make it advantageous over repeating a potentially
 complex fine-tuning process. The only constraint of this method is that the adapter base is the same
-pretrained base that was fine-tuned into the teacher. When using MetaICL as the teacher, we refer to
+pre-trained base that was fine-tuned into the teacher. When using MetaICL as the teacher, we refer to
 the resulting vessel adapter as \textit{MetaICLVA}. Like in section \ref{sec:method:adapters}, after
 applying WECHSEL to a GPT2 base, we can then combine the language-adapted base and MetaICLVA to
 obtain \textit{GPT2-geWECHSELt+MetaICLVA}, another model theoretically capable of ICL in the target
@@ -338,8 +340,7 @@ language.
 We use the PyTorch Lightning Python framework \citep{falcon_pytorch_2019} to implement our work.
 Because we envision the direct application of this work to be most useful to smaller companies and
 start-ups, we limit our compute to a single 40GB NVIDIA A100 GPU and run jobs for a maximum of 24
-hours. Our code and checkpoints are available on
-GitHub\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
+hours.
 
 \subsection{Models}
 
@@ -347,6 +348,7 @@ There exist various possible adapter setups, specifying different configurations
 weight matrices, non-linearity and residual connection, among other settings. For our work, we use
 the \verb_pfeiffer_ configuration from AdapterHub \citep{pfeiffer_adapterhub_2020}.
 
+\looseness=-1
 Regarding MetaICL, \citet{min_metaicl_2022} train a number of variants, releasing checkpoints
 however only for variants fine tuning the large version of GPT2 (774M parameters). We base the rest
 of our models on the same GPT2 version and use the ``high resource to low resource'' direct MetaICL
@@ -356,15 +358,16 @@ checkpoint as we consider this to be the most realistic. We make use of the Hugg
 \subsection{Evaluation}\label{sec:experiment:eval}
 
 For assessing ICL, we reimplement the same evaluation setup as \citet{min_metaicl_2022}, evaluating
-a given model on a suite of tasks, prepending the input with $k=16$ training examples sampled
-randomly for each task. For our evaluation metrics, like \citet{min_metaicl_2022}, we use F1 for
-tasks where the label options change across examples, and accuracy for tasks where the label options
-are always the same. Because the evaluation benchmark used by \citet{min_metaicl_2022} is limited to
-English, we develop our own multilingual multi-task benchmark spanning 9 different tasks across
-3 languages (English, German, and French). Our benchmark design is restricted to tasks that can be
-handled by the MetaICL framework, namely multi-class, single-label tasks. To enable complete
-comparisons across languages, we also restrict our benchmark to only contain language-parallel
-datasets. Correspondingly, we list the ICL benchmark datasets in Table \ref{tab:benchmark}.
+a given model on a suite of tasks, prepending the input with $k=16$ input-output pairs sampled
+randomly for each task from a separate split. For our evaluation metrics, like
+\citet{min_metaicl_2022}, we use F1 for tasks where the label options change across examples, and
+accuracy for tasks where the label options are always the same. Because the evaluation benchmark
+used by \citet{min_metaicl_2022} is limited to English, we develop our own multilingual multi-task
+benchmark spanning 9 different tasks across 3 languages (English, German, and French). Our benchmark
+design is restricted to tasks that can be handled by the MetaICL framework, namely multi-class,
+single-label tasks. To enable complete comparisons across languages, we also restrict our benchmark
+to only contain language-parallel datasets. Correspondingly, we list the benchmark datasets in
+Table~\ref{tab:benchmark}.
 
 \begingroup
 \setlength{\tabcolsep}{0.5pt}
@@ -430,7 +433,7 @@ to work with adapters. In particular, we use their \verb+HR→LR+ training mixtu
 	\label{fig:gpt2-w_ppl}
 \end{figure}
 
-Fig.\@ \ref{fig:gpt2-w_ppl} shows the performance of GPT2 after around 1k steps of training,
+Fig.\@~\ref{fig:gpt2-w_ppl} shows the performance of GPT2 after around 1k steps of training,
 evaluated intrinsically in terms of perplexity. For both French and German, we see perplexity
 decrease to sub-50 values, with the French model reaching a perplexity of $\approx$ 28. Both models
 are clearly underfit, still monotonically decreasing by the end of the training. These observations
@@ -443,13 +446,13 @@ evaluation on downstream tasks performed by MetaICL.
 
 \begin{figure*}[ht]
 	\includegraphics{baselines.pdf}
-	\caption{Performance (max is 1) on a particular language dimension of our multi-task benchmark of
-		our two baseline models, MetaICL and Sandwich. The dashed line separates whether a given task uses
-		accuracy (left) or F1-score (right) as the performance metric.}
+	\caption{Performance (max is 1) on our multi-task benchmark of our two baseline models, MetaICL
+		and Sandwich. The dashed line separates whether a given task uses accuracy (left) or F1-score
+		(right) as the performance metric.}
 	\label{fig:baselines}
 \end{figure*}
 
-Fig.\@ \ref{fig:baselines} shows the performance on each dataset of our benchmark for the two
+Fig.\@~\ref{fig:baselines} shows the performance on each dataset of our benchmark for the two
 baseline models, MetaICL and Sandwich. As summarized in Table \ref{tab:results-summary}, Sandwich
 performs roughly on par with MetaICL on both target languages, respectively with scores of 0.317 and
 0.322 in French and German compared to MetaICL's score of 0.327 in English. We note generally low
@@ -475,24 +478,24 @@ calls (for the former) versus the cost of inference plus training (for the latte
 	\label{fig:results}
 \end{figure*}
 
-Fig.\@ \ref{fig:results} shows the difference in performance on each dataset of our benchmark
+Fig.\@~\ref{fig:results} shows the difference in performance on each dataset of our benchmark
 between the proposed models and Sandwich. In general, we observe that the proposed models
 underperform across almost all tasks in both French and German, with the trends aligning at
 a task-level (e.g. all models underperform on QAM, by roughly the same amount). As reported in Table
 \ref{tab:results-summary}, the best of our proposed models is MetaICL-geWECHSELt, which
-underperformed Sandwich by roughly 0.02-0.03 points. This undermines the motivation for the other
-two models, which were designed to avoid catastrophic forgetting by separating language and ICL
-capabilities via adapters. The results suggest that the tradeoff between catastrophic forgetting and
-needing to train ICL-adapters leans in favour of the former in this compute regime. In this sense,
-we can conclude that WECHSEL does not suffer tremendously due to catastrophic forgetting when
-adapting fine-tuned DOTs such as the MetaICL variant of GPT2.
+underperformed Sandwich by roughly 0.02-0.03 points depending on the language. This undermines the
+motivation for the other two models, which were designed to avoid catastrophic forgetting by
+separating language and ICL capabilities via adapters. The results suggest that the tradeoff between
+catastrophic forgetting and needing to train ICL-adapters leans in favour of the former in this
+compute regime. In this sense, we can conclude that WECHSEL does not suffer tremendously due to
+catastrophic forgetting when adapting fine-tuned DOTs such as the MetaICL variant of GPT2.
 
 \begin{table}[ht]
 	\centering
-	\caption{Average performance (max is 1) across the datasets from our multi-task benchmark for the
-		models considered in this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average
-		difference in performance for each proposed alternative to Sandwich. Negative values indicate
-		underperformance compared to Sandwich.}
+	\caption{Average performance (max is 1) on our multi-task benchmark for the models considered in
+		this work. We use ``W'' as a shorthand for ``geWECHSELt''. We report average difference in
+		performance for each proposed alternative to Sandwich. Negative values indicate underperformance
+		compared to Sandwich.}
 	\label{tab:results-summary}
 	\begin{tabular}{@{}rccc@{}}
 		\toprule
@@ -509,18 +512,20 @@ adapting fine-tuned DOTs such as the MetaICL variant of GPT2.
 Our work is mainly limited by its preliminary nature. Apart for considering more appropriate
 (\textit{sc.} larger) compute scales, future work could investigate training ICL-adapters more
 thoroughly, for example by performing hyperparameter optimization or incorporating more recent
-adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021}, AdapterFusion
-\citep{pfeiffer_adapterfusion_2021} or Hyper-X \citep{ustun_hyper-x_2022}.
+adapter research such as AdapterDrop \citep{ruckle_adapterdrop_2021} and AdapterFusion
+\citep{pfeiffer_adapterfusion_2021}.
 
-Similarly, we note that the despite our best efforts our ICL evaluation benchmark faces some
-limitations. Due to the design restrictions mentioned in Section \ref{sec:experiment:eval} and the
-lack of non-English datasets we only evaluate on 9 tasks, despite focusing on high-resource
+\looseness=-1
+Similarly, we note that despite our best efforts our ICL evaluation benchmark faces some
+limitations. Due to the design restrictions mentioned in section \ref{sec:experiment:eval}, and the
+lack of non-English datasets, we only evaluate on 9 tasks, despite focusing on high-resource
 languages like German and French. This is a small number of tasks compared to what is done in
 English, where 10s and 100s of tasks can comprise a multi-task benchmark. Furthermore, many of our
-datasets are either human or machine translated versions of English, which can lead to noise
-\citep{koppel_translationese_2011}. We hope to raise awareness of the complete English dominance of
-the NLP data landscape.
+datasets are either human or machine translated versions of English, which can lead to noise de to
+translationese \citep{koppel_translationese_2011}. We hope to raise awareness of the complete
+English dominance of the NLP data landscape.
 
+\looseness=-1
 We are also interested in a more complete treatment of \textsc{PHoDiVA}. For instance, future work
 could explore different forms of student-teacher distillation, consider other forms of loss
 criterions, use beam search rather than greedy sampling and/or take inspiration from similar
@@ -545,7 +550,7 @@ draw more definitive conclusions.
 \section{Conclusion}
 
 We explore the problem of language-adapting a monolingual DOT previously fine-tuned to perform
-in-context learning. To this end, we stress test the current SoTA adaptation method, WECHSEL,
+in-context learning. To this end, we stress test the current SOTA adaptation method, WECHSEL,
 scaling to previously untested model sizes, applying it a fine-tuned variant of GPT2 (MetaICL) and
 evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL successfully scales
 to larger model sizes, we find that at our compute regime, WECHSEL-adapted MetaICL underperforms
