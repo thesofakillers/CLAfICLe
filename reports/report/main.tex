@@ -67,40 +67,40 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-
-	As the field of NLP becomes enveloped with pre-trained large language models (LLMs), it becomes
-	more and more dependent on data and compute. In parallel, fine-tuning paradigms such as in-context
-	learning (ICL) have emerged to address these requirements. Unfortunately, most of this research
-	has only been conducted in English and is either prohibitively expensive or impossible to repeat
-	in other languages. Multilingual LLMs have been proposed to address this issue, but have been
-	shown to be outperformed by their monolingual counterparts. While research on the language
-	adaptation of monolingual models shows promising results, this typically focuses on encoder-only
-	transformers and in the decoder-only setting is limited to intrinsic evaluation. In this work, we
-	tackle the problem of the cross-lingual adaptation of monolingual models fine-tuned to perform
-	ICL. We combine state-of-the-art (SOTA) language and task adaptation techniques and show that it
-	is still difficult to outperform a simple baseline consisting of sandwiching the model between
-	translation API calls. Finally, we introduce a novel technique for post-hoc disentanglement,
-	PHoDiVA, and propose directions for future research. We release our code and
-	models to the public\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
+	\looseness=-1
+	As the field of natural language processing (NLP) is enveloped with pre-trained large
+	language models (LLMs), it becomes more and more dependent on data and compute. In parallel,
+	fine-tuning paradigms such as in-context learning (ICL) have emerged to address these
+	requirements. Unfortunately, most of this research has only been conducted in English and is
+	either prohibitively expensive or impossible to repeat in other languages. Multilingual LLMs have
+	been proposed to address this issue, but have been shown to be outperformed by their monolingual
+	counterparts. While research on the language adaptation of monolingual models shows promising
+	results, this typically focuses on encoder-only transformers and in the decoder-only setting is
+	limited to intrinsic evaluation. In this work, we tackle the problem of the cross-lingual
+	adaptation of monolingual models fine-tuned to perform ICL. We combine state-of-the-art (SOTA)
+	language and task adaptation techniques and show that it is still difficult to outperform a simple
+	baseline consisting of sandwiching the model between translation API calls. Finally, we introduce
+	a novel technique for post-hoc disentanglement, PHoDiVA, and propose directions for future
+	research. We release our code and models to the
+	public\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
 
 \end{abstract}
 \section{Introduction}
 
-Pre-trained large language models (LLMs) are dominating natural language processing (NLP) research
-for tackling downstream tasks \citep{devlin_bert_2019,raffel_exploring_2020,brown_language_2020}.
-These models rely on the availability of vast amounts of unsupervised training data and the high
-usage computing resources that can be leveraged by variants of the transformer architecture
-\citep{vaswani_attention_2017}. Because access to such data and compute is limited, and due to the
-anglocentric nature of the field, the majority LLM research and application prioritises the English
-language. This leads to a large gap between what can be achieved in English and other languages.
-Research in multilingual LLMs attempts to address this issue, with encouraging results in many
-aspects \citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These multilingual models
-however have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and
-datasets for more niche applications such as fine-tuning for zero-shot and in-context prompted
-generalisation remain almost exclusively in English
-\citep{bach_promptsource_2022,mishra_cross-task_2022}. One approach for addressing this issue is
-developing techniques for adapting existing English models to work in other languages. Recent
-research in model adaptation has shown promising results
+Pre-trained LLMs are dominating NLP research for tackling downstream tasks
+\citep{devlin_bert_2019,raffel_exploring_2020,brown_language_2020}. These models rely on the
+availability of vast amounts of unsupervised training data and the high usage computing resources
+that can be leveraged by variants of the transformer architecture \citep{vaswani_attention_2017}.
+Because access to such data and compute is limited, and due to the Anglocentric nature of the field,
+the majority LLM research and application prioritises the English language. This leads to a large
+gap between what can be achieved in English and other languages. Research in multilingual LLMs
+attempts to address this issue, with encouraging results in many aspects
+\citep{conneau_unsupervised_2020,bigscience_workshop_bloom_2022}. These multilingual models however
+have been shown to underperform against monolingual counterparts \citep{wu_are_2020}, and datasets
+for more niche applications such as fine-tuning for zero-shot and in-context prompted generalisation
+remain almost exclusively in English \citep{bach_promptsource_2022,mishra_cross-task_2022}. One
+approach for addressing this issue is developing techniques for adapting existing English models to
+work in other languages. Recent research in model adaptation has shown promising results
 \citep{houlsby_parameter-efficient_2019,ainsworth_git_2022}, and there already exist some works
 applying these techniques directly to the problem of cross-lingual transfer
 \citep{artetxe_cross-lingual_2020}. These works however mainly focus either on encoder-only
@@ -108,8 +108,8 @@ transformer (EOT) variants or on performance on a few downstream tasks, through 
 additional language- and/or task-specific fine-tuning
 \citep{de_vries_adapting_2021,gogoulou_cross-lingual_2022}. Works that consider decoder-only
 transformer (DOT) variants on the other hand \citep{de_vries_as_2021, minixhofer_wechsel_2022} limit
-the scope to pre-trained variants and intrinsic evaluation, with little focus on how their techniques
-interact with \textit{fine-tuned} models and their performance on downstream tasks.
+the scope to pre-trained variants and intrinsic evaluation, with little focus on how their
+techniques interact with \textit{fine-tuned} models and their performance on downstream tasks.
 
 This work instead considers techniques for the efficient cross-lingual transfer of models fine-tuned
 on \textit{in-context learning} (ICL). Here, the models are fine-tuned to leverage information
@@ -139,7 +139,7 @@ models trained under this particular framework, and contribute the following:
 	      information from a fine-tuned model.  We refer to our technique as \textsc{PHoDiVA}
 	      (\textbf{P}ost \textbf{Ho}c \textbf{Di}sentanglement via \textbf{V}essel \textbf{A}dapters).
 \end{enumerate}
-Surprisingly, we fail to match the performance a simple baseline consisting of sandwhiching the
+Surprisingly, we fail to match the performance of a simple baseline consisting of sandwiching the
 model between translation API calls, which performs almost on par with the original model. We
 hypothesize this may be due to under-trained models, and propose directions for future research.
 
@@ -161,7 +161,7 @@ with many contributions focusing on informal reasoning performance through scrat
 \citep{nye_show_2021}, bootstrapping \citep{zelikman_star_2022}, chain-of-thought prompting
 \citep{wei_chain--thought_2022,wang_self-consistency_2023}, learned verifiers
 \citep{cobbe_training_2021} and selection-inference \citep{creswell_selection-inference_2023}
-techniques among others. \citet{dohan_language_2022} propose a framework for formalizing these
+techniques among others. \citet{dohan_language_2022} present a framework for formalizing these
 techniques while \citet{zhao_calibrate_2021} propose solutions to the performance sensitivity to
 prompt choice and ordering. Unsurprisingly, some studies find a performance boost can be achieved by
 fine-tuning the models directly on ICL examples \citep{sanh_multitask_2022,wang_benchmarking_2022}
@@ -197,7 +197,7 @@ generalise across languages. They propose a new method for monolingual represent
 consisting in retraining the lexical embeddings in the target language while keeping the rest of the
 model frozen. \citet{de_vries_adapting_2021} successfully apply this method to low-resource target
 languages and \citet{de_vries_as_2021} extend the method to DOT, successfully adapting GPT2 to
-Italian and Dutch. Recently, \citet{minixhofer_wechsel_2022} has optimized the method by using
+Italian and Dutch. Recently, \citet{minixhofer_wechsel_2022} have optimized the method by using
 dictionaries of parallel static multilingual word embeddings to reinitialize the embeddings in an
 efficient way before re-training them on the target language. Unfortunately in the DOT setting, none
 of these methods consider variants larger than GPT2-small (117M parameters) and crucially focus only
@@ -521,8 +521,8 @@ limitations. Due to the design restrictions mentioned in section \ref{sec:experi
 lack of non-English datasets, we only evaluate on 9 tasks, despite focusing on high-resource
 languages like German and French. This is a small number of tasks compared to what is done in
 English, where 10s and 100s of tasks can comprise a multi-task benchmark. Furthermore, many of our
-datasets are either human or machine translated versions of English, which can lead to noise de to
-translationese \citep{koppel_translationese_2011}. We hope to raise awareness of the complete
+datasets are either human or machine translated versions of English, which can lead to noise due to
+``translationese'' \citep{koppel_translationese_2011}. We hope to raise awareness of the complete
 English dominance of the NLP data landscape.
 
 \looseness=-1
@@ -546,19 +546,19 @@ terms of resources and performance. Finally, undermining all of this work is our
 results on a single random seed. Future work with more seeds and more compute would be necessary to
 draw more definitive conclusions.
 
-
 \section{Conclusion}
 
 We explore the problem of language-adapting a monolingual DOT previously fine-tuned to perform
 in-context learning. To this end, we stress test the current SOTA adaptation method, WECHSEL,
-scaling to previously untested model sizes, applying it a fine-tuned variant of GPT2 (MetaICL) and
-evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL successfully scales
-to larger model sizes, we find that at our compute regime, WECHSEL-adapted MetaICL underperforms
-compared to simply sandwiching the English model between translation API calls. We experiment with
-separating ICL fine-tuning and language adaptation to address potential catastrophic forgetting
-through the use of Adapters, but find these approaches unsuccessful. In doing so, we propose
-\textsc{PHoDiVA}, a novel method for post-hoc disentanglement through vessel adapters. We share
-\textsc{PHoDiVA} in this rudimentary form as a starting point for future work in this direction.
+scaling to previously untested model sizes, applying it to a fine-tuned variant of GPT2 (MetaICL)
+and evaluating extrinsically on a multi-task benchmark. While we find that WECHSEL successfully
+scales to larger model sizes, we note that at our compute regime, WECHSEL-adapted MetaICL
+underperforms compared to simply sandwiching the English model between translation API calls. We
+experiment with separating ICL fine-tuning and language adaptation to address potential catastrophic
+forgetting through the use of adapters, but find these approaches unsuccessful. In doing so, we
+propose \textsc{PHoDiVA}, a novel method for post-hoc disentanglement through vessel adapters. We
+share \textsc{PHoDiVA} in this rudimentary form as a starting point for future work in this
+direction.
 
 \section{Acknowledgements}
 
