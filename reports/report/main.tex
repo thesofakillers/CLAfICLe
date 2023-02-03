@@ -221,10 +221,14 @@ non-adapter approaches include meta-learning, which has also been applied to lan
 \citep{nooralahzadeh_zero-shot_2020}.
 
 \subsection{Other related work}
-\begin{itemize}
-	\item distillation
-	\item disentanglement
-\end{itemize}
+
+Our work makes brief references to the area of distillation \citep{hinton_distilling_2015}, which is
+typically defined to be the process of transferring information from a large model to a smaller one.
+We also briefly touch on disentanglement \citep{bengio_representation_2013}, wherein representations
+are ``disentangled'' such that a change in one dimension corresponds to a change in one factor of
+variation but does not affect other factors. In our case, we are interested in a ``post-hoc''
+disentanglement of the representations responsible for the fine-tuned capabilities of a base model,
+similarly to \citet{khrulkov_disentangled_2021}.
 
 \section{Method}\label{sec:method}
 
