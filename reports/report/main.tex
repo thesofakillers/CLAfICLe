@@ -173,9 +173,38 @@ NLP. Our work attempts to partly address this gap by exploring ways of adapting 
 English models to other languages.
 
 \subsection{Multilingual NLP}
+
+Democratizing LLMs to other languages has mainly been achieved by repeating the pre-training process
+on massive multi-lingual corpora. While non-transformer approaches exist
+\citep{artetxe_massively_2019}, most attention is devoted to transformers, resulting in
+encoder-only, encoder-decoder and decoder-only models such as XLM-R
+\citep{conneau_cross-lingual_2019}, mT5 \citep{xue_mt5_2021}, XLGM \citep{lin_few-shot_2021}, mBART
+\citep{liu_multilingual_2020} and BLOOM \citep{bigscience_workshop_bloom_2022}. While undoubtedly
+valuable, these models tend to suffer from the \textit{curse of multilinguality}
+\citep{conneau_unsupervised_2020}, where the performance degrades as the number of languages
+increases. \citet{nozza_what_2020} and \citet{wu_are_2020} reproduce this claim, showing that
+monolingual models tend to outperform multilingual models on downstream tasks. To address this
+issue, researchers have re-trained transformers in other languages
+\citep{martin_camembert_2020,de_vries_bertje_2019,chan_germans_2020, de_mattei_geppetto_2020} but
+this approach may not scale well to all 200+ languages of the world. Instead, recent work has
+focused on efficiently transferring monolingual English representation to other target languages.
+\citet{artetxe_cross-lingual_2020} first tackle this problem with the aim of testing
+\citet{pires_how_2019} and \citet{cao_multilingual_2022}'s hypothesis that joint training across
+multiple languages on a shared vocabulary gives rise to cross-lingual representations that
+generalise across languages. They propose a new method for monolingual representation transfer
+consisting in retraining the lexical embeddings in the target language while keeping the rest of the
+model frozen. \citet{de_vries_adapting_2021} successfully apply this method to low-resource target
+languages and \citet{de_vries_as_2021} extend the method to DOT, successfully adapting GPT2 to
+Italian and Dutch. Recently, \citet{minixhofer_wechsel_2022} has optimized the method by using
+dictionaries of parallel static word embeddings to reinitialize the embeddings in an efficient way
+before re-training them on the target language. Unfortunately in the DOT setting, none of these
+methods consider variants larger than GPT2-small (117M parameters) and crucially focus only on
+intrinsic evaluation rather than performance on downstream tasks. Furthermore, it remains to be seen
+whether any of these methods can be applied to fine-tuned versions of GPT2, without leading to
+catastrophic forgetting. Our work attempts to address these issues by exploring the transferability
+MetaICL \citep{min_metaicl_2022} from English to French and German.
+
 \begin{itemize}
-	\item multilingual nlp (XLM-r)
-	\item monolingual non-english models
 	\item wechsel, devries, artexte, etc.
 \end{itemize}
 \subsection{Adaptation}
@@ -298,7 +327,7 @@ language.
 We use the PyTorch Lightning Python framework \citep{falcon_pytorch_2019} to implement our work.
 Because we envision the direct application of this work to be most useful to smaller companies and
 start-ups, we limit our compute to a single 40GB NVIDIA A100 GPU and run jobs for a maximum of 24
-hours. Our code is available on
+hours. Our code and checkpoints are available on
 GitHub\footnote{\href{https://github.com/thesofakillers/CLAfICLe}{https://github.com/thesofakillers/CLAfICLe}}.
 
 \subsection{Models}
@@ -359,7 +388,7 @@ language modeling, we use the original release of the OSCAR corpus
 \subsection{Training}
 
 When performing CLM training, due to our limited compute, we heed the advice of
-\citet{geiping_cramming_2022} and pack as samples into 1024-token sequences (the maximum length
+\citet{geiping_cramming_2022} and pack samples into 1024-token sequences (the maximum length
 possible) by separating them with EOS tokens, so to minimize the number of padding tokens and
 maximize GPU utilisation. With this we are able to fit a batch size of 2 into memory, while actually
 presenting the model with more than two examples per batch in most cases\footnote{This technique is
