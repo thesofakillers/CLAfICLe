@@ -9,6 +9,7 @@ Cross-Lingual Adaptation for In-Context Learning
     * [Required Packages](#required-packages)
     * [Checkpoints](#checkpoints)
 * [Model Reference](#model-reference)
+* [Usage](#usage)
 * [Project Organization](#project-organization)
 
 <!-- vim-markdown-toc -->
@@ -74,6 +75,39 @@ The following table provides a reference for the models evaluated in our paper.
 | `{base}-metaicla`               | fr, de                   | A `base` (any of the `gpt2-gewechselt-{lang}-clm`) with a MetaICL adapter, trained the standard way.                                                                                               |
 | `{base}-metaiclva`              | fr, de                   | A `base` (any of the `gpt2-gewechselt-{lang}-clm`) with a MetaICL _vessel_ adapter, trained with targeted distillation.                                                                            |
 
+## Usage
+
+We use [hydra](https://hydra.cc/) for configuring our project.
+
+To download/process the data, either run
+[claficle/data/oscar.py](claficle/data/oscar.py) or
+[claficle/data/benchmark.py](claficle/data/benchmark.py) for OSCAR and our
+multi-lingual multi-task benchmark respectively. You may have to configure or
+override [claficle/conf/setup_data.yaml](claficle/conf/setup_data.yaml)
+accordingly. We suggest inspecting [slurm/data/](slurm/data/) for examples of
+how we ran these.
+
+Note that to process OSCAR in French and German data you need to make use of
+trained tokenizers from WECHSEL initialization. You can either download these
+along with our checkpoints or run WECHSEL initalization yourself by running
+[claficle/models/gewechselt.py](claficle/models/gewechselt.py), configured with
+[claficle/conf/wechsel_init.yaml](claficle/conf/wechsel_init.yaml). We have
+examples of how we ran this in [slurm/wechsel/](slurm/wechsel_init/).
+
+Once the data is downloaded, to run evaluation run
+[claficle/run/eval.py](claficle/run/eval.py), configured with
+[claficle/conf/eval.yaml](claficle/conf/eval.yaml). Examples at
+[slurm/eval/](slurm/eval/).
+
+Of course, to run evaluation you need trained checkpoints. You can once again
+either download these or train them yourself. For geWECHSELt models, you can
+run [claficle/run/train.py](claficle/run/train.py). For MetaICLVA, you can run
+[claficle/run/distil.py](claficle/run/distil.py). For MetaICLA, please refer to
+[our MetaICL fork](https://github.com/thesofakillers/metaICLA). Like always,
+these are configured with the relevant files in
+[claficle/conf/](claficle/conf/) and are accompanies by examples of how we did
+it in [slurm/](slurm/).
+
 ## Project Organization
 
 ```plaintext
@@ -85,7 +119,7 @@ The following table provides a reference for the models evaluated in our paper.
     │   └── raw/           <- The original, immutable data dump.
     ├── checkpoints/       <- Trained and serialized models.
     ├── notebooks/         <- Jupyter notebooks.
-    ├── slurm/             <- Slurm scripts
+    ├── slurm/             <- SLURM scripts
     ├── logs/              <- logs
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     ├── pyproject.toml     <- project metadata, handled by poetry.
