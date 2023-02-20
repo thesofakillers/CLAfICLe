@@ -1,6 +1,10 @@
 # CLAfICLe
 
-Cross-Lingual Adaptation for In-Context Learning
+Read our paper:
+
+[Cross-Lingual Adaptation for In-Context Learning [PDF]](./reports/report/main.pdf)
+
+**Contents**
 
 <!-- prettier-ignore-start -->
 <!-- vim-markdown-toc GFM -->
