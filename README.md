@@ -2,7 +2,7 @@
 
 Read our paper:
 
-[Cross-Lingual Adaptation for In-Context Learning [PDF]](./reports/report/main.pdf)
+[Cross-Lingual Adaptation for In-Context Learning [PDF]](./reports/report/main.pdf) (Not submitted for publication)
 
 **Contents**
 
